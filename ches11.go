@@ -19,19 +19,7 @@ type Board struct {
 }
 
 func (b Board) String() string {
-	var printBoard string
-	
-	
-	/* Good for 64 byte board
-	for idx, _ := range b.board {
-		fmt.Print( ":", idx, "  ")
-		sq := idx + 1
-		if sq % 8 == 0{
-			fmt.Print("\n")
-		}
-	}*/
-			
-	return printBoard
+	return string(b.board)
 }
 
 func (b Board) Set(token byte, x, y int) error {
@@ -54,8 +42,12 @@ func (b Board) squareAt(x, y int) (int, error) {
 }
 
 func NewBoard() Board {
-	b := make([]byte, 128)
-	/*for i := 0; i < 8; i +=2 {
+	wth := 8 // +2 for right column + \n
+	lng := 8 // +1 for bottom row
+	
+
+	b := make([]byte, wth*lng)
+	for i := 0; i < 8; i +=2 {
 		row0 := i * 8
 		row1 := (i + 1) * 8
 		for j := 0; j < 8; j += 2 {
@@ -64,16 +56,7 @@ func NewBoard() Board {
 				b[row1+j], b[row1+j+1] = 'w', 'b'
 			}
 		}
-	}*/
-	
-	for i := 8; i <16; i++{
-		b[i] = '1'
 	}
-	
-	for i := 48; i<56; i++{
-		b[i] = '8'
-	}
-
 	return Board{
 		board: b,
 	}
@@ -85,7 +68,5 @@ func main() {
 //	Board[1] = 
 	///	fmt.Print(Board)
 	board := NewBoard()
-	//fmt.Print(board.String())
-	//fmt.Println(string(board.board[1:8]))
-	board.String()
+	fmt.Print(string(board.board))
 }
