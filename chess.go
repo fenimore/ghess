@@ -14,6 +14,7 @@ import (
 //var Board [128]byte
 
 /*
+
     ' rnbqkbnr\n'  #  20 - 29
     ' pppppppp\n'  #  30 - 39
     ' ........\n'  #  40 - 49
@@ -32,21 +33,21 @@ type Board struct {
 
 func (b Board) String() string {
 	var printBoard string
-	
-	fmt.Print(string(b.board))
-	//* Good for 64 byte board
-	for idx, _ := range b.board {
-		if idx < 10 {
-			fmt.Print(":00", idx, "  ")
-		}
+
+	for idx, val := range b.board {
 		if idx < 100 && idx > 10{
-			fmt.Print( ":0", idx, "  ")
+			if idx % 10 != 0 && idx <90{
+				if (idx+1) % 10 !=0{// why doesn't an || work?
+					fmt.Print( ":", idx, ": ")
+				} else {
+					fmt.Print(":",string(val))
+				}
+			}
 		}
-		if idx > 99 {
-			fmt.Print(":", idx, "  ")
+		if idx < 9 && idx > 0{
+			fmt.Print(": ", string(val), ": ")
 		}
-		sq := idx 
-		if sq % 10 == 0 && sq != 0{
+		if idx % 10 == 0 && idx != 0{
 			fmt.Print("\n")
 		}
 	}
@@ -75,19 +76,9 @@ func (b Board) squareAt(x, y int) (int, error) {
 
 func NewBoard() Board {
 	b := make([]byte, 120)
-
-	/*for i := 0; i < 8; i +=2 {
-		row0 := i * 8
-		row1 := (i + 1) * 8
-		for j := 0; j < 8; j += 2 {
-			b[row0+j], b[row0+j+1] = 'b', 'w'
-			if row1+j+1 <= 64 {
-				b[row1+j], b[row1+j+1] = 'w', 'b'
-			}
-		}
-	}*/
 	fmt.Println("initializing board")
-	//fmt.Println("At 20-29", string(b[28]))
+	b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8] = 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
+	b[19], b[29], b[39], b[49], b[59], b[69], b[79], b[89] = '1', '2', '3', '4', '5', '6', '7', '8'
 	return Board{
 		board: b,
 		A1: 91,
