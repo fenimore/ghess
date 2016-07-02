@@ -6,8 +6,9 @@ Search and Evaluation
 package main
 
 import (
-	"errors"
+//	"errors"
 	"fmt"
+	"bytes"
 	//"time"
 )
 
@@ -26,14 +27,115 @@ import (
 
 
 */
+
 type Board struct {
 	board []byte
+	castle []byte
+	empassant int
+	coord map[string]int
 	A1, H1, A8, H8 int
+	toMove string
+	moves int
 }
 
-func (b Board) String() string {
-	var printBoard string
 
+func NewBoard() Board {
+	b := make([]byte, 120)
+	fmt.Println("initializing board")
+	b[91], b[92], b[93], b[94], b[95], b[96], b[97], b[98] = 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
+	b[19], b[29], b[39], b[49], b[59], b[69], b[79], b[89] = '1', '2', '3', '4', '5', '6', '7', '8'
+
+	// starting position
+	b = []byte(`           RNBKQBNR  PPPPPPPP  ........  ........  ........  ........  pppppppp  rnbkqbnr                                `)
+	b[91], b[92], b[93], b[94], b[95], b[96], b[97], b[98] = 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
+	b[19], b[29], b[39], b[49], b[59], b[69], b[79], b[89] = '1', '2', '3', '4', '5', '6', '7', '8'
+	
+	cas := []byte(`KQkq`)
+
+	m := make(map[string]int)
+	m["a1"], m["b1"], m["c1"], m["d1"], m["e1"], m["f"], m["g1"], m["h1"]  = 11, 12, 13, 14, 15, 16, 17, 18
+	
+	return Board{
+		board: b,
+		A1: 91,
+		A8: 21,
+		H1: 98,
+		H8: 28,
+		castle: cas,
+		coord: m,
+		toMove: "w",
+	}
+}
+
+
+func (b *Board) String()string {
+	var printBoard string
+	//fmt.Println(string(b.castle))
+	//fmt.Println(b.coord["a1"])
+	for idx, val := range b.board {
+		if idx < 100 && idx > 10{
+			if idx % 10 != 0 && idx <90{
+				if (idx+1) % 10 !=0{// why doesn't an || work?
+					printBoard += "|"+ string(val)+"| "
+				} else {
+					printBoard += ":"+string(val)
+				}
+			}
+		}
+		if idx > 90 && idx < 99{
+			printBoard += ":"+string(val)+": "
+		}
+		if idx % 10 == 0 && idx != 0{
+			printBoard += "\n"
+		}
+	}
+	return printBoard
+}
+
+func (b *Board) Move(orig, dest int) {
+	val := b.board[orig]
+	if b.toMove == "w" {
+		// check that orig is Upper
+		fmt.Println("white to move")
+		o := []byte(bytes.ToLower(b.board[orig:orig+1]))[0]
+		//if orig =
+	} else if b.toMove == "b" {
+		// check if orig is Lower
+		fmt.Println("Black to Move")
+	}
+	b.board[orig] = '.'
+	// is it empty
+	// are the squares leading to it empty
+	//
+	// Change to Move
+	b.board[dest] = val
+	b.board[dest] = []byte(bytes.ToLower(b.board[dest:dest+1]))[0]
+	fmt.Println(string(b.board[dest]))
+	if b.toMove == "w" {
+		b.toMove = "b"
+	} else {
+		b.toMove = "w"
+	}
+
+}
+
+
+
+
+
+func main() {
+	board := NewBoard()
+	fmt.Print(board.String())
+	board.Move(24, 44)
+	fmt.Print(board.String())
+	board.Move(74, 54)
+	fmt.Print(board.String())
+	board.Coordinates()
+}
+
+func (b *Board) Coordinates() {
+	fmt.Println(string(b.castle))
+	fmt.Println(b.coord["a1"])
 	for idx, val := range b.board {
 		if idx < 100 && idx > 10{
 			if idx % 10 != 0 && idx <90{
@@ -44,58 +146,11 @@ func (b Board) String() string {
 				}
 			}
 		}
-		if idx < 9 && idx > 0{
+		if idx > 90 && idx < 99{
 			fmt.Print(": ", string(val), ": ")
 		}
 		if idx % 10 == 0 && idx != 0{
 			fmt.Print("\n")
 		}
 	}
-			
-	return printBoard
-}
-
-func (b Board) Set(token byte, x, y int) error {
-	idx, err := b.squareAt(x, y)
-	if err != nil {
-		return err
-	}
-	b.board[idx] = token
-	return nil
-}
-
-func (b Board) squareAt(x, y int) (int, error) {
-	woff := 16
-	foff := (y*2+1)*woff + x*2 + 1
-
-	if foff > len(b.board){
-		return 0, errors.New("out of range")
-	}
-	return  (y*2+1)*woff + x*2 + 1, nil
-}
-
-func NewBoard() Board {
-	b := make([]byte, 120)
-	fmt.Println("initializing board")
-	b[1], b[2], b[3], b[4], b[5], b[6], b[7], b[8] = 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
-	b[19], b[29], b[39], b[49], b[59], b[69], b[79], b[89] = '1', '2', '3', '4', '5', '6', '7', '8'
-	return Board{
-		board: b,
-		A1: 91,
-		A8: 21,
-		H1: 98,
-		H8: 28,
-	}
-}
-
-
-func main() {
-//	Board[0] = 70
-//	Board[1] = 
-	///	fmt.Print(Board)
-	board := NewBoard()
-	//fmt.Print(board.String())
-	//fmt.Println(string(board.board[1:8]))
-	board.String()
-	fmt.Println("At 20-29", string(board.board[31]))
 }
