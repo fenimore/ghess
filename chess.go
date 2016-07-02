@@ -94,27 +94,21 @@ func (b *Board) String()string {
 
 func (b *Board) Move(orig, dest int) error {
 	val := b.board[orig]
+	var o byte
 	//err := nil
 	if b.toMove == "w" {
 		// check that orig is Upper
 		fmt.Println("white to move")
-		o := []byte(bytes.ToUpper(b.board[orig:orig+1]))[0]
-		
-		if b.board[orig] == o && o != '.' {
-			fmt.Println("not a peroid")
-		} else {
-			return errors.New("not your turn")
-		}
+		o = []byte(bytes.ToUpper(b.board[orig:orig+1]))[0]
 	} else if b.toMove == "b" {
 		// check if orig is Lower
 		fmt.Println("Black to Move")
-		o := []byte(bytes.ToLower(b.board[orig:orig+1]))[0]
-		
-		if b.board[orig] == o && o != '.' {
-			fmt.Println("not a peroid")
-		} else {
-			return errors.New("not your turn")
-		}
+		o = []byte(bytes.ToLower(b.board[orig:orig+1]))[0]
+	}
+	if b.board[orig] == o && o != '.' {
+		// not a period, no error
+	} else {
+		return errors.New("not your turn or its a period")
 	}
 	b.board[orig] = '.'
 	// is it empty
@@ -145,12 +139,12 @@ func main() {
 	//fmt.Print(board.String())
 	//board.Coordinates()
 
-	e := board.Move(24, 44)
+	e := board.Move(22, 42)
 	fmt.Print(board.String())
 	if e != nil {
 		fmt.Print("not nil")
 	}
-	e = board.Move(24, 44)
+	e = board.Move(24, 42)
 	fmt.Print(board.String())
 	if e != nil {
 		fmt.Print("not nil")
