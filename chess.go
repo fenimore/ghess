@@ -67,7 +67,8 @@ func NewBoard() Board {
 	}
 }
 
-
+// Return a string of the board
+// Todo Unicode chess pieces
 func (b *Board) String()string {
 	var printBoard string
 	//fmt.Println(string(b.castle))
@@ -91,11 +92,14 @@ func (b *Board) String()string {
 	}
 	return printBoard
 }
-
+	
+/*
+Rules and validation
+*/
+// Move byte value to new position
 func (b *Board) Move(orig, dest int) error {
 	val := b.board[orig]
 	var o byte
-	//err := nil
 	if b.toMove == "w" {
 		// check that orig is Upper
 		fmt.Println("white to move")
@@ -150,6 +154,11 @@ func main() {
 		fmt.Print("not nil")
 	}
 }
+
+
+/*
+Testing method
+*/
 
 func (b *Board) Coordinates() {
 	fmt.Println(string(b.castle))
