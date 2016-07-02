@@ -6,7 +6,7 @@ Search and Evaluation
 package main
 
 import (
-//	"errors"
+	"errors"
 	"fmt"
 	"bytes"
 	//"time"
@@ -92,16 +92,29 @@ func (b *Board) String()string {
 	return printBoard
 }
 
-func (b *Board) Move(orig, dest int) {
+func (b *Board) Move(orig, dest int) error {
 	val := b.board[orig]
+	//err := nil
 	if b.toMove == "w" {
 		// check that orig is Upper
 		fmt.Println("white to move")
-		o := []byte(bytes.ToLower(b.board[orig:orig+1]))[0]
-		//if orig =
+		o := []byte(bytes.ToUpper(b.board[orig:orig+1]))[0]
+		
+		if b.board[orig] == o && o != '.' {
+			fmt.Println("not a peroid")
+		} else {
+			return errors.New("not your turn")
+		}
 	} else if b.toMove == "b" {
 		// check if orig is Lower
 		fmt.Println("Black to Move")
+		o := []byte(bytes.ToLower(b.board[orig:orig+1]))[0]
+		
+		if b.board[orig] == o && o != '.' {
+			fmt.Println("not a peroid")
+		} else {
+			return errors.New("not your turn")
+		}
 	}
 	b.board[orig] = '.'
 	// is it empty
@@ -109,14 +122,14 @@ func (b *Board) Move(orig, dest int) {
 	//
 	// Change to Move
 	b.board[dest] = val
-	b.board[dest] = []byte(bytes.ToLower(b.board[dest:dest+1]))[0]
+
 	fmt.Println(string(b.board[dest]))
 	if b.toMove == "w" {
 		b.toMove = "b"
 	} else {
 		b.toMove = "w"
 	}
-
+	return nil
 }
 
 
@@ -126,11 +139,22 @@ func (b *Board) Move(orig, dest int) {
 func main() {
 	board := NewBoard()
 	fmt.Print(board.String())
-	board.Move(24, 44)
+	//board.Move(24, 44)
+	//fmt.Print(board.String())
+	//board.Move(74, 54)
+	//fmt.Print(board.String())
+	//board.Coordinates()
+
+	e := board.Move(24, 44)
 	fmt.Print(board.String())
-	board.Move(74, 54)
+	if e != nil {
+		fmt.Print("not nil")
+	}
+	e = board.Move(24, 44)
 	fmt.Print(board.String())
-	board.Coordinates()
+	if e != nil {
+		fmt.Print("not nil")
+	}
 }
 
 func (b *Board) Coordinates() {
