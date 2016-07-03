@@ -188,26 +188,29 @@ func (b *Board) Move(orig, dest int) error {
 // validate Pawn Move
 func (b *Board) validPawn(orig int, dest int, d byte) error {
 	err := errors.New("Illegal Move")
-	remainder := dest-orig
+	var remainder int
 	if b.toMove == "w" {
-		if remainder == 10 {
-			// regular move
-		} else if remainder == 20 { // two spaces
-			// double starter move
-			if orig > 28 { // Only from 2nd rank
-				return err
-			}
-		} else if remainder == 9 || remainder == 11 {
-			// Attack vector
-			if b.board[dest] == d &&  d != '.'{
-				// Proper attack
-			} else {
-				return err
-			}
-		}
+		remainder = dest-orig
+	} else if b.toMove == "b"{
+		remainder = orig-dest
 	}
-	if b.toMove == "b" {
-
+	if remainder == 10 {
+		// regular move
+	} else if remainder == 20 { // two spaces
+		// double starter move
+		if orig > 28 && b.toMove == "w"{ // Only from 2nd rank
+			return err
+		}
+		if orig < 70 && b.toMove == "b"{
+			return err
+		}
+	} else if remainder == 9 || remainder == 11 {
+		// Attack vector
+		if b.board[dest] == d &&  d != '.'{
+			// Proper attack
+		} else {
+			return err
+		}
 	}
 	return nil
 }
