@@ -144,7 +144,7 @@ func (b *Board) Move(orig, dest int) error {
 	if b.board[dest] != d{ // 
 		return errors.New("Can't attack your own piece")
 	}
-
+	
 	// Dest:
 	// are the squares leading up to it empty
 	// Piece:
