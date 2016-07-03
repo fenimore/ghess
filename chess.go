@@ -206,6 +206,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 		}
 	} else if remainder == 9 || remainder == 11 {
 		// Attack vector
+		// check if b.board[orig+10] == '.'
 		if b.board[dest] == d &&  d != '.'{
 			// Proper attack
 		} else {
@@ -214,6 +215,14 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	}
 	return nil
 }
+
+// Valid Knight
+
+/*
+TODO: Export fen
+TODO: Parse fen
+TODO: Parse pgn
+*/
 
 
 
