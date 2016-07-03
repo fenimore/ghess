@@ -105,21 +105,26 @@ func (b *Board) Move(orig, dest int) error {
 		fmt.Println("Black to Move")
 		o = []byte(bytes.ToLower(b.board[orig:orig+1]))[0]
 	}
-	if b.board[orig] == o && o != '.' {
-		// not a period, no error
-	} else {
+	if b.board[orig] != o || o == '.' {
 		return errors.New("not your turn or its a period")
 	}
-	b.board[orig] = '.'
+	// Dest:
 	// is it empty
-	// are the squares leading to it empty
-	//
-	// Change to Move
+	// are the squares leading up to it empty
+	// is i possesed by the right color
+	// Piece:
+	// validatePawn() etc
+	// if w
+	// if orig > 30
+	// dest - orig == 1
+	// else == 1 || 2
+	// return valid
+	b.board[orig] = '.'
 	b.board[dest] = val
-
-	fmt.Println(string(b.board[dest]))
+	// Update Tickers
 	if b.toMove == "w" {
 		b.toMove = "b"
+		b.moves++ // add one to move 
 	} else {
 		b.toMove = "w"
 	}
