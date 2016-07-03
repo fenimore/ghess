@@ -2,10 +2,10 @@
 Go Chess Engine
 Fenimore Love 2016
 GPLv3
+
 TODO: Search and Evaluation
 TODO: Fen PGN reading
 TODO: Fen output
-
 */
 package main
 
@@ -18,12 +18,16 @@ import (
 // The chessboard type
 type Board struct {
 	board []byte // piece position
+	// Game Variables
 	castle []byte // castle possibility KQkq or ----
 	empassant int // square vulnerable to empassant
-	coord map[string]int // the pgn format
+	score string
 	toMove string // Next move is w or b
 	moves int // the count of moves 
+	// Map for display grid
+	pgnMap map[string]int // the pgn format
 	pieces map[string]string // the unicode fonts
+	// Game Positions
 	fen string
 	pgn string
 }
@@ -68,10 +72,11 @@ func NewBoard() Board {
 	return Board{
 		board: b,
 		castle: cas,
-		coord: m,
+		pgnMap: m,
 		pieces: r,
 		toMove: "w",
-		
+		score: "*",
+		moves: 1,
 	}
 }
 
@@ -79,12 +84,10 @@ func NewBoard() Board {
 // Todo Unicode chess pieces
 func (b *Board) String()string {
 	var printBoard string
-	//fmt.Println(string(b.castle))
-	//fmt.Println(b.coord["a1"])
 	for idx, val := range b.board {
 		if idx < 100 && idx > 10{
 			if idx % 10 != 0 && idx <90{
-				if (idx+1) % 10 !=0{// why doesn't an || work?
+				if (idx+1) % 10 !=0{// why not || ?
 					font := b.pieces[string(val)]
 					printBoard += "|"+ font +"| "
 				} else {
@@ -94,21 +97,19 @@ func (b *Board) String()string {
 		}
 		if idx > 90 && idx < 99{
 			printBoard += ":"+string(val)+": "
-		}
-		if idx % 10 == 0 && idx != 0{
+		} else if idx % 10 == 0 && idx != 0{
 			printBoard += "\n"
-
 		}
 	}
 	return printBoard
 }
 	
 /*
-Rules and validation
+Move and validation
 */
 // Wrapper in standard notation
 func (b *Board) pgnMove(orig, dest string) error{
-	e := b.Move(b.coord[orig], b.coord[dest])
+	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
 	if e != nil {
 		return e
 	}
@@ -116,19 +117,19 @@ func (b *Board) pgnMove(orig, dest string) error{
 }
 // Move byte value to new position
 func (b *Board) Move(orig, dest int) error {
+	fmt.Print("Moves: ", b.moves, " Castle: ", string(b.castle))
+	fmt.Println(" To Move: ", b.toMove)
 	val := b.board[orig]
 	var o byte // supposed starting square
 	var d byte // supposed destination
 	if b.toMove == "w" {
 		// check that orig is Upper
 		// and dest is Enemy or Empty
-		fmt.Println("White moves")
 		o = []byte(bytes.ToUpper(b.board[orig:orig+1]))[0]
 		d = []byte(bytes.ToLower(b.board[dest:dest+1]))[0]
 	} else if b.toMove == "b" {
 		// check if orig is Lower
 		// and dest is Enemy or Empty
-		fmt.Println("Black moves")
 		o = []byte(bytes.ToLower(b.board[orig:orig+1]))[0]
 		d = []byte(bytes.ToUpper(b.board[dest:dest+1]))[0]
 	}
@@ -145,10 +146,9 @@ func (b *Board) Move(orig, dest int) error {
 		return errors.New("Can't attack your own piece")
 	}
 	p := string(bytes.ToUpper(b.board[orig:orig+1]))
-	fmt.Print(orig, dest)
+	fmt.Print("Test: ", orig, dest)
 	switch {
 	case p == "P":
-		fmt.Print("is pawn")
 		e := b.validPawn(orig, dest, d)
 		if e != nil{
 			return e
@@ -164,22 +164,14 @@ func (b *Board) Move(orig, dest int) error {
 	case p == "K":
 		fmt.Print("is king")
 	}
-	// Dest:
-	// are the squares leading up to it empty
-	// Piece:
-	// validatePawn() etc
-	// if w
-	// if orig > 30
-	// dest - orig == 1
-	// else == 1 || 2
-	// return valid
+	// Update Board
 	b.board[orig] = '.'
 	b.board[dest] = val
-	// Update Tickers
+	// Update Game variables
 	if b.toMove == "w" {
 		b.toMove = "b"
-		b.moves++ // add one to move 
 	} else {
+		b.moves++ // add one to move 
 		b.toMove = "w"
 	}
 	return nil
@@ -217,6 +209,12 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 }
 
 // Valid Knight
+// remainder == 21 19 12 8 -21 -19 -12 -8
+// Valid Bishop
+// Valid Rook
+// Valid Queen
+// Valid King
+// remainder == 10 11 1 9 -10 -9 -11 -1
 
 /*
 TODO: Export fen
@@ -225,7 +223,9 @@ TODO: Parse pgn
 */
 
 
-
+/*
+Main thread
+*/
 func main() {
 	board := NewBoard()
 	board.Coordinates()
@@ -249,7 +249,7 @@ func main() {
 
 
 /*
-Testing method
+Helper Testing method
 */
 
 func TestGame(b Board) {
@@ -285,12 +285,10 @@ func TestGame(b Board) {
 
 
 func (b *Board) Coordinates() {
-	fmt.Println(string(b.castle))
-	fmt.Println(b.coord["a1"])
 	for idx, val := range b.board {
 		if idx < 100 && idx > 10{
 			if idx % 10 != 0 && idx <90{
-				if (idx+1) % 10 !=0{// why doesn't an || work?
+				if (idx+1) % 10 !=0{
 					fmt.Print( ":", idx, ": ")
 				} else {
 					fmt.Print(":",string(val))
@@ -299,8 +297,7 @@ func (b *Board) Coordinates() {
 		}
 		if idx > 90 && idx < 99{
 			fmt.Print(": ", string(val), ": ")
-		}
-		if idx % 10 == 0 && idx != 0{
+		} else if idx % 10 == 0 && idx != 0{
 			fmt.Print("\n")
 		}
 	}
