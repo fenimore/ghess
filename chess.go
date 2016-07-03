@@ -144,7 +144,26 @@ func (b *Board) Move(orig, dest int) error {
 	if b.board[dest] != d{ // 
 		return errors.New("Can't attack your own piece")
 	}
-
+	p := string(bytes.ToUpper(b.board[orig:orig+1]))
+	fmt.Print(orig, dest)
+	switch {
+	case p == "P":
+		fmt.Print("is pawn")
+		e := b.validPawn(orig, dest, d)
+		if e != nil{
+			return e
+		}
+	case p == "N":
+		fmt.Print("is knight")
+	case p == "B":
+		fmt.Print("is bishop")
+	case p == "R":
+		fmt.Print("is rook")
+	case p == "Q":
+		fmt.Print("is queen")
+	case p == "K":
+		fmt.Print("is king")
+	}
 	// Dest:
 	// are the squares leading up to it empty
 	// Piece:
@@ -166,7 +185,32 @@ func (b *Board) Move(orig, dest int) error {
 	return nil
 }
 
+// validate Pawn Move
+func (b *Board) validPawn(orig int, dest int, d byte) error {
+	err := errors.New("Illegal Move")
+	remainder := dest-orig
+	if b.toMove == "w" {
+		if remainder == 10 {
+			// regular move
+		} else if remainder == 20 { // two spaces
+			// double starter move
+			if orig > 28 { // Only from 2nd rank
+				return err
+			}
+		} else if remainder == 9 || remainder == 11 {
+			// Attack vector
+			if b.board[dest] == d &&  d != '.'{
+				// Proper attack
+			} else {
+				return err
+			}
+		}
+	}
+	if b.toMove == "b" {
 
+	}
+	return nil
+}
 
 
 
@@ -174,17 +218,17 @@ func main() {
 	board := NewBoard()
 	board.Coordinates()
 	//TestGame(board)
-	e := board.pgnMove("e2", "e5")
+	e := board.pgnMove("e2", "e4")
 	if e != nil {
 		fmt.Print(e)
 	}
 	fmt.Print(board.String())
-	e = board.pgnMove("e5", "e6")
+	e = board.pgnMove("d7", "d5")
 	if e != nil {
 		fmt.Print(e)
 	}
 	fmt.Print(board.String())
-	e = board.pgnMove("e7", "e5")
+	e = board.pgnMove("e4", "d5")
 	if e != nil {
 		fmt.Print(e)
 	}
