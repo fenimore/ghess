@@ -35,14 +35,16 @@ type Board struct {
 // __init__ for Board
 func NewBoard() Board {
 	b := make([]byte, 120)
-	fmt.Println("initializing board")
+	fmt.Println("Initializing new Chess game\n")
+	
 	// starting position
 	b = []byte(`           RNBKQBNR  PPPPPPPP  ........  ........  ........  ........  pppppppp  rnbkqbnr                                `)
+
+    // Printed Board Notations
 	b[91], b[92], b[93], b[94], b[95], b[96], b[97], b[98] = 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
 	b[19], b[29], b[39], b[49], b[59], b[69], b[79], b[89] = '1', '2', '3', '4', '5', '6', '7', '8'
 	
-	cas := []byte(`KQkq`) // castle possibility
-	// Map of PGN notation, incomplete
+	// Map of PGN notation
 	m := make(map[string]int)
 	m["a1"], m["b1"], m["c1"], m["d1"], m["e1"], m["f1"], m["g1"], m["h1"]  = 11, 12, 13, 14, 15, 16, 17, 18
 	m["a2"], m["b2"], m["c2"], m["d2"], m["e2"], m["f2"], m["g2"], m["h2"]  = 21, 22, 23, 24, 25, 26, 27, 28
@@ -53,25 +55,19 @@ func NewBoard() Board {
 	m["a7"], m["b7"], m["c7"], m["d7"], m["e7"], m["f7"], m["g7"], m["h7"]  = 71, 72, 73, 74, 75, 76, 77, 78
 	m["a8"], m["b8"], m["c8"], m["d8"], m["e8"], m["f8"], m["g8"], m["h8"]  = 81, 82, 83, 84, 85, 86, 87, 88
 
-
 	// Map of unicode fonts
 	r := make(map[string]string)
-	r["p"] = "\u2659"
-	r["P"] = "\u265F"
-	r["b"] = "\u2657"
-	r["B"] = "\u265D"
-	r["n"] = "\u2658"
-	r["N"] = "\u265E"
-	r["r"] = "\u2656"
-	r["R"] = "\u265C"
-	r["q"] = "\u2655"
-	r["Q"] = "\u265B"
-	r["k"] = "\u2654"
-	r["K"] = "\u265A"	
+	r["p"], r["P"] = "\u2659", "\u265F"
+	r["b"], r["B"] = "\u2657", "\u265D"
+	r["n"], r["N"] = "\u2658", "\u265E"
+	r["r"], r["R"] = "\u2656", "\u265C"
+	r["q"], r["Q"] = "\u2655", "\u265B"
+	r["k"], r["K"] = "\u2654", "\u265A"
 	r["."] = "\u2022"
+	
 	return Board{
 		board: b,
-		castle: cas,
+		castle: []byte(`KQkq`),
 		pgnMap: m,
 		pieces: r,
 		toMove: "w",
@@ -117,8 +113,8 @@ func (b *Board) pgnMove(orig, dest string) error{
 }
 // Move byte value to new position
 func (b *Board) Move(orig, dest int) error {
-	fmt.Print("Moves: ", b.moves, " Castle: ", string(b.castle))
-	fmt.Println(" To Move: ", b.toMove)
+	fmt.Print("Moves: ", b.moves, "| Castle: ", string(b.castle))
+	fmt.Println("| To Move: ", b.toMove)
 	val := b.board[orig]
 	var o byte // supposed starting square
 	var d byte // supposed destination
@@ -166,7 +162,7 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// Update Board
 	b.board[orig] = '.'
-	b.board[dest] = val
+	b.board[dest] = val // check if it was the King
 	// Update Game variables
 	if b.toMove == "w" {
 		b.toMove = "b"
@@ -221,30 +217,28 @@ TODO: Export fen
 TODO: Parse fen
 TODO: Parse pgn
 */
+func (b *Board) parsePgn() {
+	// Parse PGN
+}
 
+func (b *Board) parseFen() {
+	// Parse Fen
+}
+
+func (b *Board) genFen() string {
+	// b.board -> Fen
+	fen := "Fen string"
+	return fen
+}
 
 /*
 Main thread
 */
 func main() {
 	board := NewBoard()
+	fmt.Println("coordinates:")
 	board.Coordinates()
-	//TestGame(board)
-	e := board.pgnMove("e2", "e4")
-	if e != nil {
-		fmt.Print(e)
-	}
-	fmt.Print(board.String())
-	e = board.pgnMove("d7", "d5")
-	if e != nil {
-		fmt.Print(e)
-	}
-	fmt.Print(board.String())
-	e = board.pgnMove("e4", "d5")
-	if e != nil {
-		fmt.Print(e)
-	}
-	fmt.Print(board.String())
+	TestGame(board)
 }
 
 
@@ -252,35 +246,22 @@ func main() {
 Helper Testing method
 */
 
-func TestGame(b Board) {
-	fmt.Println("New Game")
-	fmt.Println(b.toMove, string(b.castle))
-	fmt.Print(b.String())
-	e := b.Move(22, 42) // white
-	fmt.Print(b.String())
-	if e != nil {
-		fmt.Print("not nil")
-	}
-	e = b.Move(72, 52)// black
-	fmt.Print(b.String())
-	if e != nil {
-		fmt.Print("not nil")
-	}
-	e = b.Move(23, 43) // white
-	fmt.Print(b.String())
-	if e != nil {
-		fmt.Print("not nil")
-	}
-	e = b.Move(52, 43) // black
-	fmt.Print(b.String())
-	if e != nil {
-		fmt.Println(e)
-	}
-	e = b.Move(21, 43) // white
-	fmt.Print(b.String())
+func TestGame(board Board) {
+	e := board.pgnMove("e2", "e4") // white
 	if e != nil {
 		fmt.Print(e)
 	}
+	fmt.Print(board.String())
+	e = board.pgnMove("d7", "d5") // Black
+	if e != nil {
+		fmt.Print(e)
+	}
+	fmt.Print(board.String())
+	e = board.pgnMove("e4", "d5") // White
+	if e != nil {
+		fmt.Print(e)
+	}
+	fmt.Print(board.String())
 }
 
 
