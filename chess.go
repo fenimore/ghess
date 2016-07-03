@@ -1,7 +1,8 @@
 /*
-Search and Evaluation
-
-
+Go Chess Engine
+Fenimore Love 2016
+GPLv3
+TODO: Search and Evaluation
 */
 package main
 
@@ -9,61 +10,54 @@ import (
 	"errors"
 	"fmt"
 	"bytes"
-	//"time"
 )
 
-//var Board [128]byte
-
-/*
-
-    ' rnbqkbnr\n'  #  20 - 29
-    ' pppppppp\n'  #  30 - 39
-    ' ........\n'  #  40 - 49
-    ' ........\n'  #  50 - 59
-    ' ........\n'  #  60 - 69
-    ' ........\n'  #  70 - 79
-    ' PPPPPPPP\n'  #  80 - 89
-    ' RNBQKBNR\n'  #  90 - 99
-
-
-*/
-
+// The chessboard type
 type Board struct {
-	board []byte
-	castle []byte
-	empassant int
-	coord map[string]int
-	A1, H1, A8, H8 int
-	toMove string
-	moves int
+	board []byte // piece position
+	castle []byte // castle possibility KQkq or ----
+	empassant int // square vulnerable to empassant
+	coord map[string]int // the pgn format
+	toMove string // Next move is w or b
+	moves int // the count of moves 
+	pieces map[string]string // the unicode fonts
 }
 
-
+// __init__ for Board
 func NewBoard() Board {
 	b := make([]byte, 120)
 	fmt.Println("initializing board")
-	b[91], b[92], b[93], b[94], b[95], b[96], b[97], b[98] = 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
-	b[19], b[29], b[39], b[49], b[59], b[69], b[79], b[89] = '1', '2', '3', '4', '5', '6', '7', '8'
-
 	// starting position
 	b = []byte(`           RNBKQBNR  PPPPPPPP  ........  ........  ........  ........  pppppppp  rnbkqbnr                                `)
 	b[91], b[92], b[93], b[94], b[95], b[96], b[97], b[98] = 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
 	b[19], b[29], b[39], b[49], b[59], b[69], b[79], b[89] = '1', '2', '3', '4', '5', '6', '7', '8'
 	
-	cas := []byte(`KQkq`)
-
+	cas := []byte(`KQkq`) // castle possibility
+	// Map of PGN notation, incomplete
 	m := make(map[string]int)
 	m["a1"], m["b1"], m["c1"], m["d1"], m["e1"], m["f"], m["g1"], m["h1"]  = 11, 12, 13, 14, 15, 16, 17, 18
-	
+	// Map of unicode fonts
+	r := make(map[string]string)
+	r["p"] = "\u2659"
+	r["P"] = "\u265F"
+	r["b"] = "\u2657"
+	r["B"] = "\u265D"
+	r["n"] = "\u2658"
+	r["N"] = "\u265E"
+	r["r"] = "\u2656"
+	r["R"] = "\u265C"
+	r["q"] = "\u2655"
+	r["Q"] = "\u265B"
+	r["k"] = "\u2654"
+	r["K"] = "\u265A"	
+	r["."] = "\u2022"
 	return Board{
 		board: b,
-		A1: 91,
-		A8: 21,
-		H1: 98,
-		H8: 28,
 		castle: cas,
 		coord: m,
+		pieces: r,
 		toMove: "w",
+		
 	}
 }
 
@@ -77,7 +71,8 @@ func (b *Board) String()string {
 		if idx < 100 && idx > 10{
 			if idx % 10 != 0 && idx <90{
 				if (idx+1) % 10 !=0{// why doesn't an || work?
-					printBoard += "|"+ string(val)+"| "
+					font := b.pieces[string(val)]
+					printBoard += "|"+ font +"| "
 				} else {
 					printBoard += ":"+string(val)
 				}
@@ -88,6 +83,7 @@ func (b *Board) String()string {
 		}
 		if idx % 10 == 0 && idx != 0{
 			printBoard += "\n"
+			fmt.Print("\n")
 		}
 	}
 	return printBoard
