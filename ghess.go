@@ -107,7 +107,7 @@ func (b *Board) String() string {
 /*
 Move and validation
 */
-// Wrapper in standard notation
+// Wrapper in portable game notation
 func (b *Board) pgnMove(orig, dest string) error {
 	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
 	if e != nil {
@@ -121,6 +121,7 @@ func (b *Board) Move(orig, dest int) error {
 	val := b.board[orig]
 	var o byte // supposed starting square
 	var d byte // supposed destination
+	var empassant bool
 	if b.toMove == "w" {
 		// check that orig is Upper
 		// and dest is Enemy or Empty
@@ -151,6 +152,10 @@ func (b *Board) Move(orig, dest int) error {
 		if e != nil {
 			return e
 		}
+		emp := dest - orig
+		if  emp > 11 || emp < -11 {
+			empassant = true
+		}
 	case p == "N":
 		fmt.Print("is knight") // not implemented
 	case p == "B":
@@ -179,6 +184,12 @@ func (b *Board) Move(orig, dest int) error {
 		b.moves++ // add one to move count
 		b.toMove = "w"
 	}
+	fmt.Print(empassant)
+	if empassant {
+		b.empassant = dest
+	} else {
+		b.empassant = 0
+	}
 	return nil
 }
 
@@ -197,8 +208,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 		// double starter move
 		if orig > 28 && b.toMove == "w" { // Only from 2nd rank
 			return err
-		}
-		if orig < 70 && b.toMove == "b" {
+		} else 	if orig < 70 && b.toMove == "b" {
 			return err
 		}
 	} else if remainder == 9 || remainder == 11 {
@@ -572,6 +582,7 @@ func PlayGame(board Board) { // TODO Rotate Board
 			" | Castle: ", string(board.castle))
 		fmt.Println(" | Turn: ", turn)
 		fmt.Print(board.String())
+		fmt.Println(board.empassant)
 	}
 }
 

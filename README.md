@@ -25,8 +25,11 @@ Golang chess engine, fumbling along...
 - Castle PGN input
 - Print pgn history on crash
 - And many more
+- empassant
 
 ## Bugs
 - PGN can 'move' into eating a piece
+
+6049707096
 
 
