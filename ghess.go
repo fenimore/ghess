@@ -184,7 +184,6 @@ func (b *Board) Move(orig, dest int) error {
 		b.moves++ // add one to move count
 		b.toMove = "w"
 	}
-	fmt.Print(empassant)
 	if empassant {
 		b.empassant = dest
 	} else {
@@ -511,6 +510,9 @@ func (b *Board) parsePgn(move string) error {
 	}
 	// Move the Piece
 	// - Validate Move in Board.Move()
+	if b.board[dest] != '.' && !isCapture {
+		return errors.New("Not the proper capture syntax")
+	}
 	if orig != 0 && dest != 0 {
 		err := b.Move(orig, dest)
 		return err
