@@ -113,8 +113,8 @@ func (b *Board) pgnMove(orig, dest string) error{
 }
 // Move byte value to new position
 func (b *Board) Move(orig, dest int) error {
-	fmt.Print("Moves: ", b.moves, "| Castle: ", string(b.castle))
-	fmt.Println("| To Move: ", b.toMove)
+	fmt.Print("Moves: ", b.moves, " | Castle: ", string(b.castle))
+	fmt.Println(" | Turn: ", b.toMove)
 	val := b.board[orig]
 	var o byte // supposed starting square
 	var d byte // supposed destination
@@ -217,8 +217,27 @@ TODO: Export fen
 TODO: Parse fen
 TODO: Parse pgn
 */
-func (b *Board) parsePgn() {
+func (b *Board) parsePgn(move string) {
 	// Parse PGN
+	// find move piece
+	// is there an x?
+	var orig int
+	square := move // treat for coord
+	piece := move // search for letters
+	dest := b.pgnMap[square]
+	switch {
+	case piece == "P":
+		// if no x
+		// if w
+		if b.board[dest-10] == 'P'{
+			orig = dest-10
+		} else if b.board[dest-20] == 'P' {
+			orig = dest-20
+		}
+	case piece == "N":
+		// do something
+	}
+	b.Move(orig, dest)
 }
 
 func (b *Board) parseFen() {
