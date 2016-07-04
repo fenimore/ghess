@@ -10,13 +10,13 @@ TODO: Fen output
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
-	"strings"
-	"regexp"
-	"bufio"
 	"os"
+	"regexp"
+	"strings"
 )
 
 // The chessboard type
@@ -238,21 +238,21 @@ func (b *Board) parsePgn(move string) error {
 	pgnPattern, _ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})`)
 	res := pgnPattern.FindStringSubmatch(move)
 	/*
-          Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}
-          Examples Inputs: 
-                   e4 | d5 | exd5 | Bc7 | Qxc7
-        */
-	var orig int // find origin coord of move
-	var square string // find pgnMap key of move
+	   Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}
+	   Examples Inputs:
+	            e4 | d5 | exd5 | Bc7 | Qxc7
+	*/
+	var orig int        // find origin coord of move
+	var square string   // find pgnMap key of move
 	var attacker string // left of x
-	var piece string // find move piece
+	var piece string    // find move piece
 	//var precise string // for multiple possibilities
-
+	var target byte // the piece to move, in proper case
 	// Check if Capture (x)
 	isCapture, _ := regexp.MatchString(`x`, move)
 	if isCapture && len(move) > 3 {
 		attacker = res[1]
-		if attacker == strings.ToLower(attacker){
+		if attacker == strings.ToLower(attacker) {
 			piece = "P"
 		}
 		square = res[2]
@@ -263,51 +263,64 @@ func (b *Board) parsePgn(move string) error {
 			square = res[2]
 		} else if chars == 3 {
 			piece = res[1]
-			square = res[2]//move[0]
-		} else if chars ==  4 {
+			square = res[2] //move[0]
+		} else if chars == 4 {
 			piece = res[1] // remove second char
 			//precise = move
-			square res[2]
+			square = res[2]
 		} else {
 			return errors.New("Not enough input")
 		}
-		fmt.Print(piece)
-
 	}
-	// 
+	// the presumed destination
 	dest := b.pgnMap[square]
-	piece = strings.ToUpper(piece)
+	// The piece will be saved as case sensitive byte
+	if b.toMove == "b" {
+		target = byte(strings.ToLower(piece)[0])
+	} else {
+		target = byte(piece[0])
+	}
 	switch {
 	case piece == "P":
-		var target1, target2 int
-		var t byte
+		var target1, target2 int // two potentional origins
 		if b.toMove == "w" {
-			t = 'P' // target origin
+			//target = 'P' // target origin
 			if isCapture {
 				target1, target2 = dest-9, dest-11
 			} else {
 				target1, target2 = dest-10, dest-20
 			}
-		} else {// is black to move
-			t = 'p' // target origin
+		} else { // is black to move
+			//target = 'p' // target origin
 			if isCapture {
 				target1, target2 = dest+9, dest+11
 			} else {
-				target1, target2 = dest+10, dest+20				}
+				target1, target2 = dest+10, dest+20
+			}
 		}
-		if b.board[target1] == t {
+		if b.board[target1] == target {
 			orig = target1
-		} else if b.board[target2] == t {
+		} else if b.board[target2] == target {
 			orig = target2
 		}
 	case piece == "N":
 		// do something
+		//var ntar1, ntar2, ntar4, ntar5, ntar6, ntar7, ntar8 int
+		var possTar [8]int
+		// assume no precision
+		possTar[0], possTar[1], possTar[2], possTar[3], possTar[4], possTar[5], possTar[6], possTar[7] = dest+21, dest+19, dest+12, dest+8, dest-8, dest-12, dest-19, dest-21
+		for _, possibility := range possTar{
+			if b.board[possibility] == target {
+				orig = possibility
+			}
+		}
+		
 	}
 	if orig != 0 && dest != 0 {
 		err := b.Move(orig, dest)
 		return err
 	} else {
-		return  errors.New("No such move")
+		return errors.New("No such move")
 	}
 }
 
