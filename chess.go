@@ -234,6 +234,9 @@ func (b *Board) pgnTest(move string) error {
 
 func (b *Board) parsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
+	//re, _ := regexp.Compile(`(.)x(..)`) // want to know what is in front of 'x'
+	pgnPattern, _ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})`)
+	res := pgnPattern.FindStringSubmatch(move)
 	/*
           Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}
           Examples Inputs: 
@@ -243,13 +246,11 @@ func (b *Board) parsePgn(move string) error {
 	var square string // find pgnMap key of move
 	var attacker string // left of x
 	var piece string // find move piece
-	var precise string // for multiple possibilities
+	//var precise string // for multiple possibilities
 
-	// Check if Capture
+	// Check if Capture (x)
 	isCapture, _ := regexp.MatchString(`x`, move)
 	if isCapture && len(move) > 3 {
-		re, _ := regexp.Compile(`(.)x(..)`) // want to know what is in front of 'x'
-		res := re.FindStringSubmatch(move)
 		attacker = res[1]
 		if attacker == strings.ToLower(attacker){
 			piece = "P"
@@ -257,19 +258,20 @@ func (b *Board) parsePgn(move string) error {
 		square = res[2]
 	} else { // No x
 		chars := len(move)
-		switch {
-		case: chars == 2
-			// do somethin
+		if chars == 2 {
 			piece = "P"
-			square = move
-		case: chars == 3:
-			piece = move[0]
-		case: chars ==  4:
-			piece = move[0]
-			precise := move[1]
-		case: chars < 2:
+			square = res[2]
+		} else if chars == 3 {
+			piece = res[1]
+			square = res[2]//move[0]
+		} else if chars ==  4 {
+			piece = res[1] // remove second char
+			//precise = move
+			square res[2]
+		} else {
 			return errors.New("Not enough input")
 		}
+		fmt.Print(piece)
 
 	}
 	// 
