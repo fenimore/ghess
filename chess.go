@@ -219,14 +219,14 @@ func (b *Board) validRook(orig int, dest int) error {
 	if remainder < 10 && remainder > -10 {
 		// Horizontal 
 		if remainder < 0 {
-			for i := orig-1; i == dest; i-- {
+			for i := orig-1; i >= dest; i-- {
 				fmt.Println(string(b.board[i]))
 				if b.board[i] != '.' {
 					return err
 				}
 			}
 		} else {
-			for i := orig+1; i == dest; i++ {
+			for i := orig+1; i <= dest; i++ {
 				fmt.Println(string(b.board[i]))
 				if b.board[i] != '.' {
 					return err
@@ -236,14 +236,14 @@ func (b *Board) validRook(orig int, dest int) error {
 	} else {
 		// Vertical
 		if remainder < 0 {
-			for i := orig+10; i == dest; i+=10 {
-				fmt.Println(string(b.board[i]))
+			for i := orig-10; i > dest; i-=10 {
+				fmt.Println(i)
 				if b.board[i] != '.' {
 					return err
 				}
 			}
-		}else {
-			for i := orig-10; i == dest; i-=10 {
+		} else {
+			for i := orig+10; i < dest; i+=10 {
 				fmt.Println(string(b.board[i]))
 				if b.board[i] != '.' {
 					return err
@@ -254,13 +254,11 @@ func (b *Board) validRook(orig int, dest int) error {
 
 	return nil
 }
-// Valid Knight
-// remainder == 21 19 12 8 -21 -19 -12 -8
+
 // Valid Bishop
-// Valid Rook
 // Valid Queen
 // Valid King
-// remainder == 10 11 1 9 -10 -9 -11 -1
+
 
 /*
 TODO: Export fen
