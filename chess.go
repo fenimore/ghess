@@ -159,7 +159,10 @@ func (b *Board) Move(orig, dest int) error {
 	case p == "B":
 		fmt.Print("is bishop")
 	case p == "R":
-		fmt.Print("is rook")
+		e := b.validRook(orig, dest)
+		if e != nil {
+			return e
+		}
 	case p == "Q":
 		fmt.Print("is queen")
 	case p == "K":
@@ -180,7 +183,7 @@ func (b *Board) Move(orig, dest int) error {
 
 // validate Pawn Move
 func (b *Board) validPawn(orig int, dest int, d byte) error {
-	err := errors.New("Illegal Move")
+	err := errors.New("Illegal Pawn Move")
 	var remainder int
 	if b.toMove == "w" {
 		remainder = dest - orig
@@ -208,7 +211,49 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	}
 	return nil
 }
+func (b *Board) validRook(orig int, dest int) error {
+	// Check if pieces are in the way
+	err := errors.New("Illegal Rook Move")
+	remainder := dest - orig
+	fmt.Print(remainder)
+	if remainder < 10 && remainder > -10 {
+		// Horizontal 
+		if remainder < 0 {
+			for i := orig-1; i == dest; i-- {
+				fmt.Println(string(b.board[i]))
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		} else {
+			for i := orig+1; i == dest; i++ {
+				fmt.Println(string(b.board[i]))
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		}
+	} else {
+		// Vertical
+		if remainder < 0 {
+			for i := orig+10; i == dest; i+=10 {
+				fmt.Println(string(b.board[i]))
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		}else {
+			for i := orig-10; i == dest; i-=10 {
+				fmt.Println(string(b.board[i]))
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		}
+	}
 
+	return nil
+}
 // Valid Knight
 // remainder == 21 19 12 8 -21 -19 -12 -8
 // Valid Bishop
