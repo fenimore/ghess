@@ -157,7 +157,10 @@ func (b *Board) Move(orig, dest int) error {
 	case p == "N":
 		fmt.Print("is knight")
 	case p == "B":
-		fmt.Print("is bishop")
+		e := b.validBishop(orig, dest)
+		if e != nil {
+			return e
+		}
 	case p == "R":
 		e := b.validRook(orig, dest)
 		if e != nil {
@@ -219,20 +222,59 @@ func (b *Board) validKnight(orig int, dest int) error {
 	return nil
 }
 
+func (b *Board) validBishop(orig int, dest int) error {
+	// Check if other pieces are in the way
+	err := errors.New("Illegal Bishop Move")
+	trajectory := orig - dest
+	a1h8 := trajectory % 11 // if 0 remainder...
+	a8h1 := trajectory % 9
+	// Check which slope
+	if a1h8 == 0 {
+		if dest > orig { // go to bottom right
+			for i := orig + 11; i <= dest; i += 11 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		} else if dest < orig { // go to top left
+			for i := orig - 11; i >= dest; i -= 11 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		}
+	} else if a8h1 == 0 {
+		if dest > orig { // go to bottem left
+			for i := orig + 9; i <= dest; i += 9 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		} else if orig > dest { // go to top right
+			for i := orig - 9; i >= dest; i -= 9 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
 func (b *Board) validRook(orig int, dest int) error {
 	// Check if pieces are in the way
 	err := errors.New("Illegal Rook Move")
 	remainder := dest - orig
 	if remainder < 10 && remainder > -10 {
-		// Horizontal 
+		// Horizontal
 		if remainder < 0 {
-			for i := orig-1; i >= dest; i-- {
+			for i := orig - 1; i >= dest; i-- {
 				if b.board[i] != '.' {
 					return err
 				}
 			}
 		} else {
-			for i := orig+1; i <= dest; i++ {
+			for i := orig + 1; i <= dest; i++ {
 				if b.board[i] != '.' {
 					return err
 				}
@@ -241,15 +283,13 @@ func (b *Board) validRook(orig int, dest int) error {
 	} else {
 		// Vertical
 		if remainder < 0 {
-			for i := orig-10; i > dest; i-=10 {
-				fmt.Println(i)
+			for i := orig - 10; i > dest; i -= 10 {
 				if b.board[i] != '.' {
 					return err
 				}
 			}
 		} else {
-			for i := orig+10; i < dest; i+=10 {
-				fmt.Println(string(b.board[i]))
+			for i := orig + 10; i < dest; i += 10 {
 				if b.board[i] != '.' {
 					return err
 				}
@@ -260,10 +300,8 @@ func (b *Board) validRook(orig int, dest int) error {
 	return nil
 }
 
-// Valid Bishop
 // Valid Queen
 // Valid King
-
 
 /*
 TODO: Export fen
@@ -367,14 +405,14 @@ func (b *Board) parsePgn(move string) error {
 		var possibilities [14]int
 		ticker := 0
 		// a8 - h1
-		for i := dest+9; i < 90; i += 9 {
+		for i := dest + 9; i < 90; i += 9 {
 			if (i+1)%10 == 0 { // hits boarder
 				break
 			}
 			possibilities[ticker] = i
 			ticker++
 		}
-		for i := dest-9; i > 10; i -= 9 {
+		for i := dest - 9; i > 10; i -= 9 {
 			if (i+1)%10 == 0 { // hits boarder
 				break
 			}
@@ -382,14 +420,14 @@ func (b *Board) parsePgn(move string) error {
 			ticker++
 		}
 		// a1 - h8 Vector
-		for i := dest+11; i < 90; i += 11 {
+		for i := dest + 11; i < 90; i += 11 {
 			if (i+1)%10 == 0 { // hits boarder
 				break
 			}
 			possibilities[ticker] = i
 			ticker++
 		}
-		for i := dest-11; i > 10; i-=11 {
+		for i := dest - 11; i > 10; i -= 11 {
 			if i%10 == 0 {
 				break
 			}
@@ -402,28 +440,28 @@ func (b *Board) parsePgn(move string) error {
 				orig = possibility
 				break
 			}
-		}		
+		}
 	case piece == "R": // Rook Parse
 		var possibilities [14]int
 		ticker := 0
 		// Horizontal Vector
-		for i := dest+10; i < 90; i += 10 {
+		for i := dest + 10; i < 90; i += 10 {
 			possibilities[ticker] = i
 			ticker++
 		}
-		for i := dest-10; i > 10; i -= 10 {
+		for i := dest - 10; i > 10; i -= 10 {
 			possibilities[ticker] = i
 			ticker++
 		}
 		// Vertical Vector
-		for i := dest+1; i < 90; i++ {
+		for i := dest + 1; i < 90; i++ {
 			if (i+1)%10 == 0 { // hits boarder
 				break
 			}
 			possibilities[ticker] = i
 			ticker++
 		}
-		for i := dest-1; i > 10; i-- {
+		for i := dest - 1; i > 10; i-- {
 			if i%10 == 0 {
 				break
 			}
