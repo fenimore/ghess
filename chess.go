@@ -118,8 +118,6 @@ func (b *Board) pgnMove(orig, dest string) error {
 
 // Move byte value to new position
 func (b *Board) Move(orig, dest int) error {
-	fmt.Print("Moves: ", b.moves, " | Castle: ", string(b.castle))
-	fmt.Println(" | Turn: ", b.toMove)
 	val := b.board[orig]
 	var o byte // supposed starting square
 	var d byte // supposed destination
@@ -147,7 +145,6 @@ func (b *Board) Move(orig, dest int) error {
 		return errors.New("Can't attack your own piece")
 	}
 	p := string(bytes.ToUpper(b.board[orig : orig+1]))
-	fmt.Print("Test: ", orig, dest)
 	switch {
 	case p == "P":
 		e := b.validPawn(orig, dest, d)
@@ -155,7 +152,7 @@ func (b *Board) Move(orig, dest int) error {
 			return e
 		}
 	case p == "N":
-		fmt.Print("is knight")
+		fmt.Print("is knight") // not implemented
 	case p == "B":
 		e := b.validBishop(orig, dest)
 		if e != nil {
@@ -173,12 +170,13 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// Update Board
 	b.board[orig] = '.'
-	b.board[dest] = val // check if it was the King
+	b.board[dest] = val
+	// TODO check for Check
 	// Update Game variables
 	if b.toMove == "w" {
 		b.toMove = "b"
 	} else {
-		b.moves++ // add one to move
+		b.moves++ // add one to move count
 		b.toMove = "w"
 	}
 	return nil
@@ -307,20 +305,23 @@ func (b *Board) validRook(orig int, dest int) error {
 TODO: Export fen
 TODO: Parse fen
 TODO: Parse pgn
+Pgn parse:
+  Accept check/checkmate indicaters
+  Implement specific pieces..
+  Dont all taking a piece from simple moving
 */
 
 func (b *Board) parsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
 	//re, _ := regexp.Compile(`(.)x(..)`) // want to know what is in front of 'x'
-	pgnPattern, _ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})`)
+	pgnPattern, _ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})(\+?)`)
 	res := pgnPattern.FindStringSubmatch(move)
 	if res == nil { // allow castling?
 		return errors.New("invalid input")
 	}
 	/*
 	   Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}
-	   Examples Inputs:
-	            e4 | d5 | exd5 | Bc7 | Qxc7
+	            e4 | d5+ | exd5 | Bc7 | Qxc7
 	*/
 	var orig int        // find origin coord of move
 	var square string   // find pgnMap key of move
@@ -563,6 +564,9 @@ func PlayGame(board Board) {
 		if e != nil {
 			fmt.Print(e)
 		}
+		fmt.Print("Moves: ", board.moves,
+			" | Castle: ", string(board.castle))
+		fmt.Println(" | Turn: ", board.toMove)
 		fmt.Print(board.String())
 	}
 }
