@@ -231,13 +231,13 @@ func (b *Board) validBishop(orig int, dest int) error {
 	// Check which slope
 	if a1h8 == 0 {
 		if dest > orig { // go to bottom right
-			for i := orig + 11; i <= dest; i += 11 {
+			for i := orig + 11; i <= dest-11; i += 11 {
 				if b.board[i] != '.' {
 					return err
 				}
 			}
 		} else if dest < orig { // go to top left
-			for i := orig - 11; i >= dest; i -= 11 {
+			for i := orig - 11; i >= dest+11; i -= 11 {
 				if b.board[i] != '.' {
 					return err
 				}
@@ -245,13 +245,13 @@ func (b *Board) validBishop(orig int, dest int) error {
 		}
 	} else if a8h1 == 0 {
 		if dest > orig { // go to bottem left
-			for i := orig + 9; i <= dest; i += 9 {
+			for i := orig + 9; i <= dest-9; i += 9 {
 				if b.board[i] != '.' {
 					return err
 				}
 			}
 		} else if orig > dest { // go to top right
-			for i := orig - 9; i >= dest; i -= 9 {
+			for i := orig - 9; i >= dest+9; i -= 9 {
 				if b.board[i] != '.' {
 					return err
 				}
@@ -330,10 +330,12 @@ func (b *Board) parsePgn(move string) error {
 	var target byte // the piece to move, in proper case
 	// Check if Capture (x)
 	isCapture, _ := regexp.MatchString(`x`, move)
-	if isCapture && len(move) > 3 {
+	if isCapture {
 		attacker = res[1]
 		if attacker == strings.ToLower(attacker) {
 			piece = "P"
+		} else {// if  upper case, forcement a piece
+			piece = res[1]
 		}
 		square = res[2]
 	} else { // No x
@@ -358,9 +360,9 @@ func (b *Board) parsePgn(move string) error {
 	dest := b.pgnMap[square]
 	// The piece will be saved as case sensitive byte
 	if b.toMove == "b" {
-		target = byte(strings.ToLower(piece)[0])
+		target = []byte(strings.ToLower(piece))[0]
 	} else {
-		target = byte(piece[0])
+		target = []byte(piece)[0]
 	}
 	switch {
 	case piece == "P": // Pawn Parse
@@ -390,6 +392,7 @@ func (b *Board) parsePgn(move string) error {
 	case piece == "N": // Knight Parse
 		var possTar [8]int
 		// TODO: assume no precision
+		// Change to possibilities[]
 		possTar[0], possTar[1], possTar[2],
 			possTar[3], possTar[4], possTar[5],
 			possTar[6], possTar[7] = dest+21,
