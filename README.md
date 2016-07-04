@@ -1,5 +1,5 @@
-# go-chess
-Golang chess engine, written in order to practice Golang.
+# go-chess || Ghess
+Golang chess engine, fumbling along...
 
 ## Board struct
 - A board object
@@ -24,7 +24,7 @@ Golang chess engine, written in order to practice Golang.
 - Store PGN
 - Castle PGN input
 - Print pgn history on crash
-
+- And many more
 
 ## Bugs
 - PGN can 'move' into eating a piece

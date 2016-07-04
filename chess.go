@@ -1,5 +1,5 @@
 /*
-Go Chess Engine
+Go Chess Engine - Ghess
 Fenimore Love 2016
 GPLv3
 
@@ -500,7 +500,7 @@ func (b *Board) parsePgn(move string) error {
 		}
 	}
 	// Move the Piece
-	// Validate Move in Board.Move()
+	// - Validate Move in Board.Move()
 	if orig != 0 && dest != 0 {
 		err := b.Move(orig, dest)
 		return err
@@ -528,8 +528,6 @@ func main() {
 	board.Coordinates()
 	PlayGame(board)
 	//TestGame(board)
-	//board.pgnTest("exd5")
-
 }
 
 /*
@@ -554,19 +552,25 @@ func TestGame(board Board) {
 	fmt.Print(board.String())
 }
 
-func PlayGame(board Board) {
+func PlayGame(board Board) { // TODO Rotate Board
+	var turn string
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(board.String())
 	for {
-		fmt.Print(board.toMove, " to move: ")
+		if board.toMove == "w" {
+			turn = "White"
+		} else {
+			turn = "Black"
+		}
+		fmt.Print(turn, " to move: ")
 		input, _ := reader.ReadString('\n')
 		e := board.parsePgn(input)
 		if e != nil {
-			fmt.Print(e)
+			fmt.Println("\nError: ", e)
 		}
-		fmt.Print("Moves: ", board.moves,
+		fmt.Print("\nMove: ", board.moves,
 			" | Castle: ", string(board.castle))
-		fmt.Println(" | Turn: ", board.toMove)
+		fmt.Println(" | Turn: ", turn)
 		fmt.Print(board.String())
 	}
 }
