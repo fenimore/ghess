@@ -226,7 +226,7 @@ TODO: Parse pgn
 func (b *Board) parsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
 	//re, _ := regexp.Compile(`(.)x(..)`) // want to know what is in front of 'x'
-	pgnPattern,_:= regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})`)
+	pgnPattern, _ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})`)
 	res := pgnPattern.FindStringSubmatch(move)
 	if res == nil { // allow castling?
 		return errors.New("invalid input")
@@ -262,9 +262,9 @@ func (b *Board) parsePgn(move string) error {
 			piece = res[1] // remove second char
 			//precise = move
 			square = res[2]
-		} else if move == "0-0" || move == "0-0-0"{
+		} else if move == "0-0" || move == "0-0-0" {
 			// castle
-		}else{
+		} else {
 			return errors.New("Not enough input")
 		}
 	}
@@ -282,41 +282,88 @@ func (b *Board) parsePgn(move string) error {
 		if b.toMove == "w" {
 			if isCapture {
 				possTar[0],
-				possTar[1] = dest-9, dest-11
+					possTar[1] = dest-9, dest-11
 			} else {
 				possTar[0],
-				possTar[1] = dest-10, dest-20
+					possTar[1] = dest-10, dest-20
 			}
 		} else { // is black to move
 			if isCapture {
 				possTar[0],
-				possTar[1] = dest+9, dest+11
+					possTar[1] = dest+9, dest+11
 			} else {
 				possTar[0],
-				possTar[1] = dest+10, dest+20
+					possTar[1] = dest+10, dest+20
 			}
 		}
-		if b.board[target1] == target {
-			orig = target1
-		} else if b.board[target2] == target {
-			orig = target2
+		if b.board[possTar[0]] == target {
+			orig = possTar[0]
+		} else if b.board[possTar[1]] == target {
+			orig = possTar[1]
 		}
 	case piece == "N":
 		var possTar [8]int
 		// TODO: assume no precision
 		possTar[0], possTar[1], possTar[2],
-		possTar[3], possTar[4], possTar[5],
-		possTar[6], possTar[7] = dest+21,
-		dest+19, dest+12, dest+8, dest-8,
-		dest-12, dest-19, dest-21
-		for _, possibility := range possTar{
+			possTar[3], possTar[4], possTar[5],
+			possTar[6], possTar[7] = dest+21,
+			dest+19, dest+12, dest+8, dest-8,
+			dest-12, dest-19, dest-21
+		for _, possibility := range possTar {
 			if b.board[possibility] == target {
 				orig = possibility
 				break
 			}
 		}
+	case piece == "R":
+		var possibilities [14]int
+		ticker := 0
+		// Horizontal Vector
+		for i := dest; i < 90; i += 10 {
+			if i == dest {
+				continue
+			}
+			possibilities[ticker] = i
+			ticker++
+		}
+		for i := dest; i > 10; i -= 10 {
+			if i == dest {
+				continue
+			}
+			possibilities[ticker] = i
+			ticker++
+		}
+		// Vertical Vector
+		for i := dest; i < 90; i++ {
+			if i == dest {
+				continue
+			}
+			if (i+1)%10 == 0 {
+				break
+			}
+			possibilities[ticker] = i
+			ticker++
+		}
+		for i := dest; i > 10; i-- {
+			if i == dest {
+				continue
+			}
+			if i%10 == 0 {
+				break
+			}
+			possibilities[ticker] = i
+			ticker++
+		}
+		//fmt.Printf("%v", possibilities)
+		for _, possibility := range possibilities {
+			if b.board[possibility] == target {
+				orig = possibility
+				break
+			}
+		}
+
 	case piece == "Q":
-		for idx, possibility := range b.board{
+		for idx, possibility := range b.board {
 			if possibility == target {
 				orig = idx
 				break
@@ -325,17 +372,16 @@ func (b *Board) parsePgn(move string) error {
 	case piece == "K":
 		var possTar [8]int
 		possTar[0], possTar[1], possTar[2],
-		possTar[3], possTar[4], possTar[5],
-		possTar[6], possTar[7] = dest+10,
-		dest+11, dest+1, dest+9, dest-10,
-		dest-11, dest-1, dest-9
-		for _, possibility := range possTar{
+			possTar[3], possTar[4], possTar[5],
+			possTar[6], possTar[7] = dest+10,
+			dest+11, dest+1, dest+9, dest-10,
+			dest-11, dest-1, dest-9
+		for _, possibility := range possTar {
 			if b.board[possibility] == target {
 				orig = possibility
 				break
 			}
 		}
-		// do something 
 	}
 	// Move the Piece
 	// Validate Move in Board.Move()
