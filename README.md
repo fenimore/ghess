@@ -12,3 +12,4 @@ Golang chess engine, written in order to practice Golang.
 
 ## TODO
 - Check/checkmate is going to be a pain...
+

@@ -211,23 +211,28 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	}
 	return nil
 }
+
+func (b *Board) validKnight(orig int, dest int) error {
+	// The validation is easy
+	// accomplished in the pgn reader
+	// do redudent validation TODO?
+	return nil
+}
+
 func (b *Board) validRook(orig int, dest int) error {
 	// Check if pieces are in the way
 	err := errors.New("Illegal Rook Move")
 	remainder := dest - orig
-	fmt.Print(remainder)
 	if remainder < 10 && remainder > -10 {
 		// Horizontal 
 		if remainder < 0 {
 			for i := orig-1; i >= dest; i-- {
-				fmt.Println(string(b.board[i]))
 				if b.board[i] != '.' {
 					return err
 				}
 			}
 		} else {
 			for i := orig+1; i <= dest; i++ {
-				fmt.Println(string(b.board[i]))
 				if b.board[i] != '.' {
 					return err
 				}
@@ -320,7 +325,7 @@ func (b *Board) parsePgn(move string) error {
 		target = byte(piece[0])
 	}
 	switch {
-	case piece == "P":
+	case piece == "P": // Pawn Parse
 		var possTar [2]int // two potentional origins
 		if b.toMove == "w" {
 			if isCapture {
@@ -344,7 +349,7 @@ func (b *Board) parsePgn(move string) error {
 		} else if b.board[possTar[1]] == target {
 			orig = possTar[1]
 		}
-	case piece == "N":
+	case piece == "N": // Knight Parse
 		var possTar [8]int
 		// TODO: assume no precision
 		possTar[0], possTar[1], possTar[2],
@@ -358,61 +363,87 @@ func (b *Board) parsePgn(move string) error {
 				break
 			}
 		}
-	case piece == "R":
+	case piece == "B": // Bishop Parse
 		var possibilities [14]int
 		ticker := 0
-		// Horizontal Vector
-		for i := dest; i < 90; i += 10 {
-			if i == dest {
-				continue
-			}
-			possibilities[ticker] = i
-			ticker++
-		}
-		for i := dest; i > 10; i -= 10 {
-			if i == dest {
-				continue
-			}
-			possibilities[ticker] = i
-			ticker++
-		}
-		// Vertical Vector
-		for i := dest; i < 90; i++ {
-			if i == dest {
-				continue
-			}
-			if (i+1)%10 == 0 {
+		// a8 - h1
+		for i := dest+9; i < 90; i += 9 {
+			if (i+1)%10 == 0 { // hits boarder
 				break
 			}
 			possibilities[ticker] = i
 			ticker++
 		}
-		for i := dest; i > 10; i-- {
-			if i == dest {
-				continue
+		for i := dest-9; i > 10; i -= 9 {
+			if (i+1)%10 == 0 { // hits boarder
+				break
 			}
+			possibilities[ticker] = i
+			ticker++
+		}
+		// a1 - h8 Vector
+		for i := dest+11; i < 90; i += 11 {
+			if (i+1)%10 == 0 { // hits boarder
+				break
+			}
+			possibilities[ticker] = i
+			ticker++
+		}
+		for i := dest-11; i > 10; i-=11 {
 			if i%10 == 0 {
 				break
 			}
 			possibilities[ticker] = i
 			ticker++
 		}
-		//fmt.Printf("%v", possibilities)
+		// Find piece origin
+		for _, possibility := range possibilities {
+			if b.board[possibility] == target {
+				orig = possibility
+				break
+			}
+		}		
+	case piece == "R": // Rook Parse
+		var possibilities [14]int
+		ticker := 0
+		// Horizontal Vector
+		for i := dest+10; i < 90; i += 10 {
+			possibilities[ticker] = i
+			ticker++
+		}
+		for i := dest-10; i > 10; i -= 10 {
+			possibilities[ticker] = i
+			ticker++
+		}
+		// Vertical Vector
+		for i := dest+1; i < 90; i++ {
+			if (i+1)%10 == 0 { // hits boarder
+				break
+			}
+			possibilities[ticker] = i
+			ticker++
+		}
+		for i := dest-1; i > 10; i-- {
+			if i%10 == 0 {
+				break
+			}
+			possibilities[ticker] = i
+			ticker++
+		}
 		for _, possibility := range possibilities {
 			if b.board[possibility] == target {
 				orig = possibility
 				break
 			}
 		}
-
-	case piece == "Q":
+	case piece == "Q": // Queen Parse
 		for idx, possibility := range b.board {
 			if possibility == target {
 				orig = idx
 				break
 			}
 		}
-	case piece == "K":
+	case piece == "K": // King Parse
 		var possTar [8]int
 		possTar[0], possTar[1], possTar[2],
 			possTar[3], possTar[4], possTar[5],
