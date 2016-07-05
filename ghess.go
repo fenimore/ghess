@@ -105,7 +105,26 @@ func (b *Board) String() string {
 }
 
 func (b *Board) RotateString() string {
-	return "Yup"
+	// TODO Rotate Board
+	var printBoard string
+	for idx, val := range b.board {
+		if idx < 100 && idx > 10 {
+			if idx%10 != 0 && idx < 90 {
+				if (idx+1)%10 != 0 { // why not || ?
+					font := b.pieces[string(val)]
+					printBoard += "|" + font + "|"
+				} else {
+					printBoard += ":" + string(val)
+				}
+			}
+		}
+		if idx > 90 && idx < 99 {
+			printBoard += ":" + string(val) + ":"
+		} else if idx%10 == 0 && idx != 0 {
+			printBoard += "\n"
+		}
+	}
+	return printBoard
 }
 
 /*
