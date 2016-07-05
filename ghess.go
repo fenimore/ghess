@@ -109,10 +109,25 @@ func (b *Board) String() string {
 	return printBoard
 }
 
-func (b *Board) RotateWhite() {
+func (b *Board) RotateWhite() string {
 	// TODO Rotate Board
-	//var printBoard string
+	game := b.board
+	p := b.pieces
+	var printBoard string
+	for i := 89; i > 10; i-- {
+		if i%10 == 0  {
+			printBoard += "\n"
+			continue
+		} else if (i+1)%10 == 0 {
+			printBoard += string(game[i])+": "
+			continue
+		}
+		printBoard += "|"+p[string(game[i])]+"|"
+	}
 
+	printBoard += "\n"
+	printBoard += "   :a::b::c::d::e::f::g::h:\n"
+	return printBoard
 }
 
 /*
@@ -659,6 +674,8 @@ func PlayGame(board Board) { // TODO Rotate Board
 			" | Castle: ", string(board.castle))
 		fmt.Println(" | Turn: ", turn)
 		fmt.Print(board.String())
+		fmt.Print(board.RotateWhite())
+		board.CoordinatesRotate()
 		fmt.Println(board.pgn)
 	}
 }
@@ -680,4 +697,24 @@ func (b *Board) Coordinates() {
 			fmt.Print("\n")
 		}
 	}
+}
+
+func (b *Board) CoordinatesRotate() {
+		// TODO Rotate Board
+	game := b.board
+	var printBoard string
+	for i := 89; i > 10; i-- {
+		if i%10 == 0  {
+			printBoard += "\n"
+			continue
+		} else if (i+1)%10 == 0 {
+			printBoard += string(game[i])+": "
+			continue
+		}
+		printBoard += "|"+strconv.Itoa(i)+"|"
+	}
+
+	printBoard += "\n"
+	printBoard += "   :a::b::c::d::e::f::g::h:\n"
+	fmt.Println(printBoard)
 }
