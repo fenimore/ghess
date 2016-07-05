@@ -213,12 +213,15 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	err := errors.New("Illegal Pawn Move")
 	var remainder int
 	var empOffset int
+	var empTarget byte
 	if b.toMove == "w" {
 		remainder = dest - orig
 		empOffset = -10 // where the empassant piece should be
+		empTarget = 'p'
 	} else if b.toMove == "b" {
 		remainder = orig - dest
-		empOffset = 10		
+		empOffset = 10
+		empTarget = 'P'
 	}
 	if remainder == 10 {
 		// regular move
@@ -236,7 +239,11 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 			// Proper attack
 		} else if b.board[dest] == d && dest+empOffset == b.empassant{
 			// Empassant attack
-			b.board[b.empassant] = '.'
+			if b.board[dest+empOffset] == empTarget { // is the right case
+				b.board[b.empassant] = '.'
+			} else {
+				return err
+			}
 		} else {
 			return err
 		}
