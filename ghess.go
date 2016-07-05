@@ -67,7 +67,7 @@ func NewBoard() Board {
 	r["r"], r["R"] = "\u2656", "\u265C"
 	r["q"], r["Q"] = "\u2655", "\u265B"
 	r["k"], r["K"] = "\u2654", "\u265A"
-	r["."] = "\u2022"
+	r["."] = "\u00B7"
 
 	return Board{
 		board:  b,
@@ -81,22 +81,22 @@ func NewBoard() Board {
 }
 
 // Return a string of the board
-// Todo Unicode chess pieces
 func (b *Board) String() string {
+	// TODO Rotate Board
 	var printBoard string
 	for idx, val := range b.board {
 		if idx < 100 && idx > 10 {
 			if idx%10 != 0 && idx < 90 {
 				if (idx+1)%10 != 0 { // why not || ?
 					font := b.pieces[string(val)]
-					printBoard += "|" + font + "| "
+					printBoard += "|" + font + "|"
 				} else {
 					printBoard += ":" + string(val)
 				}
 			}
 		}
 		if idx > 90 && idx < 99 {
-			printBoard += ":" + string(val) + ": "
+			printBoard += ":" + string(val) + ":"
 		} else if idx%10 == 0 && idx != 0 {
 			printBoard += "\n"
 		}
@@ -104,11 +104,17 @@ func (b *Board) String() string {
 	return printBoard
 }
 
+func (b *Board) RotateString() string {
+	return "Yup"
+}
+
 /*
 Move and validation
 */
 // Wrapper in portable game notation
+// 'Two' coordinate notation
 func (b *Board) pgnMove(orig, dest string) error {
+	//e2e4
 	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
 	if e != nil {
 		return e
@@ -593,14 +599,14 @@ func (b *Board) Coordinates() {
 		if idx < 100 && idx > 10 {
 			if idx%10 != 0 && idx < 90 {
 				if (idx+1)%10 != 0 {
-					fmt.Print(":", idx, ": ")
+					fmt.Print(":", idx, ":")
 				} else {
 					fmt.Print(":", string(val))
 				}
 			}
 		}
 		if idx > 90 && idx < 99 {
-			fmt.Print(": ", string(val), ": ")
+			fmt.Print(": ", string(val), ":")
 		} else if idx%10 == 0 && idx != 0 {
 			fmt.Print("\n")
 		}
