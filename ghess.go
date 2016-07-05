@@ -178,7 +178,7 @@ func (b *Board) Move(orig, dest int) error {
 			return e
 		}
 		emp := dest - orig
-		if  emp > 11 || emp < -11 {
+		if emp > 11 || emp < -11 {
 			empassant = true
 		}
 	case p == "N":
@@ -235,7 +235,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 		// double starter move
 		if orig > 28 && b.toMove == "w" { // Only from 2nd rank
 			return err
-		} else 	if orig < 70 && b.toMove == "b" {
+		} else if orig < 70 && b.toMove == "b" {
 			return err
 		}
 	} else if remainder == 9 || remainder == 11 {
@@ -336,16 +336,16 @@ func (b *Board) validRook(orig int, dest int) error {
 }
 
 func (b *Board) validQueen(orig int, dest int) error {
-	remainder := dest-orig
-	vertical := remainder % 10 == 0
-	horizontal := remainder<9 && remainder>-9// Horizontal
-	diagA8 := remainder % 9 == 0 // Diag a8h1
-	diagA1 := remainder % 11 == 0 // Diag a1h8
-	if horizontal { // should be first?
+	remainder := dest - orig
+	vertical := remainder%10 == 0
+	horizontal := remainder < 9 && remainder > -9 // Horizontal
+	diagA8 := remainder%9 == 0                    // Diag a8h1
+	diagA1 := remainder%11 == 0                   // Diag a1h8
+	if horizontal {                               // should be first?
 		fmt.Println("Horizontal")
-	} else 	if vertical { // then it doesn't matter
+	} else if vertical { // then it doesn't matter
 		fmt.Println("Vertical")
-	} else 	if diagA8 {
+	} else if diagA8 {
 		fmt.Println("Diag")
 	} else if diagA1 {
 		fmt.Println("Diag")
@@ -353,9 +353,10 @@ func (b *Board) validQueen(orig int, dest int) error {
 		return errors.New("Illegal Queen Move")
 	}
 	// check if anything is inbetween
-	
+
 	return nil
 }
+
 // Valid Queen
 // Valid King
 
@@ -393,7 +394,7 @@ func (b *Board) parsePgn(move string) error {
 		attacker = res[1]
 		if attacker == strings.ToLower(attacker) {
 			piece = "P"
-		} else {// if  upper case, forcement a piece
+		} else { // if  upper case, forcement a piece
 			piece = res[1]
 		}
 		square = res[2]
@@ -429,23 +430,23 @@ func (b *Board) parsePgn(move string) error {
 		// TODO: Allow for empassant take
 		if b.toMove == "w" {
 			if isCapture {
-				 possibilities[0],
-				possibilities[1] = dest-9,
-				dest-11
+				possibilities[0],
+					possibilities[1] = dest-9,
+					dest-11
 			} else {
 				possibilities[0],
-				possibilities[1] = dest-10,
-				dest-20
+					possibilities[1] = dest-10,
+					dest-20
 			}
 		} else { // is black to move
 			if isCapture {
 				possibilities[0],
-				possibilities[1] = dest+9,
-				dest+11
+					possibilities[1] = dest+9,
+					dest+11
 			} else {
 				possibilities[0],
-				possibilities[1] = dest+10,
-				dest+20
+					possibilities[1] = dest+10,
+					dest+20
 			}
 		}
 		if b.board[possibilities[0]] == target {
@@ -454,15 +455,16 @@ func (b *Board) parsePgn(move string) error {
 			orig = possibilities[1]
 		}
 	case piece == "N": // Knight Parse
-		var possTar [8]int
+		var possibilities [8]int
 		// TODO: assume no precision
 		// Change to possibilities[]
-		possTar[0], possTar[1], possTar[2],
-			possTar[3], possTar[4], possTar[5],
-			possTar[6], possTar[7] = dest+21,
+		possibilities[0], possibilities[1],
+			possibilities[2], possibilities[3],
+			possibilities[4], possibilities[5],
+			possibilities[6], possibilities[7] = dest+21,
 			dest+19, dest+12, dest+8, dest-8,
 			dest-12, dest-19, dest-21
-		for _, possibility := range possTar {
+		for _, possibility := range possibilities {
 			if b.board[possibility] == target {
 				orig = possibility
 				break
@@ -549,13 +551,14 @@ func (b *Board) parsePgn(move string) error {
 			}
 		}
 	case piece == "K": // King Parse
-		var possTar [8]int
-		possTar[0], possTar[1], possTar[2],
-			possTar[3], possTar[4], possTar[5],
-			possTar[6], possTar[7] = dest+10,
+		var possibilities [8]int
+		possibilities[0], possibilities[1],
+		possibilities[2], possibilities[3],
+		possibilities[4], possibilities[5],
+			possibilities[6], possibilities[7] = dest+10,
 			dest+11, dest+1, dest+9, dest-10,
 			dest-11, dest-1, dest-9
-		for _, possibility := range possTar {
+		for _, possibility := range possibilities {
 			if b.board[possibility] == target {
 				orig = possibility
 				break
