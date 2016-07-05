@@ -194,7 +194,10 @@ func (b *Board) Move(orig, dest int) error {
 			return e
 		}
 	case p == "Q":
-		fmt.Print("is queen")
+		e := b.validQueen(orig, dest)
+		if e != nil {
+			return e
+		}
 	case p == "K":
 		fmt.Print("is king")
 	}
@@ -332,6 +335,27 @@ func (b *Board) validRook(orig int, dest int) error {
 	return nil
 }
 
+func (b *Board) validQueen(orig int, dest int) error {
+	remainder := dest-orig
+	vertical := remainder % 10 == 0
+	horizontal := remainder<9 && remainder>-9// Horizontal
+	diagA8 := remainder % 9 == 0 // Diag a8h1
+	diagA1 := remainder % 11 == 0 // Diag a1h8
+	if horizontal { // should be first?
+		fmt.Println("Horizontal")
+	} else 	if vertical { // then it doesn't matter
+		fmt.Println("Vertical")
+	} else 	if diagA8 {
+		fmt.Println("Diag")
+	} else if diagA1 {
+		fmt.Println("Diag")
+	} else {
+		return errors.New("Illegal Queen Move")
+	}
+	// check if anything is inbetween
+	
+	return nil
+}
 // Valid Queen
 // Valid King
 
@@ -402,6 +426,7 @@ func (b *Board) parsePgn(move string) error {
 	switch {
 	case piece == "P": // Pawn Parse
 		var possTar [2]int // two potentional origins
+		// TODO: Allow for empassant take
 		if b.toMove == "w" {
 			if isCapture {
 				possTar[0],
