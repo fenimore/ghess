@@ -626,8 +626,6 @@ Main thread
 */
 func main() {
 	board := NewBoard()
-	fmt.Println("coordinates:")
-	board.Coordinates()
 	PlayGame(board)
 	//TestGame(board)
 }
@@ -662,6 +660,15 @@ func PlayGame(board Board) { // TODO Rotate Board
 			switch {
 			case input == "/q":
 				os.Exit(1)
+			case input == "/c":
+				fmt.Println("Coordinates:")
+				board.Coordinates()
+			case input == "/p":
+				fmt.Println("PGN history:")
+				fmt.Println(board.pgn, "\n")
+			case input == "/f":
+				fmt.Println("FEN position:")
+			}
 			continue
 		}
 		e := board.ParsePgn(input)
@@ -677,7 +684,6 @@ func PlayGame(board Board) { // TODO Rotate Board
 			fmt.Printf("   [Error: %v]\n", e)
 		}
 		fmt.Print(board.String())
-		fmt.Println(board.pgn + "\n")
 	}
 }
 
