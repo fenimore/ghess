@@ -17,6 +17,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"strconv"
 )
 
 // The chessboard type
@@ -31,11 +32,12 @@ type Board struct {
 	check     bool
 	// Map for display grid
 	pgnMap map[string]int    // the pgn format
+	pieceMap map[int] string // coord to standard notation
 	pieces map[string]string // the unicode fonts
 	// Game Positions
 	fen      string
 	pgn      string
-	lastMove string // used for generating PGN history
+	pgnHeader  string
 }
 
 // __init__ for Board
@@ -61,6 +63,7 @@ func NewBoard() Board {
 	m["a7"], m["b7"], m["c7"], m["d7"], m["e7"], m["f7"], m["g7"], m["h7"] = 71, 72, 73, 74, 75, 76, 77, 78
 	m["a8"], m["b8"], m["c8"], m["d8"], m["e8"], m["f8"], m["g8"], m["h8"] = 81, 82, 83, 84, 85, 86, 87, 88
 
+	// Todo make map for pieceMap[]
 	// Map of unicode fonts
 	r := make(map[string]string)
 	r["p"], r["P"] = "\u2659", "\u265F"
@@ -209,10 +212,13 @@ func (b *Board) Move(orig, dest int) error {
 func (b *Board) validPawn(orig int, dest int, d byte) error {
 	err := errors.New("Illegal Pawn Move")
 	var remainder int
+	var empOffset int
 	if b.toMove == "w" {
 		remainder = dest - orig
+		empOffset = -10 // where the empassant piece should be
 	} else if b.toMove == "b" {
 		remainder = orig - dest
+		empOffset = 10		
 	}
 	if remainder == 10 {
 		// regular move
@@ -225,9 +231,12 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 		}
 	} else if remainder == 9 || remainder == 11 {
 		// Attack vector
-		// check if b.board[orig+10] == '.'
+		// check if b.board[dest+10] == '.'
 		if b.board[dest] == d && d != '.' {
 			// Proper attack
+		} else if b.board[dest] == d && dest+empOffset == b.empassant{
+			// Empassant attack
+			b.board[b.empassant] = '.'
 		} else {
 			return err
 		}
@@ -557,8 +566,8 @@ func (b *Board) parsePgn(move string) error {
 	if orig != 0 && dest != 0 {
 		err := b.Move(orig, dest)
 		if err == nil {
-			if b.toMove == "w"{
-				b.pgn += string(b.moves)+". "
+			if b.toMove == "b"{
+				b.pgn += strconv.Itoa(b.moves) +". "
 			}
 			b.pgn += (move + " ")
 		}
@@ -573,6 +582,11 @@ func (b *Board) readPgnMatch() string {
 	fen := "Fen string"
 	// if error, could not read
 	return fen
+}
+
+func (b *Board) stringPgn() string {
+	
+	return b.pgn
 }
 
 func (b *Board) parseFen() {
@@ -639,7 +653,6 @@ func PlayGame(board Board) { // TODO Rotate Board
 		fmt.Println(" | Turn: ", turn)
 		fmt.Print(board.String())
 		fmt.Println(board.pgn)
-		//fmt.Println("empassant: ", board.empassant)
 	}
 }
 
