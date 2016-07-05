@@ -54,14 +54,14 @@ func NewBoard() Board {
 
 	// Map of PGN notation
 	m := make(map[string]int)
-	m["a1"], m["b1"], m["c1"], m["d1"], m["e1"], m["f1"], m["g1"], m["h1"] = 11, 12, 13, 14, 15, 16, 17, 18
-	m["a2"], m["b2"], m["c2"], m["d2"], m["e2"], m["f2"], m["g2"], m["h2"] = 21, 22, 23, 24, 25, 26, 27, 28
-	m["a3"], m["b3"], m["c3"], m["d3"], m["e3"], m["f3"], m["g3"], m["h3"] = 31, 32, 33, 34, 35, 36, 37, 38
-	m["a4"], m["b4"], m["c4"], m["d4"], m["e4"], m["f4"], m["g4"], m["h4"] = 41, 42, 43, 44, 45, 46, 47, 48
-	m["a5"], m["b5"], m["c5"], m["d5"], m["e5"], m["f5"], m["g5"], m["h5"] = 51, 52, 53, 54, 55, 56, 57, 58
-	m["a6"], m["b6"], m["c6"], m["d6"], m["e6"], m["f6"], m["g6"], m["h6"] = 61, 62, 63, 64, 65, 66, 67, 68
-	m["a7"], m["b7"], m["c7"], m["d7"], m["e7"], m["f7"], m["g7"], m["h7"] = 71, 72, 73, 74, 75, 76, 77, 78
-	m["a8"], m["b8"], m["c8"], m["d8"], m["e8"], m["f8"], m["g8"], m["h8"] = 81, 82, 83, 84, 85, 86, 87, 88
+	m["a1"], m["b1"], m["c1"], m["d1"], m["e1"], m["f1"], m["g1"], m["h1"] = 18, 17, 16, 15, 14, 13, 12, 11
+	m["a2"], m["b2"], m["c2"], m["d2"], m["e2"], m["f2"], m["g2"], m["h2"] = 28, 27, 26, 25, 24, 23, 22, 21
+	m["a3"], m["b3"], m["c3"], m["d3"], m["e3"], m["f3"], m["g3"], m["h3"] = 38, 37, 36, 35, 34, 33, 32, 31
+	m["a4"], m["b4"], m["c4"], m["d4"], m["e4"], m["f4"], m["g4"], m["h4"] = 48, 47, 46, 45, 44, 43, 42, 41
+	m["a5"], m["b5"], m["c5"], m["d5"], m["e5"], m["f5"], m["g5"], m["h5"] = 58, 57, 56, 55, 54, 53, 52, 51
+	m["a6"], m["b6"], m["c6"], m["d6"], m["e6"], m["f6"], m["g6"], m["h6"] = 68, 67, 66, 65, 64, 63, 62, 61
+	m["a7"], m["b7"], m["c7"], m["d7"], m["e7"], m["f7"], m["g7"], m["h7"] = 78, 77, 76, 75, 74, 73, 72, 71
+	m["a8"], m["b8"], m["c8"], m["d8"], m["e8"], m["f8"], m["g8"], m["h8"] = 88, 87, 86, 85, 84, 83, 82, 81
 
 	// Todo make map for pieceMap[]
 	// Map of unicode fonts
@@ -86,8 +86,8 @@ func NewBoard() Board {
 }
 
 // Return a string of the board
-func (b *Board) String() string {
-	// TODO Rotate Board
+func (b *Board) RotateBroken() string {
+	// This is Broken... Yikes
 	var printBoard string
 	for idx, val := range b.board {
 		if idx < 100 && idx > 10 {
@@ -109,7 +109,7 @@ func (b *Board) String() string {
 	return printBoard
 }
 
-func (b *Board) RotateWhite() string {
+func (b *Board) String() string {
 	// TODO Rotate Board
 	game := b.board
 	p := b.pieces
@@ -386,7 +386,7 @@ Pgn parse:
   Dont all taking a piece from simple moving
 */
 
-func (b *Board) parsePgn(move string) error {
+func (b *Board) ParsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
 	pgnPattern,_ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})(\+?)`)
 	res := pgnPattern.FindStringSubmatch(move)
@@ -637,17 +637,7 @@ Helper Testing method
 */
 
 func TestGame(board Board) {
-	e := board.parsePgn("e4")
-	if e != nil {
-		fmt.Print(e)
-	}
-	fmt.Print(board.String())
-	e = board.parsePgn("d5")
-	if e != nil {
-		fmt.Print(e)
-	}
-	fmt.Print(board.String())
-	e = board.parsePgn("exd5")
+	e := board.ParsePgn("e4")
 	if e != nil {
 		fmt.Print(e)
 	}
@@ -666,7 +656,7 @@ func PlayGame(board Board) { // TODO Rotate Board
 		}
 		fmt.Print(turn, " to move: ")
 		input, _ := reader.ReadString('\n')
-		e := board.parsePgn(input)
+		e := board.ParsePgn(input)
 		if e != nil {
 			fmt.Println("\nError: ", e)
 		}
@@ -674,13 +664,11 @@ func PlayGame(board Board) { // TODO Rotate Board
 			" | Castle: ", string(board.castle))
 		fmt.Println(" | Turn: ", turn)
 		fmt.Print(board.String())
-		fmt.Print(board.RotateWhite())
-		board.CoordinatesRotate()
 		fmt.Println(board.pgn)
 	}
 }
 
-func (b *Board) Coordinates() {
+func (b *Board) CoordinatesRotateBlack() {
 	for idx, val := range b.board {
 		if idx < 100 && idx > 10 {
 			if idx%10 != 0 && idx < 90 {
@@ -699,7 +687,7 @@ func (b *Board) Coordinates() {
 	}
 }
 
-func (b *Board) CoordinatesRotate() {
+func (b *Board) Coordinates() {
 		// TODO Rotate Board
 	game := b.board
 	var printBoard string

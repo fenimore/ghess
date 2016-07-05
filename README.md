@@ -40,57 +40,14 @@ rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2
 rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
 
 ### Print rotate??
+// The pgnMap is broken if it is rotated. I don't understand this. It is likely very simple to understand. In any case, gonna keep the default String() method as white oriented, and so the pgnMap will be 18-11 not 11-18
 
-	game := b.board
-	p := b.pieces
-	fmt.Print(p[string(game[89])], p[string(game[81])], 
-		p[string(game[82])], p[string(game[83])], 
-		p[string(game[84])], p[string(game[85])],
-		p[string(game[86])], p[string(game[87])], 
-		p[string(game[88])], "\n")
-	fmt.Print(p[string(game[79])], p[string(game[71])], 
-		p[string(game[72])],
-		p[string(game[73])], p[string(game[74])],
-		p[string(game[75])],
-		p[string(game[76])], p[string(game[77])],
-		p[string(game[78])], "\n")
-	fmt.Print(p[string(game[69])], p[string(game[61])],
-		p[string(game[62])],
-		p[string(game[63])], p[string(game[64])],
-		p[string(game[65])],
-		p[string(game[66])], p[string(game[67])],
-		p[string(game[68])], "\n")
-	fmt.Print(p[string(game[59])], p[string(game[51])],
-		p[string(game[52])],
-		p[string(game[53])], p[string(game[54])],
-		p[string(game[55])],p[string(game[56])],
-		p[string(game[57])],
-		p[string(game[58])], "\n")
-	fmt.Print(p[string(game[49])], p[string(game[41])],
-		p[string(game[42])],
-		p[string(game[43])], p[string(game[44])],
-		p[string(game[45])],
-		p[string(game[46])], p[string(game[47])],
-		p[string(game[48])], "\n")
-	fmt.Print(p[string(game[39])], p[string(game[31])],
-		p[string(game[32])],
-		p[string(game[33])], p[string(game[34])],
-		p[string(game[35])],
-		p[string(game[36])], p[string(game[37])],
-		p[string(game[38])], "\n")
-	fmt.Print(p[string(game[29])], p[string(game[21])],
-		p[string(game[22])],
-		p[string(game[23])], p[string(game[24])],
-		p[string(game[25])],
-		p[string(game[26])], p[string(game[27])],
-		p[string(game[28])], "\n")
-	fmt.Print(p[string(game[19])], p[string(game[11])],
-		p[string(game[12])],
-		p[string(game[13])], p[string(game[14])],
-		p[string(game[15])],
-		p[string(game[16])], p[string(game[17])],
-		p[string(game[18])], "\n")
-	fmt.Print(string(game[91]), string(game[92]), string(game[93]),
-		string(game[94]), string(game[95]), string(game[96]),
-		string(game[97]), string(game[98]),
-		string(game[99]), "\n")
+This is the old pgnMap:
+	m["a1"], m["b1"], m["c1"], m["d1"], m["e1"], m["f1"], m["g1"], m["h1"] = 11, 12, 13, 14, 15, 16, 17, 18
+	m["a2"], m["b2"], m["c2"], m["d2"], m["e2"], m["f2"], m["g2"], m["h2"] = 21, 22, 23, 24, 25, 26, 27, 28
+	m["a3"], m["b3"], m["c3"], m["d3"], m["e3"], m["f3"], m["g3"], m["h3"] = 31, 32, 33, 34, 35, 36, 37, 38
+	m["a4"], m["b4"], m["c4"], m["d4"], m["e4"], m["f4"], m["g4"], m["h4"] = 41, 42, 43, 44, 45, 46, 47, 48
+	m["a5"], m["b5"], m["c5"], m["d5"], m["e5"], m["f5"], m["g5"], m["h5"] = 51, 52, 53, 54, 55, 56, 57, 58
+	m["a6"], m["b6"], m["c6"], m["d6"], m["e6"], m["f6"], m["g6"], m["h6"] = 61, 62, 63, 64, 65, 66, 67, 68
+	m["a7"], m["b7"], m["c7"], m["d7"], m["e7"], m["f7"], m["g7"], m["h7"] = 71, 72, 73, 74, 75, 76, 77, 78
+	m["a8"], m["b8"], m["c8"], m["d8"], m["e8"], m["f8"], m["g8"], m["h8"] = 81, 82, 83, 84, 85, 86, 87, 88
