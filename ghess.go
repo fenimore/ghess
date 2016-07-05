@@ -28,12 +28,14 @@ type Board struct {
 	score     string
 	toMove    string // Next move is w or b
 	moves     int    // the count of moves
+	check     bool
 	// Map for display grid
 	pgnMap map[string]int    // the pgn format
 	pieces map[string]string // the unicode fonts
 	// Game Positions
-	fen string
-	pgn string
+	fen      string
+	pgn      string
+	lastMove string // used for generating PGN history
 }
 
 // __init__ for Board
@@ -104,27 +106,10 @@ func (b *Board) String() string {
 	return printBoard
 }
 
-func (b *Board) RotateString() string {
+func (b *Board) RotateWhite() {
 	// TODO Rotate Board
-	var printBoard string
-	for idx, val := range b.board {
-		if idx < 100 && idx > 10 {
-			if idx%10 != 0 && idx < 90 {
-				if (idx+1)%10 != 0 { // why not || ?
-					font := b.pieces[string(val)]
-					printBoard += "|" + font + "|"
-				} else {
-					printBoard += ":" + string(val)
-				}
-			}
-		}
-		if idx > 90 && idx < 99 {
-			printBoard += ":" + string(val) + ":"
-		} else if idx%10 == 0 && idx != 0 {
-			printBoard += "\n"
-		}
-	}
-	return printBoard
+	//var printBoard string
+
 }
 
 /*
@@ -372,14 +357,13 @@ Pgn parse:
 
 func (b *Board) parsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
-	//re, _ := regexp.Compile(`(.)x(..)`) // want to know what is in front of 'x'
-	pgnPattern, _ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})(\+?)`)
+	pgnPattern,_ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})(\+?)`)
 	res := pgnPattern.FindStringSubmatch(move)
 	if res == nil { // allow castling?
 		return errors.New("invalid input")
 	}
 	/*
-	   Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}
+	   Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}\+?
 	            e4 | d5+ | exd5 | Bc7 | Qxc7
 	*/
 	var orig int        // find origin coord of move
@@ -553,8 +537,8 @@ func (b *Board) parsePgn(move string) error {
 	case piece == "K": // King Parse
 		var possibilities [8]int
 		possibilities[0], possibilities[1],
-		possibilities[2], possibilities[3],
-		possibilities[4], possibilities[5],
+			possibilities[2], possibilities[3],
+			possibilities[4], possibilities[5],
 			possibilities[6], possibilities[7] = dest+10,
 			dest+11, dest+1, dest+9, dest-10,
 			dest-11, dest-1, dest-9
@@ -572,10 +556,23 @@ func (b *Board) parsePgn(move string) error {
 	}
 	if orig != 0 && dest != 0 {
 		err := b.Move(orig, dest)
+		if err == nil {
+			if b.toMove == "w"{
+				b.pgn += string(b.moves)+". "
+			}
+			b.pgn += (move + " ")
+		}
 		return err
 	} else {
 		return errors.New("No such move")
 	}
+}
+
+// Read a Pgn match
+func (b *Board) readPgnMatch() string {
+	fen := "Fen string"
+	// if error, could not read
+	return fen
 }
 
 func (b *Board) parseFen() {
@@ -641,7 +638,8 @@ func PlayGame(board Board) { // TODO Rotate Board
 			" | Castle: ", string(board.castle))
 		fmt.Println(" | Turn: ", turn)
 		fmt.Print(board.String())
-		fmt.Println("empassant: ", board.empassant)
+		fmt.Println(board.pgn)
+		//fmt.Println("empassant: ", board.empassant)
 	}
 }
 
