@@ -634,7 +634,7 @@ func PlayGame(board Board) { // TODO Rotate Board
 			" | Castle: ", string(board.castle))
 		fmt.Println(" | Turn: ", turn)
 		fmt.Print(board.String())
-		fmt.Println(board.empassant)
+		fmt.Println("empassant: ", board.empassant)
 	}
 }
 
