@@ -646,6 +646,9 @@ func PlayGame(board Board) { // TODO Rotate Board
 	var turn string
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print(board.String())
+	fmt.Println("Commands:")
+	fmt.Println("/q - quit /c - coordinates")
+	fmt.Println("/p - pgn  /f - fen")
 	for {
 		if board.toMove == "w" {
 			turn = "White"
