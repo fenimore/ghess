@@ -656,15 +656,28 @@ func PlayGame(board Board) { // TODO Rotate Board
 		}
 		fmt.Print(turn, " to move: ")
 		input, _ := reader.ReadString('\n')
-		e := board.ParsePgn(input)
-		if e != nil {
-			fmt.Println("\nError: ", e)
+		isCmd, _ := regexp.MatchString(`/`, input)
+		if isCmd {
+			input = strings.TrimRight(input, "\r\n")
+			switch {
+			case input == "/q":
+				os.Exit(1)
+			continue
 		}
-		fmt.Print("\nMove: ", board.moves,
+		e := board.ParsePgn(input)
+		if board.toMove == "w" {
+			turn = "White"
+		} else {
+			turn = "Black"
+		}
+		fmt.Print("\n\nDebug:\nMove: ", board.moves,
 			" | Castle: ", string(board.castle))
 		fmt.Println(" | Turn: ", turn)
+		if e != nil {
+			fmt.Printf("   [Error: %v]\n", e)
+		}
 		fmt.Print(board.String())
-		fmt.Println(board.pgn)
+		fmt.Println(board.pgn + "\n")
 	}
 }
 
