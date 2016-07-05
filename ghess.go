@@ -18,6 +18,7 @@ import (
 	"regexp"
 	"strings"
 	"strconv"
+	"time"
 )
 
 // The chessboard type
@@ -37,7 +38,8 @@ type Board struct {
 	// Game Positions
 	fen      string
 	pgn      string
-	pgnHeader  string
+	pgnHeaders  string
+
 }
 
 // __init__ for Board
@@ -83,6 +85,21 @@ func NewBoard() Board {
 		score:  "*",
 		moves:  1,
 	}
+}
+
+func (b *Board) setHeaders(w, bl string) {
+	w = strings.TrimRight(w, "\r\n")
+	bl = strings.TrimRight(bl, "\r\n")
+	y, m, d := time.Now().Date()
+	ye, mo, da := strconv.Itoa(y), strconv.Itoa(int(m)),
+	strconv.Itoa(d)
+	white   := "[White \""+w+"\"]"
+	black  := "[Black \""+bl+"\"]"
+	date   := "[Date \""+ye+"."+mo+"."+da+"\"]"
+	result := `[Result "*"]` 
+	b.pgnHeaders = white + "\n" + black+ "\n" + date + "\n" + result + "\n"
+	fmt.Print(b.pgnHeaders)
+
 }
 
 // Return a string of the board
@@ -671,6 +688,15 @@ func PlayGame(board Board) { // TODO Rotate Board
 				fmt.Println(board.pgn, "\n")
 			case input == "/f":
 				fmt.Println("FEN position:")
+			case input == "/sh":
+				fmt.Println("Set Headers:")
+				fmt.Print("White: ")
+				inWhite, _ := reader.ReadString('\n')
+				fmt.Print("Black: ")
+				inBlack, _:= reader.ReadString('\n')
+				board.setHeaders(inWhite, inBlack)
+			case input == "/h":
+				fmt.Println(board.pgnHeaders)
 			}
 			continue
 		}
@@ -680,7 +706,8 @@ func PlayGame(board Board) { // TODO Rotate Board
 		} else {
 			turn = "Black"
 		}
-		fmt.Print("\n\nDebug:\nMove: ", board.moves,
+		fmt.Println("\n-------------------")
+		fmt.Print("Debug:\nMove: ", board.moves,
 			" | Castle: ", string(board.castle))
 		fmt.Println(" | Turn: ", turn)
 		if e != nil {
