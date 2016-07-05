@@ -425,29 +425,33 @@ func (b *Board) parsePgn(move string) error {
 	}
 	switch {
 	case piece == "P": // Pawn Parse
-		var possTar [2]int // two potentional origins
+		var possibilities [2]int // two potentional origins
 		// TODO: Allow for empassant take
 		if b.toMove == "w" {
 			if isCapture {
-				possTar[0],
-					possTar[1] = dest-9, dest-11
+				 possibilities[0],
+				possibilities[1] = dest-9,
+				dest-11
 			} else {
-				possTar[0],
-					possTar[1] = dest-10, dest-20
+				possibilities[0],
+				possibilities[1] = dest-10,
+				dest-20
 			}
 		} else { // is black to move
 			if isCapture {
-				possTar[0],
-					possTar[1] = dest+9, dest+11
+				possibilities[0],
+				possibilities[1] = dest+9,
+				dest+11
 			} else {
-				possTar[0],
-					possTar[1] = dest+10, dest+20
+				possibilities[0],
+				possibilities[1] = dest+10,
+				dest+20
 			}
 		}
-		if b.board[possTar[0]] == target {
-			orig = possTar[0]
-		} else if b.board[possTar[1]] == target {
-			orig = possTar[1]
+		if b.board[possibilities[0]] == target {
+			orig = possibilities[0]
+		} else if b.board[possibilities[1]] == target {
+			orig = possibilities[1]
 		}
 	case piece == "N": // Knight Parse
 		var possTar [8]int
