@@ -166,7 +166,8 @@ func (b *Board) Move(orig, dest int) error {
 	val := b.board[orig]
 	var o byte // supposed starting square
 	var d byte // supposed destination
-	var empassant bool
+	var empassant bool //refactor?
+	var isCastle bool
 	if b.toMove == "w" {
 		// check that orig is Upper
 		// and dest is Enemy or Empty
@@ -178,6 +179,12 @@ func (b *Board) Move(orig, dest int) error {
 		o = []byte(bytes.ToLower(b.board[orig : orig+1]))[0]
 		d = []byte(bytes.ToUpper(b.board[dest : dest+1]))[0]
 	}
+	// Check for Castle
+	if orig == 14 {
+		isCastle = b.board[dest] == 'R'
+	} else if orig == 84 {
+		isCastle = b.board[dest] == 'r'
+	}
 	// Check if it is the right turn
 	if b.board[orig] != o {
 		return errors.New("Not your turn")
@@ -187,7 +194,7 @@ func (b *Board) Move(orig, dest int) error {
 		return errors.New("Empty square")
 	}
 	// Check if destination is Enemy
-	if b.board[dest] != d { //
+	if b.board[dest] != d && !isCastle { //
 		return errors.New("Can't attack your own piece")
 	}
 	p := string(bytes.ToUpper(b.board[orig : orig+1]))
@@ -202,28 +209,71 @@ func (b *Board) Move(orig, dest int) error {
 			empassant = true
 		}
 	case p == "N":
-		fmt.Print("is knight") // not implemented
+		e := b.validKnight(orig, dest)
+		if e != nil {
+			return e
+		}
 	case p == "B":
 		e := b.validBishop(orig, dest)
 		if e != nil {
 			return e
 		}
-	case p == "R":
+	case p == "R": 
 		e := b.validRook(orig, dest)
 		if e != nil {
 			return e
+		}
+		switch { // Castle
+		case orig == b.pgnMap["a1"]:
+			b.castle[1] = '-'
+		case orig == b.pgnMap["a8"]:
+			b.castle[3] = '-'
+		case orig == b.pgnMap["h1"]:
+			b.castle[0] = '-'
+		case orig == b.pgnMap["h8"]:
+			b.castle[2] = '-'
 		}
 	case p == "Q":
 		e := b.validQueen(orig, dest)
 		if e != nil {
 			return e
 		}
-	case p == "K":
-		fmt.Print("is king")
+	case p == "K": // is castle?
+		if !isCastle {
+			e := b.validKing(orig, dest, false)
+			if e != nil {
+				return e
+			}
+			if orig == 14 || orig == 84 { // starting pos
+				switch {
+				case o == 'K':
+					b.castle[0], b.castle[1] = '-', '-'
+				case o == 'k':
+					b.castle[2], b.castle[3] = '-', '-'
+				}
+			}
+		} else {
+			e := b.validKing(orig, dest, true)
+			if e != nil {
+				return e
+			}
+			
+		}
 	}
 	// Update Board
 	b.board[orig] = '.'
-	b.board[dest] = val
+	if !isCastle {
+		b.board[dest] = val
+	} else { // castle
+		b.board[dest] = '.'
+		if dest > orig { // queen side
+			b.board[dest-2],
+			b.board[dest-3] = val, b.board[dest]
+		} else {         // king side
+			b.board[dest+1],
+			b.board[dest+2] = val, b.board[dest]
+		}
+	}
 	// TODO check for Check
 	// Update Game variables
 	if b.toMove == "w" {
@@ -284,10 +334,20 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 }
 
 func (b *Board) validKnight(orig int, dest int) error {
-	// The validation is easy
-	// accomplished in the pgn reader
-	// do redudent validation TODO?
-	return nil
+	var possibilities [8]int
+	possibilities[0], possibilities[1],
+	possibilities[2], possibilities[3],
+	possibilities[4], possibilities[5],
+	possibilities[6], possibilities[7] = orig+21,
+	orig+19, orig+12, orig+8, orig-8,
+	orig-12, orig-19, orig-21
+
+	for _, possibility := range possibilities {
+		if possibility == dest {
+			return nil
+		}
+	}
+	return errors.New("Illegal Knight Move")
 }
 
 func (b *Board) validBishop(orig int, dest int) error {
@@ -364,16 +424,6 @@ func (b *Board) validRook(orig int, dest int) error {
 			}
 		}
 	}
-	switch { // Castle
-	case orig == b.pgnMap["a1"]:
-		b.castle[1] = '-'
-	case orig == b.pgnMap["a8"]:
-		b.castle[3] = '-'
-	case orig == b.pgnMap["h1"]:
-		b.castle[0] = '-'
-	case orig == b.pgnMap["h8"]:
-		b.castle[2] = '-'
-	}
 	return nil
 }
 
@@ -399,8 +449,51 @@ func (b *Board) validQueen(orig int, dest int) error {
 	return nil
 }
 
-// Valid Queen
-// Valid King
+// do castle in King validation
+func (b *Board) validKing(orig int, dest int, castle bool) error {
+	castlerr := errors.New("Something is in your way")
+	var possibilities [8]int
+	g := b.board // g for gameboard
+	possibilities[0], possibilities[1],
+	possibilities[2], possibilities[3],
+	possibilities[4], possibilities[5],
+	possibilities[6], possibilities[7] = orig+10,
+	orig+11, orig+1, orig+9, orig-10,
+	orig-11, orig-1, orig-9
+	for _, possibility := range possibilities {
+		if possibility == dest {
+			return nil
+		}
+	}
+	if castle {
+		queenSideCastle := !(g[orig+1] != '.' || g[orig+2] != '.' || g[orig+3] != '.')
+		kingSideCastle := !(g[orig-1] != '.' || g[orig-2] != '.')
+		if dest > orig { // Queen side
+			if !queenSideCastle {
+				return castlerr
+			}
+			if b.toMove == "w" {
+				// rook 85 k 86
+			} else {
+				// rook 
+			}
+		} else { 
+			if !kingSideCastle {
+				return castlerr
+			}
+			if b.toMove == "w" {
+				//rook 13 k 12
+			} else {
+			}
+		}
+
+	} else {
+		return errors.New("Illegal King Move")
+	}
+	return nil
+}
+
+
 
 /*
 TODO: Export fen
@@ -416,13 +509,12 @@ func (b *Board) ParsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
 	pgnPattern,_ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})(\+?)`)
 	res := pgnPattern.FindStringSubmatch(move)
-	if res == nil { // allow castling?
+	if res == nil && move != "0-0" && move != "0-0-0" { // allow castling?
 		return errors.New("invalid input")
 	}
-	/*
-	   Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}\+?
-	            e4 | d5+ | exd5 | Bc7 | Qxc7
-	*/
+	/* Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}\+?
+	            e4 | d5+ | exd5 | Bc7 | Qxc7 */
+	
 	var orig int        // find origin coord of move
 	var square string   // find pgnMap key of move
 	var attacker string // left of x
@@ -430,6 +522,8 @@ func (b *Board) ParsePgn(move string) error {
 	//var precise string // for multiple possibilities
 	var target byte // the piece to move, in proper case
 	// Check if Capture (x)
+	isCastle := false
+	isWhite := b.toMove == "w"
 	isCapture, _ := regexp.MatchString(`x`, move)
 	if isCapture {
 		attacker = res[1]
@@ -445,14 +539,29 @@ func (b *Board) ParsePgn(move string) error {
 			piece = "P"
 			square = res[2]
 		} else if chars == 3 && move != "0-0" {
+			// Breaks when e44 is entered...
 			piece = res[1]
 			square = res[2] //move[0]
 		} else if chars == 4 {
 			piece = res[1] // remove second char
 			//precise = move
 			square = res[2]
-		} else if move == "0-0" || move == "0-0-0" {
-			// castle
+		} else if move == "0-0" {
+			isCastle = true
+			piece = "K"
+			if isWhite {
+				square = "h1"
+			} else {
+				square = "a8"
+			}
+		} else if move == "0-0-0" {
+			isCastle = true
+			piece = "K"
+			if isWhite {
+				square = "a1"
+			} else {
+				square = "a8"
+			}
 		} else {
 			return errors.New("Not enough input")
 		}
@@ -593,6 +702,14 @@ func (b *Board) ParsePgn(move string) error {
 		}
 	case piece == "K": // King Parse
 		var possibilities [8]int
+		if isCastle {
+			if isWhite {
+				orig = 14
+			} else {
+				orig = 84
+			}
+			break
+		} 
 		possibilities[0], possibilities[1],
 			possibilities[2], possibilities[3],
 			possibilities[4], possibilities[5],
@@ -608,8 +725,10 @@ func (b *Board) ParsePgn(move string) error {
 	}
 	// Move the Piece
 	// - Validate Move in Board.Move()
-	if b.board[dest] != '.' && !isCapture {
+	if b.board[dest] != '.' && !isCapture && !isCastle {
+		fmt.Print(isCastle)
 		return errors.New("Not the proper capture syntax")
+
 	}
 	if orig != 0 && dest != 0 {
 		err := b.Move(orig, dest)
