@@ -265,7 +265,6 @@ func (b *Board) Move(orig, dest int) error {
 	if !isCastle {
 		b.board[dest] = val
 	} else { // castle
-		b.board[dest] = '.'
 		if dest > orig { // queen side
 			b.board[dest-2],
 			b.board[dest-3] = val, b.board[dest]
@@ -273,6 +272,7 @@ func (b *Board) Move(orig, dest int) error {
 			b.board[dest+1],
 			b.board[dest+2] = val, b.board[dest]
 		}
+		b.board[dest] = '.'
 	}
 	// TODO check for Check
 	// Update Game variables
@@ -468,22 +468,15 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	if castle {
 		queenSideCastle := !(g[orig+1] != '.' || g[orig+2] != '.' || g[orig+3] != '.')
 		kingSideCastle := !(g[orig-1] != '.' || g[orig-2] != '.')
+		fmt.Print(kingSideCastle)
+		fmt.Print(string(g[orig]), string(g[orig-1]), string(g[orig-2]))
 		if dest > orig { // Queen side
 			if !queenSideCastle {
 				return castlerr
 			}
-			if b.toMove == "w" {
-				// rook 85 k 86
-			} else {
-				// rook 
-			}
-		} else { 
+		} else if orig > dest { 
 			if !kingSideCastle {
 				return castlerr
-			}
-			if b.toMove == "w" {
-				//rook 13 k 12
-			} else {
 			}
 		}
 
@@ -552,7 +545,7 @@ func (b *Board) ParsePgn(move string) error {
 			if isWhite {
 				square = "h1"
 			} else {
-				square = "a8"
+				square = "h8"
 			}
 		} else if move == "0-0-0" {
 			isCastle = true
@@ -733,6 +726,7 @@ func (b *Board) ParsePgn(move string) error {
 	if orig != 0 && dest != 0 {
 		err := b.Move(orig, dest)
 		if err == nil {
+			// Update pgn History
 			if b.toMove == "b"{
 				b.pgn += strconv.Itoa(b.moves) +". "
 			}
@@ -796,6 +790,7 @@ func PlayGame(board Board) { // TODO Rotate Board
 	fmt.Println("/p - pgn  /f - fen")
 	fmt.Println("/sh - set headers /h - headers\n")
 	fmt.Print(board.String())
+	
 	for {
 		if board.toMove == "w" {
 			turn = "White"
@@ -827,7 +822,15 @@ func PlayGame(board Board) { // TODO Rotate Board
 				board.setHeaders(inWhite, inBlack)
 			case input == "/h":
 				fmt.Println(board.pgnHeaders)
+			case input == "/r":
+				board = NewBoard()
+				fmt.Print(board.String())
+			case input == "/castle-test":
+				board = NewBoard()
+				board = CastleTest(board)
+				fmt.Print(board.String())
 			}
+
 			continue
 		}
 		e := board.ParsePgn(input)
@@ -845,6 +848,27 @@ func PlayGame(board Board) { // TODO Rotate Board
 		}
 		fmt.Print(board.String())
 	}
+}
+
+func CastleTest(board Board) Board {
+	// Castle Test
+	_ = board.ParsePgn("b4")
+	_ = board.ParsePgn("g6")
+	_ = board.ParsePgn("c4")
+	_ = board.ParsePgn("Nf6")
+	_ = board.ParsePgn("Bb2")
+	_ = board.ParsePgn("Bg7")
+	_ = board.ParsePgn("Qc2")
+	_ = board.ParsePgn("Nc6")
+	_ = board.ParsePgn("Nc3")
+	_ = board.ParsePgn("b6")
+	_ = board.ParsePgn("Nf3")
+	_ = board.ParsePgn("Bb7")
+	_ = board.ParsePgn("d4")
+	_ = board.ParsePgn("d5")	
+	_ = board.ParsePgn("g3")
+	_ = board.ParsePgn("Qd7")
+	return board
 }
 
 func (b *Board) CoordinatesRotateBlack() {
