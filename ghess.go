@@ -19,7 +19,19 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 )
+
+
+func (b Board) isUpper(x int) bool {
+	//compare = []byte(bytes.ToLower(b))[0]
+	compare := byte(unicode.ToUpper(rune(b.board[x])))
+	if b.board[x] == compare {
+		return true
+	} else {
+		return false
+	}
+}
 
 // The chessboard type
 type Board struct {
@@ -171,7 +183,6 @@ func (b *Board) Move(orig, dest int) error {
 	var d byte         // supposed destination
 	var empassant bool //refactor?
 	var isCastle bool
-
 	if b.toMove == "w" {
 		// check that orig is Upper
 		// and dest is Enemy or Empty
@@ -784,7 +795,7 @@ func (b *Board) readPgnMatch(match string) (Board, error) {
 	game := NewBoard()
 	result := game.pattern.FindAllString(match, -1)
 	for _, val := range result {
-		fmt.Print("Move: ", game.moves)
+		fmt.Println("Move: ", game.moves)
 		err := game.ParsePgn(val)
 		if err != nil {
 			return game, err
@@ -990,7 +1001,6 @@ func (b *Board) Coordinates() {
 		}
 		printBoard += "|" + strconv.Itoa(i) + "|"
 	}
-
 	printBoard += "\n"
 	printBoard += "   :a ::b ::c ::d ::e ::f ::g ::h :\n"
 	fmt.Println(printBoard)
