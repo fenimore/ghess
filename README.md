@@ -25,9 +25,8 @@ Golang chess engine, fumbling along...
 
 ## TODO
 - Check/checkmate is going to be a pain...
-- King and Queen Move validation
+- Queen Move validation
 - FEN import
-- Castle PGN input
 - Move history/ Undo
 - Save game history to board (not automatic)?
 

@@ -477,10 +477,12 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 				if b.castle[1] != 'Q'{
 					return noCastle
 				}
-			} else {
+				b.castle[0], b.castle[1] = '-','-'
+			} else { // b
 				if b.castle[3] != 'q' {
 					return noCastle 
 				}
+				b.castle[2], b.castle[3] = '-','-'
 			}
 		} else if orig > dest { 
 			if !kingSideCastle {
@@ -490,10 +492,12 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 				if b.castle[0] != 'K'{
 					return noCastle
 				}
+				b.castle[0], b.castle[1] = '-','-'
 			} else {
 				if b.castle[2] != 'k' {
 					return noCastle 
 				}
+				b.castle[2], b.castle[3] = '-','-'
 			}
 		}
 
@@ -517,7 +521,12 @@ Pgn parse:
 
 func (b *Board) ParsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
-	pgnPattern,_ := regexp.Compile(`([B-R]?[a-h]?)x?([a-h]\d{1})(\+?)`)
+	pgnPattern, err := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])(\+?)`)
+	if err != nil {
+		return err
+	}
+	// [B-R]?[a-h]?)x?([a-h]\d{1})(\+?)
+	// ([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8)(\+?)
 	res := pgnPattern.FindStringSubmatch(move)
 	if res == nil && move != "0-0" && move != "0-0-0" { // allow castling?
 		return errors.New("invalid input")
@@ -756,10 +765,10 @@ func (b *Board) ParsePgn(move string) error {
 }
 
 // Read a Pgn match
-func (b *Board) readPgnMatch() string {
-	fen := "Fen string"
+func (b *Board) readPgnMatch(string) Board {
+	game := NewBoard()
 	// if error, could not read
-	return fen
+	return game 
 }
 
 func (b *Board) stringPgn() string {
@@ -803,6 +812,9 @@ func PlayGame(board Board) { // TODO Rotate Board
 	welcome := `
 /~ |_ _  _ _
 \_|||(/__\_\
+
+
+
 
 go-chess
     Enter /help for more options
@@ -866,7 +878,11 @@ Tests:
 				fmt.Println(board.pgnHeaders)
 			case input == "/test-castle":
 				board = NewBoard()
-				board = CastleTest(board)
+				board = TestCastle(board)
+				fmt.Print(board.String())
+			case input == "/test-pawn":
+				board = NewBoard()
+				board = TestPawn(board)
 				fmt.Print(board.String())
 			default:
 				fmt.Println("Mysterious input")
@@ -891,7 +907,7 @@ Tests:
 	}
 }
 
-func CastleTest(board Board) Board {
+func TestCastle(board Board) Board {
 	// Castle Test
 	_ = board.ParsePgn("b4")
 	_ = board.ParsePgn("g6")
@@ -909,6 +925,14 @@ func CastleTest(board Board) Board {
 	_ = board.ParsePgn("d5")	
 	_ = board.ParsePgn("g3")
 	_ = board.ParsePgn("Qd7")
+	return board
+}
+
+func TestPawn(board Board) Board {
+	// Castle Test
+	_ = board.ParsePgn("e4")
+	_ = board.ParsePgn("d5")
+	_ = board.ParsePgn("exd5")
 	return board
 }
 
