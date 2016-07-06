@@ -39,6 +39,7 @@ type Board struct {
 	fen      string
 	pgn      string
 	pgnHeaders  string
+	pattern *regexp.Regexp
 
 }
 
@@ -77,6 +78,7 @@ func NewBoard() Board {
 	r["k"], r["K"] = "\u2654", "\u265A"
 	r["."] = "\u00B7"
 
+	pattern,_ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)`)
 	return Board{
 		board:  b,
 		castle: []byte(`KQkq`),
@@ -85,6 +87,7 @@ func NewBoard() Board {
 		toMove: "w",
 		score:  "*",
 		moves:  1,
+		pattern: pattern,
 	}
 }
 
@@ -168,6 +171,7 @@ func (b *Board) Move(orig, dest int) error {
 	var d byte // supposed destination
 	var empassant bool //refactor?
 	var isCastle bool
+
 	if b.toMove == "w" {
 		// check that orig is Upper
 		// and dest is Enemy or Empty
@@ -521,13 +525,11 @@ Pgn parse:
 
 func (b *Board) ParsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
-	pgnPattern, err := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])(\+?)`)
-	if err != nil {
-		return err
-	}
-	// [B-R]?[a-h]?)x?([a-h]\d{1})(\+?)
-	// ([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8)(\+?)
-	res := pgnPattern.FindStringSubmatch(move)
+	//pgnPattern, err := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)`)
+//	if err != nil {
+//		return err
+//	}
+	res := b.pattern.FindStringSubmatch(move)
 	if res == nil && move != "0-0" && move != "0-0-0" { // allow castling?
 		return errors.New("invalid input")
 	}
@@ -765,8 +767,14 @@ func (b *Board) ParsePgn(move string) error {
 }
 
 // Read a Pgn match
-func (b *Board) readPgnMatch(string) Board {
+func (b *Board) readPgnMatch(match string) Board {	
+	//pattern, err := regexp.Compile(`\d\.`)
+	//regexp.MatchString(`x`, move)
 	game := NewBoard()
+	result := strings.Split(match, " ")
+	for _, val := range result {
+		fmt.Println(val)
+	}
 	// if error, could not read
 	return game 
 }
@@ -884,6 +892,9 @@ Tests:
 				board = NewBoard()
 				board = TestPawn(board)
 				fmt.Print(board.String())
+			case input == "/test-pgn":
+				hist := `1. b4 g6 2. c4 Nf6 3. Bb2 Bg7 4. Qc2 Nc6 5. Nc3 b6 6. Nf3 Bb7 7. d4 d5 8. g3 Qd7`
+				board.readPgnMatch(hist)
 			default:
 				fmt.Println("Mysterious input")
 			}
