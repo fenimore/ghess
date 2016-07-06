@@ -4,13 +4,19 @@ Golang chess engine, fumbling along...
 ## Board struct
 - A board object
 - Game variables
-- castle possibilities
-- score
-- to move
+  * castle possibilities
+  * score
+  * to move
+  * check
+  * empassant
+- Board display
+  * pgnMap
+  * pieceMap
+  * pieces
 - move count
 - fen string
 - pgn string
-
+- pgn Headers
 
 ## Bitmap
 - 120 bytes
@@ -21,13 +27,9 @@ Golang chess engine, fumbling along...
 - Check/checkmate is going to be a pain...
 - King and Queen Move validation
 - FEN import
-- Store PGN
 - Castle PGN input
-- Print pgn history on crash
-- And many more
-- empassant
 - Move history/ Undo
-- Save game history to board (not automatic)
+- Save game history to board (not automatic)?
 
 ### Fen String examples:
 

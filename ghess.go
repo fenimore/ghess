@@ -66,6 +66,7 @@ func NewBoard() Board {
 	m["a8"], m["b8"], m["c8"], m["d8"], m["e8"], m["f8"], m["g8"], m["h8"] = 88, 87, 86, 85, 84, 83, 82, 81
 
 	// Todo make map for pieceMap[]
+	
 	// Map of unicode fonts
 	r := make(map[string]string)
 	r["p"], r["P"] = "\u2659", "\u265F"
@@ -87,19 +88,18 @@ func NewBoard() Board {
 	}
 }
 
+// Set pgnHeaders for a pgn export
 func (b *Board) setHeaders(w, bl string) {
 	w = strings.TrimRight(w, "\r\n")
 	bl = strings.TrimRight(bl, "\r\n")
 	y, m, d := time.Now().Date()
 	ye, mo, da := strconv.Itoa(y), strconv.Itoa(int(m)),
 	strconv.Itoa(d)
-	white   := "[White \""+w+"\"]"
+	white  := "[White \""+w+"\"]"
 	black  := "[Black \""+bl+"\"]"
 	date   := "[Date \""+ye+"."+mo+"."+da+"\"]"
 	result := `[Result "*"]` 
 	b.pgnHeaders = white + "\n" + black+ "\n" + date + "\n" + result + "\n"
-	fmt.Print(b.pgnHeaders)
-
 }
 
 // Return a string of the board
@@ -364,7 +364,16 @@ func (b *Board) validRook(orig int, dest int) error {
 			}
 		}
 	}
-
+	switch { // Castle
+	case orig == b.pgnMap["a1"]:
+		b.castle[1] = '-'
+	case orig == b.pgnMap["a8"]:
+		b.castle[3] = '-'
+	case orig == b.pgnMap["h1"]:
+		b.castle[0] = '-'
+	case orig == b.pgnMap["h8"]:
+		b.castle[2] = '-'
+	}
 	return nil
 }
 
@@ -662,10 +671,12 @@ func TestGame(board Board) {
 func PlayGame(board Board) { // TODO Rotate Board
 	var turn string
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(board.String())
+	// welcome message
 	fmt.Println("Commands:")
 	fmt.Println("/q - quit /c - coordinates")
 	fmt.Println("/p - pgn  /f - fen")
+	fmt.Println("/sh - set headers /h - headers\n")
+	fmt.Print(board.String())
 	for {
 		if board.toMove == "w" {
 			turn = "White"
