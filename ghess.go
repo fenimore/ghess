@@ -7,7 +7,7 @@ TODO: Search and Evaluation
 TODO: Fen PGN reading
 TODO: Fen output
 */
-package main
+package mainy
 
 import (
 	"bufio"
@@ -108,7 +108,7 @@ func (b *Board) setHeaders(w, bl string) {
 }
 
 // Return PNG String
-func (b *Board) PngString() string {
+func (b *Board) PgnString() string {
 	return b.headers + b.pgn
 }
 
@@ -136,6 +136,7 @@ func (b *Board) RotateBroken() string {
 	return printBoard
 }
 
+// Create printable board
 func (b *Board) String() string {
 	// TODO Rotate Board
 	game := b.board
@@ -157,12 +158,9 @@ func (b *Board) String() string {
 	return printBoard
 }
 
-/*
-Move and validation
-*/
-// Wrapper in portable game notation
-// 'Two' coordinate notation
-func (b *Board) pgnMove(orig, dest string) error {
+// Wrapper in for standard notation positions
+func (b *Board) standardWrapper(orig, dest string) error {
+	// TODO: use two coordinates, include piece value
 	//e2e4
 	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
 	if e != nil {
@@ -171,7 +169,8 @@ func (b *Board) pgnMove(orig, dest string) error {
 	return nil
 }
 
-// Move byte value to new position
+// Validate move
+// Change byte values to new values
 func (b *Board) Move(orig, dest int) error {
 	val := b.board[orig]
 	var o byte         // supposed starting square
@@ -293,7 +292,7 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	return nil
 }
-
+// Check: right-color, origin-empty, attack-enemy
 func (b *Board) basicValidation(orig, dest int, o, d byte, isCastle bool) error {
 	// Check if it is the right turn
 	if b.board[orig] != o {
@@ -352,7 +351,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	}
 	return nil
 }
-
+// Validate Knight move.
 func (b *Board) validKnight(orig int, dest int) error {
 	var possibilities [8]int
 	possibilities[0], possibilities[1],
@@ -369,7 +368,7 @@ func (b *Board) validKnight(orig int, dest int) error {
 	}
 	return errors.New("Illegal Knight Move")
 }
-
+// Validate Bishop move.
 func (b *Board) validBishop(orig int, dest int) error {
 	// Check if other pieces are in the way
 	err := errors.New("Illegal Bishop Move")
@@ -408,7 +407,7 @@ func (b *Board) validBishop(orig int, dest int) error {
 	}
 	return nil
 }
-
+// Validate rook move.
 func (b *Board) validRook(orig int, dest int) error {
 	// Check if pieces are in the way
 	err := errors.New("Illegal Rook Move")
@@ -446,7 +445,7 @@ func (b *Board) validRook(orig int, dest int) error {
 	}
 	return nil
 }
-
+// Validate queen move.
 func (b *Board) validQueen(orig int, dest int) error {
 	remainder := dest - orig
 	vertical := remainder%10 == 0
@@ -469,7 +468,8 @@ func (b *Board) validQueen(orig int, dest int) error {
 	return nil
 }
 
-// do castle in King validation
+// Validate king move.
+// Check for castle
 func (b *Board) validKing(orig int, dest int, castle bool) error {
 	castlerr := errors.New("Something is in your way")
 	noCastle := errors.New("Castle on this side is foutu")
@@ -527,16 +527,9 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	return nil
 }
 
-/*
-TODO: Export fen
-TODO: Parse fen
-TODO: Parse pgn
-Pgn parse:
-  Accept check/checkmate indicaters
-  Implement specific pieces..
-  Dont all taking a piece from simple moving
-*/
 
+// Parse a pgn move
+// Infer the origin piece
 func (b *Board) ParseMove(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
 	// Variables
@@ -785,8 +778,9 @@ func (b *Board) ParseMove(move string) error {
 	}
 }
 
-// Read a Pgn match
+// Read a pgn match
 func (b *Board) LoadPgn(match string) (Board, error) {
+	// TODO: ignore header strings
 	game := NewBoard()
 	result := game.pattern.FindAllString(match, -1)
 	for _, val := range result {
@@ -799,19 +793,15 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 	return game, nil
 }
 
-func (b *Board) stringPgn() string {
 
-	return b.pgn
-}
-
-func (b *Board) parseFen() {
+func (b *Board) ParseFen() {
 	// Parse Fen
 }
 
-func (b *Board) genFen() string {
+// Get FEN position
+func (b *Board) Position() string {
 	// b.board -> Fen
-	fen := "Fen string"
-	return fen
+	return b.fen
 }
 
 /*
@@ -820,21 +810,9 @@ Main thread
 func main() {
 	board := NewBoard()
 	PlayGame(board)
-	//TestGame(board)
 }
 
-/*
-Helper Testing method
-*/
-
-func TestGame(board Board) {
-	e := board.ParseMove("e4")
-	if e != nil {
-		fmt.Print(e)
-	}
-	fmt.Print(board.String())
-}
-
+// Take user input and commands
 func PlayGame(board Board) { // TODO Rotate Board
 	var turn string
 	welcome := `
@@ -967,6 +945,7 @@ func (b *Board) Coordinates() {
 	fmt.Println(printBoard)
 }
 
+// Check if byte in board is upper case.
 func (b Board) isUpper(x int) bool {
 	//compare = []byte(bytes.ToLower(b))[0]
 	compare := byte(unicode.ToUpper(rune(b.board[x])))
