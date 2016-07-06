@@ -16,8 +16,8 @@ import (
 	"fmt"
 	"os"
 	"regexp"
-	"strings"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -32,14 +32,14 @@ type Board struct {
 	moves     int    // the count of moves
 	check     bool
 	// Map for display grid
-	pgnMap map[string]int    // the pgn format
-	pieceMap map[int] string // coord to standard notation
-	pieces map[string]string // the unicode fonts
+	pgnMap   map[string]int    // the pgn format
+	pieceMap map[int]string    // coord to standard notation
+	pieces   map[string]string // the unicode fonts
 	// Game Positions
-	fen      string
-	pgn      string
-	pgnHeaders  string
-	pattern *regexp.Regexp // For parsing PGN
+	fen        string
+	pgn        string
+	pgnHeaders string
+	pattern    *regexp.Regexp // For parsing PGN
 
 }
 
@@ -67,7 +67,7 @@ func NewBoard() Board {
 	m["a8"], m["b8"], m["c8"], m["d8"], m["e8"], m["f8"], m["g8"], m["h8"] = 88, 87, 86, 85, 84, 83, 82, 81
 
 	// Todo make map for pieceMap[]
-	
+
 	// Map of unicode fonts
 	r := make(map[string]string)
 	r["p"], r["P"] = "\u2659", "\u265F"
@@ -78,15 +78,15 @@ func NewBoard() Board {
 	r["k"], r["K"] = "\u2654", "\u265A"
 	r["."] = "\u00B7"
 
-	pattern,_ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
+	pattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
 	return Board{
-		board:  b,
-		castle: []byte(`KQkq`),
-		pgnMap: m,
-		pieces: r,
-		toMove: "w",
-		score:  "*",
-		moves:  1,
+		board:   b,
+		castle:  []byte(`KQkq`),
+		pgnMap:  m,
+		pieces:  r,
+		toMove:  "w",
+		score:   "*",
+		moves:   1,
 		pattern: pattern,
 	}
 }
@@ -97,12 +97,12 @@ func (b *Board) setHeaders(w, bl string) {
 	bl = strings.TrimRight(bl, "\r\n")
 	y, m, d := time.Now().Date()
 	ye, mo, da := strconv.Itoa(y), strconv.Itoa(int(m)),
-	strconv.Itoa(d)
-	white  := "[White \""+w+"\"]"
-	black  := "[Black \""+bl+"\"]"
-	date   := "[Date \""+ye+"."+mo+"."+da+"\"]"
-	result := `[Result "*"]` 
-	b.pgnHeaders = white + "\n" + black+ "\n" + date + "\n" + result + "\n"
+		strconv.Itoa(d)
+	white := "[White \"" + w + "\"]"
+	black := "[Black \"" + bl + "\"]"
+	date := "[Date \"" + ye + "." + mo + "." + da + "\"]"
+	result := `[Result "*"]`
+	b.pgnHeaders = white + "\n" + black + "\n" + date + "\n" + result + "\n"
 }
 
 // Return a string of the board
@@ -135,14 +135,14 @@ func (b *Board) String() string {
 	p := b.pieces
 	var printBoard string
 	for i := 89; i > 10; i-- {
-		if i%10 == 0  {
+		if i%10 == 0 {
 			printBoard += "\n"
 			continue
 		} else if (i+1)%10 == 0 {
-			printBoard += string(game[i])+": "
+			printBoard += string(game[i]) + ": "
 			continue
 		}
-		printBoard += "|"+p[string(game[i])]+"|"
+		printBoard += "|" + p[string(game[i])] + "|"
 	}
 
 	printBoard += "\n"
@@ -167,8 +167,8 @@ func (b *Board) pgnMove(orig, dest string) error {
 // Move byte value to new position
 func (b *Board) Move(orig, dest int) error {
 	val := b.board[orig]
-	var o byte // supposed starting square
-	var d byte // supposed destination
+	var o byte         // supposed starting square
+	var d byte         // supposed destination
 	var empassant bool //refactor?
 	var isCastle bool
 
@@ -194,7 +194,7 @@ func (b *Board) Move(orig, dest int) error {
 	if err != nil {
 		return err
 	}
-	
+
 	p := string(bytes.ToUpper(b.board[orig : orig+1]))
 	switch {
 	case p == "P":
@@ -218,7 +218,7 @@ func (b *Board) Move(orig, dest int) error {
 		}
 	case p == "R":
 		e := b.validRook(orig, dest)
-		if e != nil { 
+		if e != nil {
 			return e
 		}
 		switch { // Castle
@@ -255,7 +255,7 @@ func (b *Board) Move(orig, dest int) error {
 			if e != nil {
 				return e
 			}
-			
+
 		}
 	}
 	// Update Board
@@ -265,10 +265,10 @@ func (b *Board) Move(orig, dest int) error {
 	} else { // castle
 		if dest > orig { // queen side
 			b.board[dest-2],
-			b.board[dest-3] = val, b.board[dest]
-		} else {         // king side
+				b.board[dest-3] = val, b.board[dest]
+		} else { // king side
 			b.board[dest+1],
-			b.board[dest+2] = val, b.board[dest]
+				b.board[dest+2] = val, b.board[dest]
 		}
 		b.board[dest] = '.'
 	}
@@ -333,7 +333,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 		// check if b.board[dest+10] == '.'
 		if b.board[dest] == d && d != '.' {
 			// Proper attack
-		} else if b.board[dest] == d && dest+empOffset == b.empassant{
+		} else if b.board[dest] == d && dest+empOffset == b.empassant {
 			// Empassant attack
 			if b.board[dest+empOffset] == empTarget { // is the right case
 				b.board[b.empassant] = '.'
@@ -350,11 +350,11 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 func (b *Board) validKnight(orig int, dest int) error {
 	var possibilities [8]int
 	possibilities[0], possibilities[1],
-	possibilities[2], possibilities[3],
-	possibilities[4], possibilities[5],
-	possibilities[6], possibilities[7] = orig+21,
-	orig+19, orig+12, orig+8, orig-8,
-	orig-12, orig-19, orig-21
+		possibilities[2], possibilities[3],
+		possibilities[4], possibilities[5],
+		possibilities[6], possibilities[7] = orig+21,
+		orig+19, orig+12, orig+8, orig-8,
+		orig-12, orig-19, orig-21
 
 	for _, possibility := range possibilities {
 		if possibility == dest {
@@ -406,8 +406,6 @@ func (b *Board) validBishop(orig int, dest int) error {
 func (b *Board) validRook(orig int, dest int) error {
 	// Check if pieces are in the way
 	err := errors.New("Illegal Rook Move")
-	fmt.Println(dest, orig)
-	fmt.Println(string(b.board[15]))
 	remainder := dest - orig
 	if remainder < 10 && remainder > -10 {
 		// Horizontal
@@ -420,7 +418,6 @@ func (b *Board) validRook(orig int, dest int) error {
 		} else {
 			for i := orig + 1; i < dest; i++ {
 				if b.board[i] != '.' {
-					fmt.Println("i is ", i)
 					return err
 				}
 			}
@@ -473,11 +470,11 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	var possibilities [8]int
 	g := b.board // g for gameboard
 	possibilities[0], possibilities[1],
-	possibilities[2], possibilities[3],
-	possibilities[4], possibilities[5],
-	possibilities[6], possibilities[7] = orig+10,
-	orig+11, orig+1, orig+9, orig-10,
-	orig-11, orig-1, orig-9
+		possibilities[2], possibilities[3],
+		possibilities[4], possibilities[5],
+		possibilities[6], possibilities[7] = orig+10,
+		orig+11, orig+1, orig+9, orig-10,
+		orig-11, orig-1, orig-9
 	for _, possibility := range possibilities {
 		if possibility == dest {
 			return nil
@@ -491,30 +488,30 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 				return castlerr
 			}
 			if b.toMove == "w" {
-				if b.castle[1] != 'Q'{
+				if b.castle[1] != 'Q' {
 					return noCastle
 				}
-				b.castle[0], b.castle[1] = '-','-'
+				b.castle[0], b.castle[1] = '-', '-'
 			} else { // b
 				if b.castle[3] != 'q' {
-					return noCastle 
+					return noCastle
 				}
-				b.castle[2], b.castle[3] = '-','-'
+				b.castle[2], b.castle[3] = '-', '-'
 			}
-		} else if orig > dest { 
+		} else if orig > dest {
 			if !kingSideCastle {
 				return castlerr
 			}
 			if b.toMove == "w" {
-				if b.castle[0] != 'K'{
+				if b.castle[0] != 'K' {
 					return noCastle
 				}
-				b.castle[0], b.castle[1] = '-','-'
+				b.castle[0], b.castle[1] = '-', '-'
 			} else {
 				if b.castle[2] != 'k' {
-					return noCastle 
+					return noCastle
 				}
-				b.castle[2], b.castle[3] = '-','-'
+				b.castle[2], b.castle[3] = '-', '-'
 			}
 		}
 
@@ -523,8 +520,6 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	}
 	return nil
 }
-
-
 
 /*
 TODO: Export fen
@@ -539,7 +534,7 @@ Pgn parse:
 func (b *Board) ParsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
 	// Variables
-	var piece string    // find move piece	
+	var piece string    // find move piece
 	var orig int        // find origin coord of move
 	var square string   // find pgnMap key of move
 	var attacker string // left of x
@@ -550,15 +545,15 @@ func (b *Board) ParsePgn(move string) error {
 	isCastle := false
 	isWhite := b.toMove == "w"
 	isCapture, _ := regexp.MatchString(`x`, move)
-	
+
 	res := b.pattern.FindStringSubmatch(move)
 	if res == nil && move != "O-O" && move != "O-O-O" {
 		return errors.New("invalid input")
 	} else if move == "O-O" || move == "O-O-O" {
 		// be nice
 		isCastle = true
-	} 
-	
+	}
+
 	// Either is catpure or not
 	if isCapture {
 		attacker = res[1]
@@ -725,7 +720,6 @@ func (b *Board) ParsePgn(move string) error {
 	Looposs:
 		for _, possibility := range possibilities {
 			if b.board[possibility] == target {
-				fmt.Println(possibility, string(target))
 				orig = possibility
 				err := b.validRook(orig, dest)
 				if err != nil {
@@ -750,7 +744,7 @@ func (b *Board) ParsePgn(move string) error {
 				orig = 84
 			}
 			break
-		} 
+		}
 		possibilities[0], possibilities[1],
 			possibilities[2], possibilities[3],
 			possibilities[4], possibilities[5],
@@ -767,7 +761,6 @@ func (b *Board) ParsePgn(move string) error {
 	// Move the Piece
 	// - Validate Move in Board.Move()
 	if b.board[dest] != '.' && !isCapture && !isCastle {
-		fmt.Print(isCastle)
 		return errors.New("Not the proper capture syntax")
 
 	}
@@ -775,8 +768,8 @@ func (b *Board) ParsePgn(move string) error {
 		err := b.Move(orig, dest)
 		if err == nil {
 			// Update pgn History
-			if b.toMove == "b"{
-				b.pgn += strconv.Itoa(b.moves) +". "
+			if b.toMove == "b" {
+				b.pgn += strconv.Itoa(b.moves) + ". "
 			}
 			b.pgn += (move + " ")
 		}
@@ -787,22 +780,21 @@ func (b *Board) ParsePgn(move string) error {
 }
 
 // Read a Pgn match
-func (b *Board) readPgnMatch(match string) (Board, error) {	
+func (b *Board) readPgnMatch(match string) (Board, error) {
 	game := NewBoard()
 	result := game.pattern.FindAllString(match, -1)
 	for _, val := range result {
-		fmt.Print(game.String(), game.moves)
+		fmt.Print("Move: ", game.moves)
 		err := game.ParsePgn(val)
 		if err != nil {
 			return game, err
 		}
 	}
-	// if error, could not read
 	return game, nil
 }
 
 func (b *Board) stringPgn() string {
-	
+
 	return b.pgn
 }
 
@@ -867,7 +859,7 @@ Tests:
 	// welcome message
 	fmt.Println(welcome)
 	fmt.Print(board.String())
-	
+
 	for {
 		if board.toMove == "w" {
 			turn = "White"
@@ -903,6 +895,7 @@ Tests:
 				if err != nil {
 					fmt.Println(err)
 				}
+				fmt.Print(board.String())
 			case input == "/fen":
 				fmt.Println("FEN position:")
 			case input == "/set-headers":
@@ -910,7 +903,7 @@ Tests:
 				fmt.Print("White: ")
 				inWhite, _ := reader.ReadString('\n')
 				fmt.Print("Black: ")
-				inBlack, _:= reader.ReadString('\n')
+				inBlack, _ := reader.ReadString('\n')
 				board.setHeaders(inWhite, inBlack)
 			case input == "/headers":
 				fmt.Println(board.pgnHeaders)
@@ -923,12 +916,11 @@ Tests:
 				board = TestPawn(board)
 				fmt.Print(board.String())
 			case input == "/test-pgn":
-				hist := `1. b4 g6 2. c4 Nf6 3. Bb2 Bg7 4. Qc2 Nc6 5. Nc3 b6 6. Nf3 Bb7 7. d4 d5 8. g3 Qd7`
+				hist := `1. Nf3 Nc6 2. d4 d5 3. c4 e6 4. e3 Nf6 5. Nc3 Be7 6. a3 O-O 7. b4 a6 8. Be2 Re8 9. O-O Bf8 10. c5 g6 11. b5 axb5 12. Bxb5 Bd7 13. h3 Na5 14. Bd3 Nc6 15. Rb1 Qc8 16. Nb5 e5 17. Be2 e4 18. Ne1 h6 19. Nc2 g5 20. f3 exf3 21. Bxf3 g4 22. hxg4 Bxg4 23. Nxc7 Qxc7 24. Bxg4 Nxg4 25. Qxg4+ Bg7 26. Nb4 Nxb4 27. Rxb4 Ra6 28. Rf5 Re4 29. Qh5 Rg6 30. Qh3 Qc8 31. Qf3 Qd7 32. Rb2 Bxd4 33. exd4 Re1+ 34. Kh2 Rxc1 35. Qxd5 Qe7 36. g3 Qc7 37. Rf4 b6 38. a4 Rg5 39. cxb6 Rxd5 40. bxc7 Rxc7 41. Rb5 Rc2+`
 				var err error
 				board, err = board.readPgnMatch(hist)
 				if err != nil {
 					fmt.Println(err)
-					board = NewBoard()
 				}
 				fmt.Print(board.String())
 			default:
@@ -969,7 +961,7 @@ func TestCastle(board Board) Board {
 	_ = board.ParsePgn("Nf3")
 	_ = board.ParsePgn("Bb7")
 	_ = board.ParsePgn("d4")
-	_ = board.ParsePgn("d5")	
+	_ = board.ParsePgn("d5")
 	_ = board.ParsePgn("g3")
 	_ = board.ParsePgn("Qd7")
 	return board
@@ -985,18 +977,18 @@ func TestPawn(board Board) Board {
 
 // Print the Board.Move() coordinate
 func (b *Board) Coordinates() {
-		// TODO Rotate Board
+	// TODO Rotate Board
 	game := b.board
 	var printBoard string
 	for i := 89; i > 10; i-- {
-		if i%10 == 0  {
+		if i%10 == 0 {
 			printBoard += "\n"
 			continue
 		} else if (i+1)%10 == 0 {
-			printBoard += string(game[i])+": "
+			printBoard += string(game[i]) + ": "
 			continue
 		}
-		printBoard += "|"+strconv.Itoa(i)+"|"
+		printBoard += "|" + strconv.Itoa(i) + "|"
 	}
 
 	printBoard += "\n"
