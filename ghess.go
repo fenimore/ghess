@@ -800,12 +800,30 @@ func TestGame(board Board) {
 
 func PlayGame(board Board) { // TODO Rotate Board
 	var turn string
+	welcome := `
+/~ |_ _  _ _
+\_|||(/__\_\
+
+go-chess
+    Enter /help for more options
+
+`
+	manuel := `Help:
+    Prefix commands with / - slash
+
+Commands:
+	quit - exit game
+	new - new game
+	coordinates - print board coordinates
+	pgn - print PGN history
+	fen - print FEN position
+	set-headers - set PGN headers
+	headers - print game info
+Tests:
+	test-castle - test castling`
 	reader := bufio.NewReader(os.Stdin)
 	// welcome message
-	fmt.Println("Commands:")
-	fmt.Println("/q - quit /c - coordinates")
-	fmt.Println("/p - pgn  /f - fen")
-	fmt.Println("/sh - set headers /h - headers\n")
+	fmt.Println(welcome)
 	fmt.Print(board.String())
 	
 	for {
@@ -820,32 +838,38 @@ func PlayGame(board Board) { // TODO Rotate Board
 		if isCmd {
 			input = strings.TrimRight(input, "\r\n")
 			switch {
-			case input == "/q":
+			case input == "/help":
+				fmt.Print("\n", manuel)
+			case input == "/quit":
 				os.Exit(1)
-			case input == "/c":
+			case input == "/new":
+				board = NewBoard()
+				fmt.Print(board.String())
+			case input == "/print":
+				fmt.Print(board.String())
+			case input == "/coordinates":
 				fmt.Println("Coordinates:")
 				board.Coordinates()
-			case input == "/p":
+			case input == "/pgn":
 				fmt.Println("PGN history:")
 				fmt.Println(board.pgn, "\n")
-			case input == "/f":
+			case input == "/fen":
 				fmt.Println("FEN position:")
-			case input == "/sh":
+			case input == "/set-headers":
 				fmt.Println("Set Headers:")
 				fmt.Print("White: ")
 				inWhite, _ := reader.ReadString('\n')
 				fmt.Print("Black: ")
 				inBlack, _:= reader.ReadString('\n')
 				board.setHeaders(inWhite, inBlack)
-			case input == "/h":
+			case input == "/headers":
 				fmt.Println(board.pgnHeaders)
-			case input == "/r":
-				board = NewBoard()
-				fmt.Print(board.String())
-			case input == "/castle-test":
+			case input == "/test-castle":
 				board = NewBoard()
 				board = CastleTest(board)
 				fmt.Print(board.String())
+			default:
+				fmt.Println("Mysterious input")
 			}
 
 			continue
@@ -888,25 +912,7 @@ func CastleTest(board Board) Board {
 	return board
 }
 
-func (b *Board) CoordinatesRotateBlack() {
-	for idx, val := range b.board {
-		if idx < 100 && idx > 10 {
-			if idx%10 != 0 && idx < 90 {
-				if (idx+1)%10 != 0 {
-					fmt.Print(":", idx, ":")
-				} else {
-					fmt.Print(":", string(val))
-				}
-			}
-		}
-		if idx > 90 && idx < 99 {
-			fmt.Print(": ", string(val), ":")
-		} else if idx%10 == 0 && idx != 0 {
-			fmt.Print("\n")
-		}
-	}
-}
-
+// Print the Board.Move() coordinate
 func (b *Board) Coordinates() {
 		// TODO Rotate Board
 	game := b.board
@@ -923,6 +929,6 @@ func (b *Board) Coordinates() {
 	}
 
 	printBoard += "\n"
-	printBoard += "   :a::b::c::d::e::f::g::h:\n"
+	printBoard += "   :a ::b ::c ::d ::e ::f ::g ::h :\n"
 	fmt.Println(printBoard)
 }
