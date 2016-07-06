@@ -39,7 +39,7 @@ type Board struct {
 	fen      string
 	pgn      string
 	pgnHeaders  string
-	pattern *regexp.Regexp
+	pattern *regexp.Regexp // For parsing PGN
 
 }
 
@@ -78,7 +78,7 @@ func NewBoard() Board {
 	r["k"], r["K"] = "\u2654", "\u265A"
 	r["."] = "\u00B7"
 
-	pattern,_ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)`)
+	pattern,_ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
 	return Board{
 		board:  b,
 		castle: []byte(`KQkq`),
@@ -530,7 +530,7 @@ func (b *Board) ParsePgn(move string) error {
 //		return err
 //	}
 	res := b.pattern.FindStringSubmatch(move)
-	if res == nil && move != "0-0" && move != "0-0-0" { // allow castling?
+	if res == nil && move != "0-0" && move != "0-0-0" {
 		return errors.New("invalid input")
 	}
 	/* Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}\+?
@@ -767,16 +767,17 @@ func (b *Board) ParsePgn(move string) error {
 }
 
 // Read a Pgn match
-func (b *Board) readPgnMatch(match string) Board {	
-	//pattern, err := regexp.Compile(`\d\.`)
-	//regexp.MatchString(`x`, move)
+func (b *Board) readPgnMatch(match string) (Board, error) {	
 	game := NewBoard()
-	result := strings.Split(match, " ")
+	result := game.pattern.FindAllString(match, -1)
 	for _, val := range result {
-		fmt.Println(val)
+		err := game.ParsePgn(val)
+		if err != nil {
+			return game, err
+		}
 	}
 	// if error, could not read
-	return game 
+	return game, nil
 }
 
 func (b *Board) stringPgn() string {
@@ -873,6 +874,15 @@ Tests:
 			case input == "/pgn":
 				fmt.Println("PGN history:")
 				fmt.Println(board.pgn, "\n")
+			case input == "/read-pgn":
+				var err error
+				fmt.Print("Enter PGN history: ")
+				history, _ := reader.ReadString('\n')
+				board, err = board.readPgnMatch(history)
+				if err != nil {
+					fmt.Println(err)
+					board = NewBoard()
+				}
 			case input == "/fen":
 				fmt.Println("FEN position:")
 			case input == "/set-headers":
@@ -894,7 +904,13 @@ Tests:
 				fmt.Print(board.String())
 			case input == "/test-pgn":
 				hist := `1. b4 g6 2. c4 Nf6 3. Bb2 Bg7 4. Qc2 Nc6 5. Nc3 b6 6. Nf3 Bb7 7. d4 d5 8. g3 Qd7`
-				board.readPgnMatch(hist)
+				var err error
+				board, err = board.readPgnMatch(hist)
+				if err != nil {
+					fmt.Println(err)
+					board = NewBoard()
+				}
+				fmt.Print(board.String())
 			default:
 				fmt.Println("Mysterious input")
 			}
