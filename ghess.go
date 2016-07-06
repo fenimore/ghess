@@ -218,22 +218,8 @@ func (b *Board) Move(orig, dest int) error {
 		}
 	case p == "R":
 		e := b.validRook(orig, dest)
-		if e != nil { // incase the wrong orig was found..
-			for idx, possibility := range b.board {
-				if possibility == o && idx != orig  {
-					e = b.validRook(idx, dest)
-					if e != nil {
-						orig = idx
-						err := b.basicValidation(orig, dest, o, d, isCastle)
-						if err != nil {
-							return err
-						}
-					}
-				}
-			}
-			if e != nil {
-				return e
-			}
+		if e != nil { 
+			return e
 		}
 		switch { // Castle
 		case orig == b.pgnMap["a1"]:
@@ -420,18 +406,21 @@ func (b *Board) validBishop(orig int, dest int) error {
 func (b *Board) validRook(orig int, dest int) error {
 	// Check if pieces are in the way
 	err := errors.New("Illegal Rook Move")
+	fmt.Println(dest, orig)
+	fmt.Println(string(b.board[15]))
 	remainder := dest - orig
 	if remainder < 10 && remainder > -10 {
 		// Horizontal
 		if remainder < 0 {
-			for i := orig - 1; i >= dest; i-- {
+			for i := orig - 1; i > dest; i-- {
 				if b.board[i] != '.' {
 					return err
 				}
 			}
 		} else {
-			for i := orig + 1; i <= dest; i++ {
+			for i := orig + 1; i < dest; i++ {
 				if b.board[i] != '.' {
+					fmt.Println("i is ", i)
 					return err
 				}
 			}
@@ -733,10 +722,16 @@ func (b *Board) ParsePgn(move string) error {
 			possibilities[ticker] = i
 			ticker++
 		}
+	Looposs:
 		for _, possibility := range possibilities {
 			if b.board[possibility] == target {
+				fmt.Println(possibility, string(target))
 				orig = possibility
-				break
+				err := b.validRook(orig, dest)
+				if err != nil {
+					continue
+				}
+				break Looposs
 			}
 		}
 	case piece == "Q": // Queen Parse
