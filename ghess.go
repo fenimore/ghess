@@ -189,18 +189,12 @@ func (b *Board) Move(orig, dest int) error {
 	} else if orig == 84 {
 		isCastle = b.board[dest] == 'r'
 	}
-	// Check if it is the right turn
-	if b.board[orig] != o {
-		return errors.New("Not your turn")
+
+	err := b.basicValidation(orig, dest, o, d, isCastle)
+	if err != nil {
+		return err
 	}
-	// Check if Origin is Empty
-	if o == '.' {
-		return errors.New("Empty square")
-	}
-	// Check if destination is Enemy
-	if b.board[dest] != d && !isCastle { //
-		return errors.New("Can't attack your own piece")
-	}
+	
 	p := string(bytes.ToUpper(b.board[orig : orig+1]))
 	switch {
 	case p == "P":
@@ -222,10 +216,24 @@ func (b *Board) Move(orig, dest int) error {
 		if e != nil {
 			return e
 		}
-	case p == "R": 
+	case p == "R":
 		e := b.validRook(orig, dest)
-		if e != nil {
-			return e
+		if e != nil { // incase the wrong orig was found..
+			for idx, possibility := range b.board {
+				if possibility == o && idx != orig  {
+					e = b.validRook(idx, dest)
+					if e != nil {
+						orig = idx
+						err := b.basicValidation(orig, dest, o, d, isCastle)
+						if err != nil {
+							return err
+						}
+					}
+				}
+			}
+			if e != nil {
+				return e
+			}
 		}
 		switch { // Castle
 		case orig == b.pgnMap["a1"]:
@@ -290,6 +298,22 @@ func (b *Board) Move(orig, dest int) error {
 		b.empassant = dest
 	} else {
 		b.empassant = 0
+	}
+	return nil
+}
+
+func (b *Board) basicValidation(orig, dest int, o, d byte, isCastle bool) error {
+	// Check if it is the right turn
+	if b.board[orig] != o {
+		return errors.New("Not your turn")
+	}
+	// Check if Origin is Empty
+	if o == '.' {
+		return errors.New("Empty square")
+	}
+	// Check if destination is Enemy
+	if b.board[dest] != d && !isCastle { //
+		return errors.New("Can't attack your own piece")
 	}
 	return nil
 }
@@ -525,27 +549,28 @@ Pgn parse:
 
 func (b *Board) ParsePgn(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
-	//pgnPattern, err := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)`)
-//	if err != nil {
-//		return err
-//	}
-	res := b.pattern.FindStringSubmatch(move)
-	if res == nil && move != "0-0" && move != "0-0-0" {
-		return errors.New("invalid input")
-	}
-	/* Regex Pattern: [B-R]?[a-h]?x?[a-h]\d{1}\+?
-	            e4 | d5+ | exd5 | Bc7 | Qxc7 */
-	
+	// Variables
+	var piece string    // find move piece	
 	var orig int        // find origin coord of move
 	var square string   // find pgnMap key of move
 	var attacker string // left of x
-	var piece string    // find move piece
 	//var precise string // for multiple possibilities
 	var target byte // the piece to move, in proper case
-	// Check if Capture (x)
+
+	// Status
 	isCastle := false
 	isWhite := b.toMove == "w"
 	isCapture, _ := regexp.MatchString(`x`, move)
+	
+	res := b.pattern.FindStringSubmatch(move)
+	if res == nil && move != "O-O" && move != "O-O-O" {
+		return errors.New("invalid input")
+	} else if move == "O-O" || move == "O-O-O" {
+		// be nice
+		isCastle = true
+	} 
+	
+	// Either is catpure or not
 	if isCapture {
 		attacker = res[1]
 		if attacker == strings.ToLower(attacker) {
@@ -554,6 +579,22 @@ func (b *Board) ParsePgn(move string) error {
 			piece = res[1]
 		}
 		square = res[2]
+	} else if isCastle {
+		if move == "O-O" {
+			piece = "K"
+			if isWhite {
+				square = "h1"
+			} else {
+				square = "h8"
+			}
+		} else if move == "O-O-O" {
+			piece = "K"
+			if isWhite {
+				square = "a1"
+			} else {
+				square = "a8"
+			}
+		}
 	} else { // No x
 		chars := len(move)
 		if chars == 2 {
@@ -567,22 +608,6 @@ func (b *Board) ParsePgn(move string) error {
 			piece = res[1] // remove second char
 			//precise = move
 			square = res[2]
-		} else if move == "0-0" {
-			isCastle = true
-			piece = "K"
-			if isWhite {
-				square = "h1"
-			} else {
-				square = "h8"
-			}
-		} else if move == "0-0-0" {
-			isCastle = true
-			piece = "K"
-			if isWhite {
-				square = "a1"
-			} else {
-				square = "a8"
-			}
 		} else {
 			return errors.New("Not enough input")
 		}
@@ -771,6 +796,7 @@ func (b *Board) readPgnMatch(match string) (Board, error) {
 	game := NewBoard()
 	result := game.pattern.FindAllString(match, -1)
 	for _, val := range result {
+		fmt.Print(game.String(), game.moves)
 		err := game.ParsePgn(val)
 		if err != nil {
 			return game, err
@@ -881,7 +907,6 @@ Tests:
 				board, err = board.readPgnMatch(history)
 				if err != nil {
 					fmt.Println(err)
-					board = NewBoard()
 				}
 			case input == "/fen":
 				fmt.Println("FEN position:")
