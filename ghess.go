@@ -22,17 +22,6 @@ import (
 	"unicode"
 )
 
-
-func (b Board) isUpper(x int) bool {
-	//compare = []byte(bytes.ToLower(b))[0]
-	compare := byte(unicode.ToUpper(rune(b.board[x])))
-	if b.board[x] == compare {
-		return true
-	} else {
-		return false
-	}
-}
-
 // The chessboard type
 type Board struct {
 	board []byte // piece position
@@ -48,9 +37,9 @@ type Board struct {
 	pieceMap map[int]string    // coord to standard notation
 	pieces   map[string]string // the unicode fonts
 	// Game Positions
-	fen        string
-	pgn        string
-	pgnHeaders string
+	fen        string // Game position
+	pgn        string // Game history
+	headers    string // Pgn format
 	pattern    *regexp.Regexp // For parsing PGN
 
 }
@@ -90,6 +79,7 @@ func NewBoard() Board {
 	r["k"], r["K"] = "\u2654", "\u265A"
 	r["."] = "\u00B7"
 
+	// Regex Pattern for matching pgn moves
 	pattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
 	return Board{
 		board:   b,
@@ -114,7 +104,12 @@ func (b *Board) setHeaders(w, bl string) {
 	black := "[Black \"" + bl + "\"]"
 	date := "[Date \"" + ye + "." + mo + "." + da + "\"]"
 	result := `[Result "*"]`
-	b.pgnHeaders = white + "\n" + black + "\n" + date + "\n" + result + "\n"
+	b.headers = white + "\n" + black + "\n" + date + "\n" + result + "\n"
+}
+
+// Return PNG String
+func (b *Board) PngString() string {
+	return b.headers + b.pgn
 }
 
 // Return a string of the board
@@ -542,7 +537,7 @@ Pgn parse:
   Dont all taking a piece from simple moving
 */
 
-func (b *Board) ParsePgn(move string) error {
+func (b *Board) ParseMove(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
 	// Variables
 	var piece string    // find move piece
@@ -791,12 +786,12 @@ func (b *Board) ParsePgn(move string) error {
 }
 
 // Read a Pgn match
-func (b *Board) readPgnMatch(match string) (Board, error) {
+func (b *Board) LoadPgn(match string) (Board, error) {
 	game := NewBoard()
 	result := game.pattern.FindAllString(match, -1)
 	for _, val := range result {
 		fmt.Println("Move: ", game.moves)
-		err := game.ParsePgn(val)
+		err := game.ParseMove(val)
 		if err != nil {
 			return game, err
 		}
@@ -833,7 +828,7 @@ Helper Testing method
 */
 
 func TestGame(board Board) {
-	e := board.ParsePgn("e4")
+	e := board.ParseMove("e4")
 	if e != nil {
 		fmt.Print(e)
 	}
@@ -865,7 +860,9 @@ Commands:
 	set-headers - set PGN headers
 	headers - print game info
 Tests:
-	test-castle - test castling`
+	test-castle - test castling
+        test-pgn - load a pgn game
+`
 	reader := bufio.NewReader(os.Stdin)
 	// welcome message
 	fmt.Println(welcome)
@@ -898,11 +895,11 @@ Tests:
 			case input == "/pgn":
 				fmt.Println("PGN history:")
 				fmt.Println(board.pgn, "\n")
-			case input == "/read-pgn":
+			case input == "/load-pgn":
 				var err error
 				fmt.Print("Enter PGN history: ")
 				history, _ := reader.ReadString('\n')
-				board, err = board.readPgnMatch(history)
+				board, err = board.LoadPgn(history)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -917,19 +914,11 @@ Tests:
 				inBlack, _ := reader.ReadString('\n')
 				board.setHeaders(inWhite, inBlack)
 			case input == "/headers":
-				fmt.Println(board.pgnHeaders)
-			case input == "/test-castle":
-				board = NewBoard()
-				board = TestCastle(board)
-				fmt.Print(board.String())
-			case input == "/test-pawn":
-				board = NewBoard()
-				board = TestPawn(board)
-				fmt.Print(board.String())
+				fmt.Println(board.headers)
 			case input == "/test-pgn":
 				hist := `1. Nf3 Nc6 2. d4 d5 3. c4 e6 4. e3 Nf6 5. Nc3 Be7 6. a3 O-O 7. b4 a6 8. Be2 Re8 9. O-O Bf8 10. c5 g6 11. b5 axb5 12. Bxb5 Bd7 13. h3 Na5 14. Bd3 Nc6 15. Rb1 Qc8 16. Nb5 e5 17. Be2 e4 18. Ne1 h6 19. Nc2 g5 20. f3 exf3 21. Bxf3 g4 22. hxg4 Bxg4 23. Nxc7 Qxc7 24. Bxg4 Nxg4 25. Qxg4+ Bg7 26. Nb4 Nxb4 27. Rxb4 Ra6 28. Rf5 Re4 29. Qh5 Rg6 30. Qh3 Qc8 31. Qf3 Qd7 32. Rb2 Bxd4 33. exd4 Re1+ 34. Kh2 Rxc1 35. Qxd5 Qe7 36. g3 Qc7 37. Rf4 b6 38. a4 Rg5 39. cxb6 Rxd5 40. bxc7 Rxc7 41. Rb5 Rc2+`
 				var err error
-				board, err = board.readPgnMatch(hist)
+				board, err = board.LoadPgn(hist)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -940,7 +929,7 @@ Tests:
 
 			continue
 		}
-		e := board.ParsePgn(input)
+		e := board.ParseMove(input)
 		if board.toMove == "w" {
 			turn = "White"
 		} else {
@@ -957,34 +946,6 @@ Tests:
 	}
 }
 
-func TestCastle(board Board) Board {
-	// Castle Test
-	_ = board.ParsePgn("b4")
-	_ = board.ParsePgn("g6")
-	_ = board.ParsePgn("c4")
-	_ = board.ParsePgn("Nf6")
-	_ = board.ParsePgn("Bb2")
-	_ = board.ParsePgn("Bg7")
-	_ = board.ParsePgn("Qc2")
-	_ = board.ParsePgn("Nc6")
-	_ = board.ParsePgn("Nc3")
-	_ = board.ParsePgn("b6")
-	_ = board.ParsePgn("Nf3")
-	_ = board.ParsePgn("Bb7")
-	_ = board.ParsePgn("d4")
-	_ = board.ParsePgn("d5")
-	_ = board.ParsePgn("g3")
-	_ = board.ParsePgn("Qd7")
-	return board
-}
-
-func TestPawn(board Board) Board {
-	// Castle Test
-	_ = board.ParsePgn("e4")
-	_ = board.ParsePgn("d5")
-	_ = board.ParsePgn("exd5")
-	return board
-}
 
 // Print the Board.Move() coordinate
 func (b *Board) Coordinates() {
@@ -1004,4 +965,14 @@ func (b *Board) Coordinates() {
 	printBoard += "\n"
 	printBoard += "   :a ::b ::c ::d ::e ::f ::g ::h :\n"
 	fmt.Println(printBoard)
+}
+
+func (b Board) isUpper(x int) bool {
+	//compare = []byte(bytes.ToLower(b))[0]
+	compare := byte(unicode.ToUpper(rune(b.board[x])))
+	if b.board[x] == compare {
+		return true
+	} else {
+		return false
+	}
 }
