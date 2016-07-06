@@ -452,6 +452,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 // do castle in King validation
 func (b *Board) validKing(orig int, dest int, castle bool) error {
 	castlerr := errors.New("Something is in your way")
+	noCastle := errors.New("Castle on this side is foutu")
 	var possibilities [8]int
 	g := b.board // g for gameboard
 	possibilities[0], possibilities[1],
@@ -468,15 +469,31 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	if castle {
 		queenSideCastle := !(g[orig+1] != '.' || g[orig+2] != '.' || g[orig+3] != '.')
 		kingSideCastle := !(g[orig-1] != '.' || g[orig-2] != '.')
-		fmt.Print(kingSideCastle)
-		fmt.Print(string(g[orig]), string(g[orig-1]), string(g[orig-2]))
 		if dest > orig { // Queen side
 			if !queenSideCastle {
 				return castlerr
 			}
+			if b.toMove == "w" {
+				if b.castle[1] != 'Q'{
+					return noCastle
+				}
+			} else {
+				if b.castle[3] != 'q' {
+					return noCastle 
+				}
+			}
 		} else if orig > dest { 
 			if !kingSideCastle {
 				return castlerr
+			}
+			if b.toMove == "w" {
+				if b.castle[0] != 'K'{
+					return noCastle
+				}
+			} else {
+				if b.castle[2] != 'k' {
+					return noCastle 
+				}
 			}
 		}
 
