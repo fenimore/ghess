@@ -264,26 +264,51 @@ func (b *Board) Move(orig, dest int) error {
 		}
 	}
 	// Make sure new position doesn't put in check
-	if p != "K" {
-		// get the players k
-		// Need update Board to be else where...
+	// Update Board Possible Board
+	possible := b.possibleBoard(orig, dest, val,
+		empassant, isCastle)
+	// Check if Possible Moves into check
+	isWhite := b.isUpper(orig)
+	var king int
+	for idx, val := range possible.board {
+		if isWhite && val == 'K' {
+			king = idx
+			break
+		} else if !isWhite && val == 'k' {
+			king = idx
+			break
+		}
 	}
-	// Update Board
-	e := b.updateBoard(orig, dest, val, empassant, isCastle)
-	if != nil {
-		return e
+	isCheck := possible.isInCheck(king)
+	if isCheck {
+		return errors.New("Cannot move into Check")
 	}
+	b.updateBoard(orig, dest, val, empassant, isCastle)
 	return nil
 }
 
 // Updates board, useless without Move() validation
 func (b *Board) updateBoard(orig, dest int,
-	val byte, empassant, isCastle bool) error {
-	// Update Board
+	val byte, empassant, isCastle bool) {
+	// Check for castle deactivation
+	if b.board[orig] == 'r' || b.board[orig] == 'R' {
+		switch { // Castle
+		case orig == b.pgnMap["a1"]:
+			b.castle[1] = '-'
+		case orig == b.pgnMap["a8"]:
+			b.castle[3] = '-'
+		case orig == b.pgnMap["h1"]:
+			b.castle[0] = '-'
+		case orig == b.pgnMap["h8"]:
+			b.castle[2] = '-'
+		}
+	}
+	// Set origin
 	b.board[orig] = '.'
+	// Set destination
 	if !isCastle {
 		b.board[dest] = val
-	} else { // castle
+	} else { // castle changes several things...
 		if dest > orig { // queen side
 			b.board[dest-2],
 				b.board[dest-3] = val, b.board[dest]
@@ -313,9 +338,63 @@ func (b *Board) updateBoard(orig, dest int,
 	} else {
 		b.check = false
 	}
-	return nil
 }
-	
+
+func (b *Board) possibleBoard(orig, dest int,
+	val byte, empassant, isCastle bool) Board {
+	poss := b
+	if poss.board[orig] == 'r' || poss.board[orig] == 'R' {
+		switch { // Castle
+		case orig == poss.pgnMap["a1"]:
+			poss.castle[1] = '-'
+		case orig == poss.pgnMap["a8"]:
+			poss.castle[3] = '-'
+		case orig == poss.pgnMap["h1"]:
+			poss.castle[0] = '-'
+		case orig == poss.pgnMap["h8"]:
+			poss.castle[2] = '-'
+		}
+	}
+	// Set origin
+	poss.board[orig] = '.'
+	// Set destination
+	if !isCastle {
+		poss.board[dest] = val
+	} else { // castle changes several things...
+		if dest > orig { // queen side
+			poss.board[dest-2],
+				poss.board[dest-3] = val, poss.board[dest]
+		} else { // king side
+			poss.board[dest+1],
+				poss.board[dest+2] = val, poss.board[dest]
+		}
+		poss.board[dest] = '.'
+	}
+	// TODO check for Check
+	// Update Game variables
+	if poss.toMove == "w" {
+		poss.toMove = "b"
+	} else {
+		poss.moves++ // add one to move count
+		poss.toMove = "w"
+	}
+	if empassant {
+		poss.empassant = dest
+	} else {
+		poss.empassant = 0
+	}
+	// Check if move put player in Check
+	isCheck := poss.isPlayerInCheck()
+	if isCheck {
+		poss.check = true
+	} else {
+		poss.check = false
+	}
+	return *poss
+}
+
+
+
 // Check if current player is in Check
 func (b *Board) isPlayerInCheck() bool {
 	isWhite := b.toMove == "w"
