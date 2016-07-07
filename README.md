@@ -35,7 +35,8 @@ A Golang chess engine, fumbling along...
 - 120 bytes
 - 11 - 18 1st rank
 - 81 - 88 8th rank
-#
+
+
     Coordinates:
     8: |88||87||86||85||84||83||82||81|
     7: |78||77||76||75||74||73||72||71|
@@ -48,17 +49,25 @@ A Golang chess engine, fumbling along...
        :a ::b ::c ::d ::e ::f ::g ::h :
 
 ## TODO
+
 ### Basic rules
+
 - Check
+  - Castle through check
 - Checkmate (a pgn notation)
-- Queen/Knight Move validation
+
 ### Basic Functionality
+
 - FEN import/export
+
 ### Search & Evaluate
+
 - Look for all possible moves
 - Look for all valid moves
 - Give all moves a score
+
 ### Extra features
+
 - Move history/ Undo
 - Save game history to board (not automatic)?
 - Save as two coordinates, with piece specifier
@@ -71,5 +80,6 @@ A Golang chess engine, fumbling along...
     rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
 
 ### License
+
 Fenimore Love - 2016
 GPL

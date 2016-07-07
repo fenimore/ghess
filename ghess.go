@@ -7,7 +7,7 @@ TODO: Search and Evaluation
 TODO: Fen PGN reading
 TODO: Fen output
 */
-package mainy
+package main
 
 import (
 	"bufio"
@@ -447,19 +447,69 @@ func (b *Board) validRook(orig int, dest int) error {
 }
 // Validate queen move.
 func (b *Board) validQueen(orig int, dest int) error {
+	err := errors.New("Illegal Queen Move")
 	remainder := dest - orig
 	vertical := remainder%10 == 0
 	horizontal := remainder < 9 && remainder > -9 // Horizontal
 	diagA8 := remainder%9 == 0                    // Diag a8h1
 	diagA1 := remainder%11 == 0                   // Diag a1h8
-	if horizontal {                               // should be first?
-		fmt.Println("Horizontal")
-	} else if vertical { // then it doesn't matter
-		fmt.Println("Vertical")
+	// Check if moves through not-empty squares
+	if horizontal {                               // 1st
+		if remainder < 0 {
+			for i := orig-1; i > dest; i-- {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		} else { // go right
+			for i := orig+1; i < dest; i++ {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		}
+	} else if vertical {
+		if remainder < 0 {
+			for i := orig - 10; i > dest; i -= 10 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		} else {
+			for i := orig + 10; i < dest; i += 10 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		}		
 	} else if diagA8 {
-		fmt.Println("Diag")
+		if dest > orig { // go to bottem left
+			for i := orig + 9; i <= dest-9; i += 9 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		} else if orig > dest { // go to top right
+			for i := orig - 9; i >= dest+9; i -= 9 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		}
 	} else if diagA1 {
-		fmt.Println("Diag")
+		if dest > orig { // go to bottom right
+			for i := orig + 11; i <= dest-11; i += 11 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		} else if dest < orig { // go to top left
+			for i := orig - 11; i >= dest+11; i -= 11 {
+				if b.board[i] != '.' {
+					return err
+				}
+			}
+		}		
 	} else {
 		return errors.New("Illegal Queen Move")
 	}
@@ -813,6 +863,7 @@ func main() {
 }
 
 // Take user input and commands
+// TODO: make a method of board
 func PlayGame(board Board) { // TODO Rotate Board
 	var turn string
 	welcome := `
@@ -846,6 +897,7 @@ Tests:
 	fmt.Println(welcome)
 	fmt.Print(board.String())
 
+Loop:
 	for {
 		if board.toMove == "w" {
 			turn = "White"
@@ -861,7 +913,7 @@ Tests:
 			case input == "/help":
 				fmt.Print("\n", manuel)
 			case input == "/quit":
-				os.Exit(1)
+				break Loop//os.Exit(1)
 			case input == "/new":
 				board = NewBoard()
 				fmt.Print(board.String())
@@ -922,6 +974,7 @@ Tests:
 		}
 		fmt.Print(board.String())
 	}
+	fmt.Println("\nSee you next time!")
 }
 
 
