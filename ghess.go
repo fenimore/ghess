@@ -290,8 +290,96 @@ func (b *Board) Move(orig, dest int) error {
 	} else {
 		b.empassant = 0
 	}
+	isCheck := b.isPlayerInCheck()
+	if isCheck {
+		fmt.Println("In check!!!")
+	} else {
+		fmt.Println("Not in check!!!!")
+	}
 	return nil
 }
+
+func (b *Board) isPlayerInCheck() bool {
+	isWhite := b.toMove == "w"
+	for idx, val := range b.board {
+		if val == 'K' && b.isUpper(idx) && isWhite {
+			return b.isInCheck(idx)
+		}
+		if val == 'k' && !b.isUpper(idx) && !isWhite {
+			return b.isInCheck(idx)
+		}
+	}
+	return false
+}
+		
+// Check if target is in Check
+func (b *Board) isInCheck(target int) bool {
+	fmt.Println("target: ", target)
+	isWhite := b.isUpper(target)
+	fmt.Println("isWhite: ", isWhite)
+	k := b.board[target]
+	// store all the orig of the opponents pieces
+	attackers := make([]int, 0, 16)
+	for idx, val := range b.board {
+		matchWhite, _ := regexp.MatchString(`[PNBRQK]`,
+			string(val))
+		matchBlack, _ := regexp.MatchString(`[pnbrqk]`,
+			string(val))
+		if isWhite && matchBlack {
+			attackers = append(attackers, idx)
+		} else if !isWhite && matchWhite { // black
+			attackers = append(attackers, idx)
+		}
+	}
+	fmt.Println("attackers: ", attackers)
+	for _, val := range attackers {
+		fmt.Println(val)
+		p := string(bytes.ToUpper(b.board[val:val +1]))
+		fmt.Println("Attack piece: ", p)
+		switch {
+		case p == "P":
+			err := b.basicValidation(val, target,
+				b.board[val], k, false)
+			e := b.validPawn(val, target, k)
+			fmt.Println(err, e)
+			if e == nil && err == nil {
+				return true
+			}
+		case p == "N":
+			e := b.validKnight(val, target)
+			if e == nil {
+				return true
+			}
+		case p == "B":
+			err := b.basicValidation(val, target,
+				b.board[val], k, false)			
+			e := b.validBishop(val, target)
+			fmt.Println(err, e)
+			if e == nil && err == nil{
+				return true
+			}
+		case p == "R":
+			e := b.validRook(val, target)
+			if e == nil {
+				return true
+			}
+		case p == "Q":
+			err := b.basicValidation(val, target,
+				b.board[val], k, false)			
+			e := b.validQueen(val, target)
+			if e == nil && err == nil {
+				return true
+			}
+		case p == "K":
+			e := b.validKing(val, target, false)
+			if e == nil {
+				return true
+			}			
+		}		
+	}
+	return false
+}
+
 // Check: right-color, origin-empty, attack-enemy
 func (b *Board) basicValidation(orig, dest int, o, d byte, isCastle bool) error {
 	// Check if it is the right turn
@@ -315,6 +403,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	var remainder int
 	var empOffset int
 	var empTarget byte
+	// Whose turn
 	if b.toMove == "w" {
 		remainder = dest - orig
 		empOffset = -10 // where the empassant piece should be
@@ -324,6 +413,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 		empOffset = 10
 		empTarget = 'P'
 	}
+	// What sort of move
 	if remainder == 10 {
 		// regular move
 	} else if remainder == 20 { // two spaces
@@ -348,6 +438,8 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 		} else {
 			return err
 		}
+	} else {
+		return errors.New("Not valid Pawn move.")
 	}
 	return nil
 }
@@ -360,7 +452,6 @@ func (b *Board) validKnight(orig int, dest int) error {
 		possibilities[6], possibilities[7] = orig+21,
 		orig+19, orig+12, orig+8, orig-8,
 		orig-12, orig-19, orig-21
-
 	for _, possibility := range possibilities {
 		if possibility == dest {
 			return nil
@@ -404,6 +495,8 @@ func (b *Board) validBishop(orig int, dest int) error {
 				}
 			}
 		}
+	} else {
+		return errors.New("Bishop move not valid")
 	}
 	return nil
 }
@@ -576,6 +669,7 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	}
 	return nil
 }
+
 
 
 // Parse a pgn move
