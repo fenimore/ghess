@@ -265,7 +265,8 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// Make sure new position doesn't put in check
 	// Update Board Possible Board
-	possible := b.possibleBoard(orig, dest, val,
+	poss := *b // dereference pointer
+	possible := b.possibleBoard(poss, orig, dest, val,
 		empassant, isCastle)
 	// Check if Possible Moves into check
 	isWhite := b.isUpper(orig)
@@ -280,6 +281,8 @@ func (b *Board) Move(orig, dest int) error {
 		}
 	}
 	isCheck := possible.isInCheck(king)
+	fmt.Print("possible\n", possible.String())
+	fmt.Print("current\n", b.String())	
 	if isCheck {
 		return errors.New("Cannot move into Check")
 	}
@@ -340,9 +343,9 @@ func (b *Board) updateBoard(orig, dest int,
 	}
 }
 
-func (b *Board) possibleBoard(orig, dest int,
+func (b Board) possibleBoard(possible Board, orig, dest int,
 	val byte, empassant, isCastle bool) Board {
-	poss := b
+	poss := possible
 	if poss.board[orig] == 'r' || poss.board[orig] == 'R' {
 		switch { // Castle
 		case orig == poss.pgnMap["a1"]:
@@ -390,7 +393,8 @@ func (b *Board) possibleBoard(orig, dest int,
 	} else {
 		poss.check = false
 	}
-	return *poss
+	thePossibility := poss
+	return thePossibility
 }
 
 
