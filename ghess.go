@@ -263,6 +263,22 @@ func (b *Board) Move(orig, dest int) error {
 
 		}
 	}
+	// Make sure new position doesn't put in check
+	if p != "K" {
+		// get the players k
+		// Need update Board to be else where...
+	}
+	// Update Board
+	e := b.updateBoard(orig, dest, val, empassant, isCastle)
+	if != nil {
+		return e
+	}
+	return nil
+}
+
+// Updates board, useless without Move() validation
+func (b *Board) updateBoard(orig, dest int,
+	val byte, empassant, isCastle bool) error {
 	// Update Board
 	b.board[orig] = '.'
 	if !isCastle {
@@ -290,15 +306,17 @@ func (b *Board) Move(orig, dest int) error {
 	} else {
 		b.empassant = 0
 	}
+	// Check if move put player in Check
 	isCheck := b.isPlayerInCheck()
 	if isCheck {
-		fmt.Println("In check!!!")
+		b.check = true
 	} else {
-		fmt.Println("Not in check!!!!")
+		b.check = false
 	}
 	return nil
 }
-
+	
+// Check if current player is in Check
 func (b *Board) isPlayerInCheck() bool {
 	isWhite := b.toMove == "w"
 	for idx, val := range b.board {
@@ -314,9 +332,7 @@ func (b *Board) isPlayerInCheck() bool {
 		
 // Check if target is in Check
 func (b *Board) isInCheck(target int) bool {
-	fmt.Println("target: ", target)
 	isWhite := b.isUpper(target)
-	fmt.Println("isWhite: ", isWhite)
 	k := b.board[target]
 	// store all the orig of the opponents pieces
 	attackers := make([]int, 0, 16)
@@ -331,18 +347,13 @@ func (b *Board) isInCheck(target int) bool {
 			attackers = append(attackers, idx)
 		}
 	}
-	fmt.Println("attackers: ", attackers)
+	// check for valid attacks
 	for _, val := range attackers {
-		fmt.Println(val)
 		p := string(bytes.ToUpper(b.board[val:val +1]))
-		fmt.Println("Attack piece: ", p)
 		switch {
 		case p == "P":
-			err := b.basicValidation(val, target,
-				b.board[val], k, false)
 			e := b.validPawn(val, target, k)
-			fmt.Println(err, e)
-			if e == nil && err == nil {
+			if e == nil {
 				return true
 			}
 		case p == "N":
@@ -351,11 +362,8 @@ func (b *Board) isInCheck(target int) bool {
 				return true
 			}
 		case p == "B":
-			err := b.basicValidation(val, target,
-				b.board[val], k, false)			
 			e := b.validBishop(val, target)
-			fmt.Println(err, e)
-			if e == nil && err == nil{
+			if e == nil {
 				return true
 			}
 		case p == "R":
@@ -364,10 +372,8 @@ func (b *Board) isInCheck(target int) bool {
 				return true
 			}
 		case p == "Q":
-			err := b.basicValidation(val, target,
-				b.board[val], k, false)			
 			e := b.validQueen(val, target)
-			if e == nil && err == nil {
+			if e == nil  {
 				return true
 			}
 		case p == "K":
@@ -377,6 +383,7 @@ func (b *Board) isInCheck(target int) bool {
 			}			
 		}		
 	}
+	// if nothing was valid, return false
 	return false
 }
 
@@ -914,7 +921,13 @@ func (b *Board) ParseMove(move string) error {
 			if b.toMove == "b" {
 				b.pgn += strconv.Itoa(b.moves) + ". "
 			}
-			b.pgn += (move + " ")
+			b.pgn += (move)
+			if b.check {
+				b.pgn += "+ "
+			// check for checkmate?
+			} else {
+				b.pgn += " " // add space
+			}
 		}
 		return err
 	} else {
@@ -1060,13 +1073,17 @@ Loop:
 			turn = "Black"
 		}
 		fmt.Println("\n-------------------")
-		fmt.Print("Debug:\nMove: ", board.moves,
+		fmt.Println("Debug:\nMove: ", board.moves,
 			" | Castle: ", string(board.castle))
+		fmt.Print("Check: ", board.check)
 		fmt.Println(" | Turn: ", turn)
 		if e != nil {
 			fmt.Printf("   [Error: %v]\n", e)
 		}
 		fmt.Print(board.String())
+		if board.check {
+			fmt.Println("****Check!****")
+		}
 	}
 	fmt.Println("\nSee you next time!")
 }
