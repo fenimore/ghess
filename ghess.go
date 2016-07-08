@@ -269,6 +269,15 @@ func (b *Board) Move(orig, dest int) error {
 // Updates board, useless without Move() validation
 func (b *Board) updateBoard(orig, dest int,
 	val byte, empassant, isCastle bool) {
+	// Check for Promotion
+	isPromotion := false
+	if b.board[orig] == 'p' && dest < 20 {
+		// is promotion
+		isPromotion = true
+	} else if b.board[orig] == 'P' && dest > 80 {
+		isPromotion = true
+	}
+	fmt.Println(isPromotion)
 	// Check for castle deactivation
 	if b.board[orig] == 'r' || b.board[orig] == 'R' {
 		switch { // Castle
@@ -285,17 +294,24 @@ func (b *Board) updateBoard(orig, dest int,
 	// Set origin
 	b.board[orig] = '.'
 	// Set destination
-	if !isCastle {
-		b.board[dest] = val
-	} else { // castle changes several things...
+	if isCastle {
 		if dest > orig { // queen side
 			b.board[dest-2],
-				b.board[dest-3] = val, b.board[dest]
+			b.board[dest-3] = val, b.board[dest]
 		} else { // king side
 			b.board[dest+1],
-				b.board[dest+2] = val, b.board[dest]
+			b.board[dest+2] = val, b.board[dest]
 		}
 		b.board[dest] = '.'
+	} else if isPromotion {
+		switch {
+		case dest < 20:
+			b.board[dest] = 'q'
+		case dest > 80:
+			b.board[dest] = 'Q'
+		}
+	} else { // Normal Move/Capture
+		b.board[dest] = val
 	}
 	// TODO check for Check
 	// Update Game variables
@@ -361,23 +377,25 @@ func (b *Board) isInCheck(target int) bool {
 		case p == "P":
 			e := b.validPawn(val, target, k)
 			if e == nil {
-
+				fmt.Println("Pawn check")
 				return true
 			}
 		case p == "N":
 			e := b.validKnight(val, target)
 			if e == nil {
+				fmt.Println("Knight check")				
 				return true
 			}
 		case p == "B":
 			e := b.validBishop(val, target)
 			if e == nil {
+				fmt.Println("Bishop check")				
 				return true
 			}
 		case p == "R":
 			e := b.validRook(val, target)
 			if e == nil {
-				fmt.Println("culpable", val, string(k), target)
+				fmt.Println("Rook check")
 				return true
 			}
 		case p == "Q":
@@ -935,6 +953,8 @@ func (b *Board) ParseMove(move string) error {
 			}
 			b.pgn += (move)
 			if b.check {
+				// TODO
+				// if move doesn't already have check..
 				b.pgn += "+ "
 			// check for checkmate?
 			} else {
@@ -962,7 +982,6 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 	return game, nil
 }
 
-
 func (b *Board) ParseFen() {
 	// Parse Fen
 }
@@ -986,14 +1005,12 @@ func main() {
 func PlayGame(board Board) { // TODO Rotate Board
 	var turn string
 	welcome := `
-/~ |_ _  _ _
-\_|||(/__\_\
-
-
-
-
+********
 go-chess
     Enter /help for more options
+
+    /~ |_ _  _ _
+    \_|||(/__\_\
 
 `
 	manuel := `Help:
@@ -1008,7 +1025,7 @@ Commands:
 	set-headers - set PGN headers
 	headers - print game info
 Tests:
-	test-castle - test castling
+	test-castle
         test-pgn - load a pgn game
 `
 	reader := bufio.NewReader(os.Stdin)
@@ -1073,6 +1090,9 @@ Loop:
 					fmt.Println(err)
 				}
 				fmt.Print(board.String())
+				if board.check {
+					fmt.Println("****Check!****")
+				}
 			case input == "/test-check":
 				hist := `1. e4 e5 2. Qf3 Qg5 3. Qxf7`
 				var err error
@@ -1084,7 +1104,6 @@ Loop:
 			default:
 				fmt.Println("Mysterious input")
 			}
-
 			continue
 		}
 		e := board.ParseMove(input)
@@ -1094,10 +1113,9 @@ Loop:
 			turn = "Black"
 		}
 		fmt.Println("\n-------------------")
-		fmt.Println("Debug:\nMove: ", board.moves,
-			" | Castle: ", string(board.castle))
-		fmt.Print("Check: ", board.check)
-		fmt.Println(" | Turn: ", turn)
+		panel := "Debug Mode:\nMove: "+strconv.Itoa(board.moves)+" | Castle: "+string(board.castle)+"\nCheck: "+strconv.FormatBool(board.check)+" | Turn: "+string(turn)
+		// TODO use formats.
+		fmt.Println(panel)
 		if e != nil {
 			fmt.Printf("   [Error: %v]\n", e)
 		}
@@ -1106,9 +1124,8 @@ Loop:
 			fmt.Println("****Check!****")
 		}
 	}
-	fmt.Println("\nSee you next time!")
+	fmt.Println("\nGood Game.")
 }
-
 
 // Print the Board.Move() coordinate
 func (b *Board) Coordinates() {
