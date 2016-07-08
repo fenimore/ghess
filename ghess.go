@@ -268,8 +268,10 @@ func (b *Board) Move(orig, dest int) error {
 	//possible := b.possibleBoard(orig, dest, val, empassant, isCastle)
 	isWhite := b.toMove == "w"
 	possible := *b
+	boardCopy := make([]byte, 120)
+	copy(boardCopy, b.board)
+	possible.board = boardCopy
 	possible.updateBoard(orig, dest, val, empassant, isCastle)
-	possible.headers = "Meow"
 	var king int
 	for idx, val := range possible.board {
 		if isWhite && val == 'K' {
@@ -281,13 +283,13 @@ func (b *Board) Move(orig, dest int) error {
 		}
 	}
 	isCheck := possible.isInCheck(king)
-	fmt.Print("possible\n", possible.String())
-	fmt.Print("current\n", b.String())
-	fmt.Print(possible.headers, b.headers)
 	if isCheck {
 		return errors.New("Cannot move into Check")
 	}
+        
 	b.updateBoard(orig, dest, val, empassant, isCastle)
+	fmt.Print("possible\n", possible.String())
+	fmt.Print("current\n", b.String())
 	return nil
 }
 
@@ -336,7 +338,7 @@ func (b *Board) updateBoard(orig, dest int,
 		b.empassant = 0
 	}
 
-	// Check if move put player in Check
+	// Check if move put other player in Check
 	isCheck := b.isPlayerInCheck()
 	if isCheck {
 		b.check = true
