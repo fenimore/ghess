@@ -450,6 +450,9 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	// What sort of move
 	if remainder == 10 {
 		// regular move
+		if b.board[dest] != '.' {
+			return err
+		}
 	} else if remainder == 20 { // two spaces
 		// double starter move
 		if orig > 28 && b.toMove == "w" { // Only from 2nd rank
