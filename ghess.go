@@ -34,7 +34,7 @@ type Board struct {
 	check     bool
 	// Map for display grid
 	pgnMap   map[string]int    // the pgn format
-	pieceMap map[int]string    // coord to standard notation
+	//pieceMap map[int]string    // coord to standard notation
 	pieces   map[string]string // the unicode fonts
 	// Game Positions
 	fen        string // Game position
@@ -44,7 +44,8 @@ type Board struct {
 
 }
 
-// __init__ for Board
+// Create a new Board in the starting position
+// Initialize starting values
 func NewBoard() Board {
 	b := make([]byte, 120)
 	fmt.Println("Initializing new Chess game\n")
@@ -93,19 +94,6 @@ func NewBoard() Board {
 	}
 }
 
-// Set pgnHeaders for a pgn export
-func (b *Board) setHeaders(w, bl string) {
-	w = strings.TrimRight(w, "\r\n")
-	bl = strings.TrimRight(bl, "\r\n")
-	y, m, d := time.Now().Date()
-	ye, mo, da := strconv.Itoa(y), strconv.Itoa(int(m)),
-		strconv.Itoa(d)
-	white := "[White \"" + w + "\"]"
-	black := "[Black \"" + bl + "\"]"
-	date := "[Date \"" + ye + "." + mo + "." + da + "\"]"
-	result := `[Result "*"]`
-	b.headers = white + "\n" + black + "\n" + date + "\n" + result + "\n"
-}
 
 // Return PNG String
 func (b *Board) PgnString() string {
@@ -260,6 +248,32 @@ func (b *Board) Move(orig, dest int) error {
 	isCheck := possible.isInCheck(king)
 	if isCheck {
 		return errors.New("Cannot move into Check")
+	}
+	if isCastle {
+		copy2 := make([]byte, 120)
+		copy(copy2, b.board)
+		possible.board = copy2
+		if isWhite && dest < orig  {
+			//possible.board[1])
+			//King side, 13
+			possible.updateBoard(orig, 13, 'K',
+				false, false)
+		} else if isWhite && dest > orig {
+			possible.updateBoard(orig, 15, 'K',
+				false, false)
+			// Queen side, 15
+		} else if !isWhite && dest < orig {
+			possible.updateBoard(orig, 83, 'k',
+				false, false)
+			// King 83
+		} else if !isWhite && dest > orig {
+			possible.updateBoard(orig, 85, 'k',
+				false, false)
+			// Queen 85
+		}
+		if isCheck {
+			return errors.New("Cannot Castle through check")
+		}
 	}
 	// update real board
 	b.updateBoard(orig, dest, val, empassant, isCastle)
@@ -1128,6 +1142,20 @@ Loop:
 		}
 	}
 	fmt.Println("\nGood Game.")
+}
+
+// Set pgnHeaders for a pgn export
+func (b *Board) setHeaders(w, bl string) {
+	w = strings.TrimRight(w, "\r\n")
+	bl = strings.TrimRight(bl, "\r\n")
+	y, m, d := time.Now().Date()
+	ye, mo, da := strconv.Itoa(y), strconv.Itoa(int(m)),
+		strconv.Itoa(d)
+	white := "[White \"" + w + "\"]"
+	black := "[Black \"" + bl + "\"]"
+	date := "[Date \"" + ye + "." + mo + "." + da + "\"]"
+	result := `[Result "*"]`
+	b.headers = white + "\n" + black + "\n" + date + "\n" + result + "\n"
 }
 
 // Print the Board.Move() coordinate

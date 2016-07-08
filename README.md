@@ -54,7 +54,7 @@ A Golang chess engine, fumbling along...
 
 - Castle through check
 - Checkmate (a pgn notation)
-- Pawn promotion
+- Pawn promotion to Knight
 
 ### Basic Functionality
 
