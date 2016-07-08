@@ -112,30 +112,6 @@ func (b *Board) PgnString() string {
 	return b.headers + b.pgn
 }
 
-// Return a string of the board
-func (b *Board) RotateBroken() string {
-	// This is Broken... Yikes
-	var printBoard string
-	for idx, val := range b.board {
-		if idx < 100 && idx > 10 {
-			if idx%10 != 0 && idx < 90 {
-				if (idx+1)%10 != 0 { // why not || ?
-					font := b.pieces[string(val)]
-					printBoard += "|" + font + "|"
-				} else {
-					printBoard += ":" + string(val)
-				}
-			}
-		}
-		if idx > 90 && idx < 99 {
-			printBoard += ":" + string(val) + ":"
-		} else if idx%10 == 0 && idx != 0 {
-			printBoard += "\n"
-		}
-	}
-	return printBoard
-}
-
 // Create printable board
 func (b *Board) String() string {
 	// TODO Rotate Board
@@ -263,15 +239,14 @@ func (b *Board) Move(orig, dest int) error {
 		}
 	}
 	// Make sure new position doesn't put in check
-	// Update Board Possible Board
-	//poss := *b // dereference pointer
-	//possible := b.possibleBoard(orig, dest, val, empassant, isCastle)
 	isWhite := b.toMove == "w"
-	possible := *b
-	boardCopy := make([]byte, 120)
-	copy(boardCopy, b.board)
+	possible := *b // slices are  still pointing...
+	boardCopy := make([]byte, 120) // b.board is Pointer
+	copy(boardCopy, b.board) 
 	possible.board = boardCopy
+	// Check possibilities
 	possible.updateBoard(orig, dest, val, empassant, isCastle)
+	// find mover's king
 	var king int
 	for idx, val := range possible.board {
 		if isWhite && val == 'K' {
@@ -286,10 +261,8 @@ func (b *Board) Move(orig, dest int) error {
 	if isCheck {
 		return errors.New("Cannot move into Check")
 	}
-        
+	// update real board
 	b.updateBoard(orig, dest, val, empassant, isCastle)
-	fmt.Print("possible\n", possible.String())
-	fmt.Print("current\n", b.String())
 	return nil
 }
 
@@ -368,7 +341,7 @@ func (b *Board) isInCheck(target int) bool {
 	
 	// store all the orig of the opponents pieces
 	attackers := make([]int, 0, 16)
-	//fmt.Println("white ", isWhite, "attackers ", attackers, "king", k)
+	
 	for idx, val := range b.board {
 		matchWhite, _ := regexp.MatchString(`[PNBRQK]`,
 			string(val))
@@ -380,6 +353,7 @@ func (b *Board) isInCheck(target int) bool {
 			attackers = append(attackers, idx)
 		}
 	}
+	//fmt.Println("white ", isWhite, "attackers ", attackers, "king", k)
 	// check for valid attacks
 	for _, val := range attackers {
 		p := string(bytes.ToUpper(b.board[val:val +1]))
@@ -387,6 +361,7 @@ func (b *Board) isInCheck(target int) bool {
 		case p == "P":
 			e := b.validPawn(val, target, k)
 			if e == nil {
+
 				return true
 			}
 		case p == "N":
@@ -402,6 +377,7 @@ func (b *Board) isInCheck(target int) bool {
 		case p == "R":
 			e := b.validRook(val, target)
 			if e == nil {
+				fmt.Println("culpable", val, string(k), target)
 				return true
 			}
 		case p == "Q":
@@ -561,8 +537,11 @@ func (b *Board) validRook(orig int, dest int) error {
 			}
 		}
 	} else {
+		if remainder%10 != 0 {
+			return err
+		}
 		// Vertical
-		if remainder < 0 {
+		if remainder < 0 { // descends
 			for i := orig - 10; i > dest; i -= 10 {
 				if b.board[i] != '.' {
 					return err
@@ -1064,7 +1043,8 @@ Loop:
 				board.Coordinates()
 			case input == "/pgn":
 				fmt.Println("PGN history:")
-				fmt.Println(board.pgn, "\n")
+				fmt.Println(board.headers,
+					board.pgn, "\n")
 			case input == "/load-pgn":
 				var err error
 				fmt.Print("Enter PGN history: ")
