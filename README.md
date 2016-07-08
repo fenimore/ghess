@@ -32,10 +32,6 @@ A Golang chess engine, fumbling along...
 - pgn Headers
 
 ## Bitmap
-- 120 bytes
-- 11 - 18 1st rank
-- 81 - 88 8th rank
-
 
     Coordinates:
     8: |88||87||86||85||84||83||82||81|
@@ -47,6 +43,10 @@ A Golang chess engine, fumbling along...
     2: |28||27||26||25||24||23||22||21|
     1: |18||17||16||15||14||13||12||11|
        :a ::b ::c ::d ::e ::f ::g ::h :
+
+- 120 bytes
+- 11 - 18 1st rank
+- 81 - 88 8th rank
 
 ## TODO
 
