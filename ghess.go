@@ -260,16 +260,16 @@ func (b *Board) Move(orig, dest int) error {
 			if e != nil {
 				return e
 			}
-
 		}
 	}
 	// Make sure new position doesn't put in check
 	// Update Board Possible Board
-	poss := *b // dereference pointer
-	possible := b.possibleBoard(poss, orig, dest, val,
-		empassant, isCastle)
-	// Check if Possible Moves into check
-	isWhite := b.isUpper(orig)
+	//poss := *b // dereference pointer
+	//possible := b.possibleBoard(orig, dest, val, empassant, isCastle)
+	isWhite := b.toMove == "w"
+	possible := *b
+	possible.updateBoard(orig, dest, val, empassant, isCastle)
+	possible.headers = "Meow"
 	var king int
 	for idx, val := range possible.board {
 		if isWhite && val == 'K' {
@@ -282,7 +282,8 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	isCheck := possible.isInCheck(king)
 	fmt.Print("possible\n", possible.String())
-	fmt.Print("current\n", b.String())	
+	fmt.Print("current\n", b.String())
+	fmt.Print(possible.headers, b.headers)
 	if isCheck {
 		return errors.New("Cannot move into Check")
 	}
@@ -334,6 +335,7 @@ func (b *Board) updateBoard(orig, dest int,
 	} else {
 		b.empassant = 0
 	}
+
 	// Check if move put player in Check
 	isCheck := b.isPlayerInCheck()
 	if isCheck {
@@ -342,62 +344,6 @@ func (b *Board) updateBoard(orig, dest int,
 		b.check = false
 	}
 }
-
-func (b Board) possibleBoard(possible Board, orig, dest int,
-	val byte, empassant, isCastle bool) Board {
-	poss := possible
-	if poss.board[orig] == 'r' || poss.board[orig] == 'R' {
-		switch { // Castle
-		case orig == poss.pgnMap["a1"]:
-			poss.castle[1] = '-'
-		case orig == poss.pgnMap["a8"]:
-			poss.castle[3] = '-'
-		case orig == poss.pgnMap["h1"]:
-			poss.castle[0] = '-'
-		case orig == poss.pgnMap["h8"]:
-			poss.castle[2] = '-'
-		}
-	}
-	// Set origin
-	poss.board[orig] = '.'
-	// Set destination
-	if !isCastle {
-		poss.board[dest] = val
-	} else { // castle changes several things...
-		if dest > orig { // queen side
-			poss.board[dest-2],
-				poss.board[dest-3] = val, poss.board[dest]
-		} else { // king side
-			poss.board[dest+1],
-				poss.board[dest+2] = val, poss.board[dest]
-		}
-		poss.board[dest] = '.'
-	}
-	// TODO check for Check
-	// Update Game variables
-	if poss.toMove == "w" {
-		poss.toMove = "b"
-	} else {
-		poss.moves++ // add one to move count
-		poss.toMove = "w"
-	}
-	if empassant {
-		poss.empassant = dest
-	} else {
-		poss.empassant = 0
-	}
-	// Check if move put player in Check
-	isCheck := poss.isPlayerInCheck()
-	if isCheck {
-		poss.check = true
-	} else {
-		poss.check = false
-	}
-	thePossibility := poss
-	return thePossibility
-}
-
-
 
 // Check if current player is in Check
 func (b *Board) isPlayerInCheck() bool {
@@ -417,8 +363,10 @@ func (b *Board) isPlayerInCheck() bool {
 func (b *Board) isInCheck(target int) bool {
 	isWhite := b.isUpper(target)
 	k := b.board[target]
+	
 	// store all the orig of the opponents pieces
 	attackers := make([]int, 0, 16)
+	//fmt.Println("white ", isWhite, "attackers ", attackers, "king", k)
 	for idx, val := range b.board {
 		matchWhite, _ := regexp.MatchString(`[PNBRQK]`,
 			string(val))
@@ -1137,6 +1085,14 @@ Loop:
 				fmt.Println(board.headers)
 			case input == "/test-pgn":
 				hist := `1. Nf3 Nc6 2. d4 d5 3. c4 e6 4. e3 Nf6 5. Nc3 Be7 6. a3 O-O 7. b4 a6 8. Be2 Re8 9. O-O Bf8 10. c5 g6 11. b5 axb5 12. Bxb5 Bd7 13. h3 Na5 14. Bd3 Nc6 15. Rb1 Qc8 16. Nb5 e5 17. Be2 e4 18. Ne1 h6 19. Nc2 g5 20. f3 exf3 21. Bxf3 g4 22. hxg4 Bxg4 23. Nxc7 Qxc7 24. Bxg4 Nxg4 25. Qxg4+ Bg7 26. Nb4 Nxb4 27. Rxb4 Ra6 28. Rf5 Re4 29. Qh5 Rg6 30. Qh3 Qc8 31. Qf3 Qd7 32. Rb2 Bxd4 33. exd4 Re1+ 34. Kh2 Rxc1 35. Qxd5 Qe7 36. g3 Qc7 37. Rf4 b6 38. a4 Rg5 39. cxb6 Rxd5 40. bxc7 Rxc7 41. Rb5 Rc2+`
+				var err error
+				board, err = board.LoadPgn(hist)
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Print(board.String())
+			case input == "/test-check":
+				hist := `1. e4 e5 2. Qf3 Qg5 3. Qxf7`
 				var err error
 				board, err = board.LoadPgn(hist)
 				if err != nil {
