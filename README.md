@@ -52,9 +52,9 @@ A Golang chess engine, fumbling along...
 
 ### Basic rules
 
-- Check
-  - Castle through check
+- Castle through check
 - Checkmate (a pgn notation)
+- Pawn promotion
 
 ### Basic Functionality
 
