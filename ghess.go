@@ -40,7 +40,8 @@ type Board struct {
 	fen     string         // Game position
 	pgn     string         // Game history
 	headers string         // Pgn format
-	pattern *regexp.Regexp // For parsing PGN
+	pgnPattern *regexp.Regexp // For parsing PGN
+	fenPattern *regexp.Regexp
 
 }
 
@@ -88,7 +89,8 @@ func NewBoard() Board {
 	r["."] = "\u00B7"
 
 	// Regex Pattern for matching pgn moves
-	pattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
+	pgnPattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
+	fenPattern, _ := regexp.Compile(`.?`)
 	return Board{
 		board:   b,
 		castle:  []byte(`KQkq`),
@@ -98,7 +100,8 @@ func NewBoard() Board {
 		toMove:  "w",
 		score:   "*",
 		moves:   1,
-		pattern: pattern,
+		pgnPattern: pgnPattern,
+		fenPattern: fenPattern,
 	}
 }
 
@@ -761,7 +764,7 @@ func (b *Board) ParseMove(move string) error {
 	isWhite := b.toMove == "w"
 	isCapture, _ := regexp.MatchString(`x`, move)
 
-	res := b.pattern.FindStringSubmatch(move)
+	res := b.pgnPattern.FindStringSubmatch(move)
 	if res == nil && move != "O-O" && move != "O-O-O" {
 		return errors.New("invalid input")
 	} else if move == "O-O" || move == "O-O-O" {
@@ -1006,7 +1009,7 @@ func (b *Board) ParseMove(move string) error {
 func (b *Board) LoadPgn(match string) (Board, error) {
 	// TODO: ignore header strings
 	game := NewBoard()
-	result := game.pattern.FindAllString(match, -1)
+	result := game.pgnPattern.FindAllString(match, -1)
 	for _, val := range result {
 		fmt.Println("Move: ", game.moves)
 		err := game.ParseMove(val)
@@ -1017,7 +1020,8 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 	return game, nil
 }
 
-func (b *Board) ParseFen() {
+func (b *Board) ParseFen(fen string) {
+	
 	// Parse Fen
 }
 

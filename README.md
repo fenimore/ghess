@@ -14,6 +14,16 @@ A Golang chess engine, fumbling along...
     Black to move: 
 
 
+# Features
+- Most rules are implement
+  * except:
+  * Only queen promotion
+  * no Checkmate
+- PGN import export parse
+- FEN export
+- Cli interface
+
+
 ## Board struct
 - A board object
 - Game variables
@@ -48,7 +58,10 @@ A Golang chess engine, fumbling along...
 - 11 - 18 1st rank
 - 81 - 88 8th rank
 
+
 ## TODO
+
+- TESTS
 
 ### Basic rules
 
@@ -59,7 +72,7 @@ A Golang chess engine, fumbling along...
 
 ### Basic Functionality
 
-- FEN import/export
+- FEN export
 
 ### Search & Evaluate
 

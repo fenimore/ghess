@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+
+</head>
+
+<body>
+
+<h1>go-chess || Ghess</h1>
+
+<p>A Golang chess engine, fumbling along...</p>
+
+<pre><code>Move: 3 | Castle: KQkq | Turn:  Black
+8: |♖||♘||♗||♕||♔||♗||·||♖|
+7: |♙||♙||♙||·||♙||♙||♙||♙|
+6: |·||·||·||·||·||♘||·||·|
+5: |·||·||·||♙||·||·||·||·|
+4: |·||·||♟||♟||·||·||·||·|
+3: |·||·||·||·||·||♞||·||·|
+2: |♟||♟||·||·||♟||♟||♟||♟|
+1: |♜||♞||♝||♛||♚||♝||·||♜|
+   :a::b::c::d::e::f::g::h:
+Black to move:
+</code></pre>
+
+<h1>Features</h1>
+
+<ul>
+<li>Most rules are implement
+<ul>
+<li>except:</li>
+<li>Only queen promotion</li>
+<li>no Checkmate</li>
+</ul></li>
+<li>PGN import export parse</li>
+<li>FEN export</li>
+<li>Cli interface</li>
+</ul>
+
+<h2>Board struct</h2>
+
+<ul>
+<li>A board object</li>
+<li>Game variables
+<ul>
+<li>castle possibilities</li>
+<li>score</li>
+<li>to move</li>
+<li>check</li>
+<li>empassant</li>
+</ul></li>
+<li>Board display
+<ul>
+<li>pgnMap</li>
+<li>pieceMap</li>
+<li>pieces</li>
+</ul></li>
+<li>move count</li>
+<li>fen string</li>
+<li>pgn string</li>
+<li>pgn Headers</li>
+</ul>
+
+<h2>Bitmap</h2>
+
+<pre><code>Coordinates:
+8: |88||87||86||85||84||83||82||81|
+7: |78||77||76||75||74||73||72||71|
+6: |68||67||66||65||64||63||62||61|
+5: |58||57||56||55||54||53||52||51|
+4: |48||47||46||45||44||43||42||41|
+3: |38||37||36||35||34||33||32||31|
+2: |28||27||26||25||24||23||22||21|
+1: |18||17||16||15||14||13||12||11|
+   :a ::b ::c ::d ::e ::f ::g ::h :
+</code></pre>
+
+<ul>
+<li>120 bytes</li>
+<li>11 - 18 1st rank</li>
+<li>81 - 88 8th rank</li>
+</ul>
+
+<h2>TODO</h2>
+
+<ul>
+<li>TESTS</li>
+</ul>
+
+<h3>Basic rules</h3>
+
+<ul>
+<li>Castle through check</li>
+<li>Can't castle on check</li>
+<li>Checkmate (a pgn notation)</li>
+<li>Pawn promotion to Knight</li>
+</ul>
+
+<h3>Basic Functionality</h3>
+
+<ul>
+<li>FEN export</li>
+</ul>
+
+<h3>Search &amp; Evaluate</h3>
+
+<ul>
+<li>Look for all possible moves</li>
+<li>Look for all valid moves</li>
+<li>Give all moves a score</li>
+</ul>
+
+<h3>Extra features</h3>
+
+<ul>
+<li>Move history/ Undo</li>
+<li>Save game history to board (not automatic)?</li>
+<li>Save as two coordinates, with piece specifier</li>
+</ul>
+
+<h3>Bugs:</h3>
+
+<ul>
+<li>qe4 crashes</li>
+<li>Enfait, crashes when corrupt basic input...</li>
+</ul>
+
+<h3>Notes...</h3>
+
+<pre><code>rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1
+rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2
+rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
+</code></pre>
+
+<h3>License;</h3>
+
+<p>Fenimore Love - 2016
+GPL</p>
+
+</body>
+</html>
