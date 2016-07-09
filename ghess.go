@@ -1022,7 +1022,7 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 
 // Parse fen and update Board.board
 func (b *Board) LoadFen(fen string) error {
-	// Treat fen input
+// Treat fen input
 	fen = strings.TrimRight(fen, "\r\n")
 	b.fen = fen
 	matches := b.fenPattern.MatchString(fen)
@@ -1033,8 +1033,6 @@ func (b *Board) LoadFen(fen string) error {
 	posCount := 88 // First position to fill
 	//var gotTurn, gotCastle, gotEmpassant, gotMove bool
 	//var turn, castle, emp, move string
-	var num, j int
-	var e error
 FenLoop:
 	for _, val := range fen { // res[1] {
 		// First, make sure it's a relevant position
@@ -1042,9 +1040,9 @@ FenLoop:
 			posCount -= 2
 		}
 		// Check if there are Empty Squares
-		num, e = strconv.Atoi(string(val))
+		num, e := strconv.Atoi(string(val))
 		if e == nil {
-			for j = 0; j < num; j++ {
+			for j := 0; j < num; j++ {
 				b.board[posCount] = '.'
 				posCount--
 			}
@@ -1062,7 +1060,7 @@ FenLoop:
 	}
 
 	//b.toMove = res[2] 
-	//b.fen = fen
+	b.fen = fen
 	return nil
 }
 
@@ -1257,7 +1255,7 @@ Loop:
 				} else {
 					fmt.Print(board.String())
 					time.Sleep(2000 * time.Millisecond)				}
-				err := board.LoadFen(fen4)
+				err = board.LoadFen(fen4)
 				fmt.Println("Limited Castle for black")
 				if err != nil {
 					fmt.Println(err)
