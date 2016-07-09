@@ -189,16 +189,6 @@ func (b *Board) Move(orig, dest int) error {
 		if e != nil {
 			return e
 		}
-		switch { // Castle
-		case orig == b.pgnMap["a1"]:
-			b.castle[1] = '-'
-		case orig == b.pgnMap["a8"]:
-			b.castle[3] = '-'
-		case orig == b.pgnMap["h1"]:
-			b.castle[0] = '-'
-		case orig == b.pgnMap["h8"]:
-			b.castle[2] = '-'
-		}
 	case p == "Q":
 		e := b.validQueen(orig, dest)
 		if e != nil {
@@ -229,8 +219,11 @@ func (b *Board) Move(orig, dest int) error {
 	isWhite := b.toMove == "w"
 	possible := *b                 // slices are  still pointing...
 	boardCopy := make([]byte, 120) // b.board is Pointer
+	castleCopy := make([]byte, 4)
 	copy(boardCopy, b.board)
+	copy(castleCopy, b.castle)
 	possible.board = boardCopy
+	possible.castle = castleCopy
 	// Check possibilities
 	possible.updateBoard(orig, dest, val, empassant, isCastle)
 	// find mover's king
@@ -253,23 +246,27 @@ func (b *Board) Move(orig, dest int) error {
 		copy(copy2, b.board)
 		possible.board = copy2
 		if isWhite && dest < orig {
-			//possible.board[1])
 			//King side, 13
 			possible.updateBoard(orig, 13, 'K',
 				false, false)
+			king = 13
 		} else if isWhite && dest > orig {
 			possible.updateBoard(orig, 15, 'K',
 				false, false)
 			// Queen side, 15
+			king = 15
 		} else if !isWhite && dest < orig {
 			possible.updateBoard(orig, 83, 'k',
 				false, false)
 			// King 83
+			king = 83
 		} else if !isWhite && dest > orig {
 			possible.updateBoard(orig, 85, 'k',
 				false, false)
 			// Queen 85
+			king = 85
 		}
+		isCheck = possible.isInCheck(king)
 		if isCheck {
 			return errors.New("Cannot Castle through check")
 		}
@@ -282,6 +279,7 @@ func (b *Board) Move(orig, dest int) error {
 // Updates board, useless without Move() validation
 func (b *Board) updateBoard(orig, dest int,
 	val byte, empassant, isCastle bool) {
+	isWhite := b.toMove == "w"
 	// Check for Promotion
 	isPromotion := false
 	if b.board[orig] == 'p' && dest < 20 {
@@ -301,6 +299,19 @@ func (b *Board) updateBoard(orig, dest int,
 			b.castle[0] = '-'
 		case orig == b.pgnMap["h8"]:
 			b.castle[2] = '-'
+		}
+	} else if isCastle {
+		kingSide  := orig > dest
+		queenSide := orig < dest
+		switch {
+		case isWhite && kingSide:
+			b.castle[0], b.castle[1] = '-', '-'
+		case isWhite && queenSide:
+			b.castle[0], b.castle[1] = '-', '-'
+		case !isWhite && kingSide:
+			b.castle[2], b.castle[3] = '-', '-'
+		case !isWhite && queenSide:
+			b.castle[2], b.castle[3] = '-', '-'
 		}
 	}
 	// Set origin
@@ -479,7 +490,9 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 			// Proper attack
 		} else if b.board[dest] == d && dest+empOffset == b.empassant {
 			// Empassant attack
-			if b.board[dest+empOffset] == empTarget { // is the right case
+			if b.board[dest+empOffset] == empTarget {
+				// is the right case
+				// TODO move this to UpdateBoard
 				b.board[b.empassant] = '.'
 			} else {
 				return err
@@ -696,12 +709,11 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 				if b.castle[1] != 'Q' {
 					return noCastle
 				}
-				b.castle[0], b.castle[1] = '-', '-'
+
 			} else { // b
 				if b.castle[3] != 'q' {
 					return noCastle
 				}
-				b.castle[2], b.castle[3] = '-', '-'
 			}
 		} else if orig > dest {
 			if !kingSideCastle {
@@ -711,12 +723,10 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 				if b.castle[0] != 'K' {
 					return noCastle
 				}
-				b.castle[0], b.castle[1] = '-', '-'
 			} else {
 				if b.castle[2] != 'k' {
 					return noCastle
 				}
-				b.castle[2], b.castle[3] = '-', '-'
 			}
 		}
 
@@ -1109,6 +1119,13 @@ Loop:
 				fmt.Print(board.String())
 				if board.check {
 					fmt.Println("****Check!****")
+				}
+			case input == "/test-castle-check":
+				hist := `1. e4 e5 2. d4 d5 3. Bh6 Bh3 4. Nxh3 Nxh6 5. Qg4 Qg5 6. Na3 Na6 7. Qf5 Qg4 8. Qg5 Bc5 9. Bc4 dxe4 10. dxe5 f6 11. exf6 gxf6 12. Qxf6 Bb4+ 13. c3 e3`
+				var err error
+				board, err = board.LoadPgn(hist)
+				if err != nil {
+					fmt.Println(err)
 				}
 			case input == "/test-check":
 				hist := `1. e4 e5 2. Qf3 Qg5 3. Qxf7`

@@ -53,6 +53,7 @@ A Golang chess engine, fumbling along...
 ### Basic rules
 
 - Castle through check
+- Can't castle on check
 - Checkmate (a pgn notation)
 - Pawn promotion to Knight
 
@@ -75,6 +76,7 @@ A Golang chess engine, fumbling along...
 ### Bugs:
 
 - qe4 crashes
+- Enfait, crashes when corrupt basic input...
 
 ### Notes...
 
