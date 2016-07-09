@@ -34,7 +34,7 @@ type Board struct {
 	check     bool
 	// Map for display grid
 	pgnMap map[string]int // the pgn format
-	//pieceMap map[int]string    // coord to standard notation
+	pieceMap map[int]string    // coord to standard notation
 	pieces map[string]string // the unicode fonts
 	// Game Positions
 	fen     string         // Game position
@@ -67,9 +67,16 @@ func NewBoard() Board {
 	m["a6"], m["b6"], m["c6"], m["d6"], m["e6"], m["f6"], m["g6"], m["h6"] = 68, 67, 66, 65, 64, 63, 62, 61
 	m["a7"], m["b7"], m["c7"], m["d7"], m["e7"], m["f7"], m["g7"], m["h7"] = 78, 77, 76, 75, 74, 73, 72, 71
 	m["a8"], m["b8"], m["c8"], m["d8"], m["e8"], m["f8"], m["g8"], m["h8"] = 88, 87, 86, 85, 84, 83, 82, 81
-
-	// Todo make map for pieceMap[]
-
+	// pieceMap
+	p := make(map[int]string)
+	p[18], p[17], p[16], p[15], p[14], p[13], p[12], p[11] = "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
+	p[28], p[27], p[26], p[25], p[24], p[23], p[22], p[21] = "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"
+	p[38], p[37], p[36], p[35], p[34], p[33], p[32], p[31] = "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3"
+	p[48], p[47], p[46], p[45], p[44], p[43], p[42], p[41] = "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4"
+	p[58], p[57], p[56], p[55], p[54], p[53], p[52], p[51] = "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5"
+	p[68], p[67], p[66], p[65], p[64], p[63], p[62], p[61] = "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6"
+	p[78], p[77], p[76], p[75], p[74], p[73], p[72], p[71] = "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"
+	p[88], p[87], p[86], p[85], p[84], p[83], p[82], p[81] = "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
 	// Map of unicode fonts
 	r := make(map[string]string)
 	r["p"], r["P"] = "\u2659", "\u265F"
@@ -86,6 +93,7 @@ func NewBoard() Board {
 		board:   b,
 		castle:  []byte(`KQkq`),
 		pgnMap:  m,
+		pieceMap: p,
 		pieces:  r,
 		toMove:  "w",
 		score:   "*",
@@ -1016,6 +1024,43 @@ func (b *Board) ParseFen() {
 // Get FEN position
 func (b *Board) Position() string {
 	// b.board -> Fen
+	//rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+	//first := ""
+	// FIRST RANK
+	pos := ""
+	emp := "-"
+	zeroTicker := 0
+	for i := 88; i > 10; i-- {
+		if i%10 == 0 || (i+1)%10 == 0 {
+			continue
+		}
+		// Cycle backwards and tally empty squares
+		if b.board[i] == '.' {
+			zeroTicker++
+		} else if zeroTicker > 0 && b.board[i] != '.'{
+			fmt.Print(strconv.Itoa(zeroTicker))
+			fmt.Print(string(b.board[i]))
+			zeroTicker = 0
+		} else {
+
+			fmt.Print(string(b.board[i]))
+		}
+		if (i-1)%10 == 0 && i > 10 { // hit edge
+			if zeroTicker > 0 {
+				fmt.Print(strconv.Itoa(zeroTicker))
+			}
+			zeroTicker = 0
+			if i > 11 {
+				fmt.Print("/")
+			}
+		}
+
+	}
+
+	if b.empassant != 0 {
+		emp = b.pieceMap[b.empassant]
+	}
+	b.fen = pos+" "+b.toMove+" "+string(b.castle[:4])+" "+emp+" 0 "+strconv.Itoa(b.moves)
 	return b.fen
 }
 
@@ -1100,6 +1145,7 @@ Loop:
 				fmt.Print(board.String())
 			case input == "/fen":
 				fmt.Println("FEN position:")
+				fmt.Println(board.Position())
 			case input == "/set-headers":
 				fmt.Println("Set Headers:")
 				fmt.Print("White: ")
