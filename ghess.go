@@ -1029,11 +1029,10 @@ func (b *Board) LoadFen(fen string) error {
 	if !matches {
 		return errors.New("Invalid FEN")
 	}
-	//res := b.fenPattern.FindStringSubmatch(fen)
+	res := b.fenPattern.FindStringSubmatch(fen)
 	posCount := 88 // First position to fill
 	//var gotTurn, gotCastle, gotEmpassant, gotMove bool
 	//var turn, castle, emp, move string
-FenLoop:
 	for _, val := range fen { // res[1] {
 		// First, make sure it's a relevant position
 		if (posCount%10) == 0 {// || (posCount+1)%10 == 0 {
@@ -1046,20 +1045,37 @@ FenLoop:
 				b.board[posCount] = '.'
 				posCount--
 			}
-			continue FenLoop
+			continue 
 		}
 		if val == '/' {
-			continue FenLoop
+			continue 
 		}
 		// Is regular Piece
 		b.board[posCount] = byte(val)
 		posCount--
 		if val == ' ' {
-			break FenLoop
+			break
 		}
 	}
-
-	//b.toMove = res[2] 
+	// Update Board value
+	b.castle = []byte("----")
+	for _, v := range res[3] {
+		switch {
+		case v == 'K':
+			b.castle[0] = 'K'
+			break
+		case v == 'Q':
+			b.castle[1] = 'Q'
+			break
+		case v == 'k':
+			b.castle[2] = 'k'
+			break
+		case v == 'q':
+			b.castle[3] = 'q'
+			break
+		}
+	}
+	b.toMove = res[2] 
 	b.fen = fen
 	return nil
 }
@@ -1240,8 +1256,8 @@ Loop:
 			case input == "/test-fen":
 				fen1 := `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`
 				fen2 := `6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w - - 2 42`
-				fen3 := `rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2`
-				fen4 := `rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQ - 1 2`
+				fen3 := `rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R bKQkq - 1 2`
+				fen4 := `r3kb1r/pp2ppp1/2pn1n1p/3bN3/1PN5/5P2/PB1RB1PP/R5K1 w kq - 1 19`
 				_ = board.LoadFen(fen1)
 				fmt.Print(board.String())
 				time.Sleep(2000 * time.Millisecond)
@@ -1256,10 +1272,11 @@ Loop:
 					fmt.Print(board.String())
 					time.Sleep(2000 * time.Millisecond)				}
 				err = board.LoadFen(fen4)
-				fmt.Println("Limited Castle for black")
+				fmt.Println("Castle")
 				if err != nil {
 					fmt.Println(err)
 				} else {
+					fmt.Print(board.getPanel())
 					fmt.Print(board.String())
 					time.Sleep(2000 * time.Millisecond)				}				
 			default:
@@ -1274,9 +1291,9 @@ Loop:
 			turn = "Black"
 		}
 		fmt.Println("\n-------------------")
-		panel := "Debug Mode:\nMove: " + strconv.Itoa(board.moves) + " | Castle: " + string(board.castle) + "\nCheck: " + strconv.FormatBool(board.check) + " | Turn: " + string(turn)+"\nEmpassant: "+strconv.Itoa(board.empassant)
+
 		// TODO use formats.
-		fmt.Println(panel)
+		fmt.Println(board.getPanel())
 		if e != nil {
 			fmt.Printf("   [Error: %v]\n", e)
 		}
@@ -1286,6 +1303,11 @@ Loop:
 		}
 	}
 	fmt.Println("\nGood Game.")
+}
+
+func (board *Board) getPanel() string {
+	panel := "Debug Mode:\nMove: "+ strconv.Itoa(board.moves) + " | Castle: " + string(board.castle) + "\nCheck: " + strconv.FormatBool(board.check) + " | Turn: " + board.toMove+"\nEmpassant: "+strconv.Itoa(board.empassant)
+	return panel
 }
 
 // Set pgnHeaders for a pgn export
