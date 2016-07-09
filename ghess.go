@@ -1020,9 +1020,48 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 	return game, nil
 }
 
-func (b *Board) ParseFen(fen string) {
-	
+// Parse fen and update Board.board
+func (b *Board) LoadFen(fen string) error {
+	// check against regex
+	// return errors.New("Not valid FEN")
 	// Parse Fen
+	b.fen = fen
+	zeroCount := 0
+	posCount := 88
+	//var gotTurn, gotCastle, gotEmpassant, gotMove bool
+	//var turn, castle, emp, move string
+FenLoop:
+	for _, val := range fen {
+		// First, make sure it's a relevant position
+		if (posCount%10) == 0 {// || (posCount+1)%10 == 0 {
+			posCount -= 2
+		}
+		// Check if there are empty squares to print
+		if zeroCount > 0 {
+			limit := zeroCount
+			for i := 0; i <= limit; i++ {
+				b.board[posCount] = '.'
+				zeroCount--
+				posCount--
+			}
+			continue FenLoop
+		}
+		i, err := strconv.Atoi(string(val))
+		switch {
+		case val == '/':
+			continue FenLoop
+		case err == nil:
+			zeroCount = i
+			continue FenLoop
+		case val == ' ':
+			break FenLoop
+		default:
+			break
+		}
+		b.board[posCount] = byte(val)
+		posCount--			
+	}
+	return nil
 }
 
 // Get FEN position
@@ -1147,6 +1186,15 @@ Loop:
 					fmt.Println(err)
 				}
 				fmt.Print(board.String())
+			case input == "/load-fen":
+				var err error
+				fmt.Print("Enter FEN position: ")
+				position, _ := reader.ReadString('\n')
+				err = board.LoadFen(position)
+				if err != nil {
+					fmt.Println(err)
+				}
+				fmt.Print(board.String())
 			case input == "/fen":
 				fmt.Println("FEN position:")
 				fmt.Println(board.Position())
@@ -1185,6 +1233,15 @@ Loop:
 					fmt.Println(err)
 				}
 				fmt.Print(board.String())
+			case input == "/test-fen":
+				fen1 := `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`
+				fen2 := `6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w - - 2 42`
+				_ = board.LoadFen(fen1)
+				fmt.Print(board.String())
+				time.Sleep(2000 * time.Millisecond)
+				_ = board.LoadFen(fen2)
+				fmt.Print(board.String())
+				time.Sleep(2000 * time.Millisecond)				
 			default:
 				fmt.Println("Mysterious input")
 			}
