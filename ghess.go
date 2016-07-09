@@ -90,7 +90,7 @@ func NewBoard() Board {
 
 	// Regex Pattern for matching pgn moves
 	pgnPattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
-	fenPattern, _ := regexp.Compile(`.?`)
+	fenPattern, _ := regexp.Compile(`([PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8})\s(w|b)\s([KQkq-]{1,4})\s([a-h][36]|-)\s(\d\s\d)`)
 	return Board{
 		board:   b,
 		castle:  []byte(`KQkq`),
@@ -1022,41 +1022,47 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 
 // Parse fen and update Board.board
 func (b *Board) LoadFen(fen string) error {
-	// check against regex
-	// return errors.New("Not valid FEN")
-	// Parse Fen
+	// Treat fen input
+	fen = strings.TrimRight(fen, "\r\n")
 	b.fen = fen
-	posCount := 88
-	gameInfo := ""
+	matches := b.fenPattern.MatchString(fen)
+	if !matches {
+		return errors.New("Invalid FEN")
+	}
+	//res := b.fenPattern.FindStringSubmatch(fen)
+	posCount := 88 // First position to fill
 	//var gotTurn, gotCastle, gotEmpassant, gotMove bool
 	//var turn, castle, emp, move string
+	var num, j int
+	var e error
 FenLoop:
-	for idx, val := range fen {
+	for _, val := range fen { // res[1] {
 		// First, make sure it's a relevant position
 		if (posCount%10) == 0 {// || (posCount+1)%10 == 0 {
 			posCount -= 2
 		}
-		i, err := strconv.Atoi(string(val))
-		if err == nil {
-			for j := 0; j < i; j++ {
+		// Check if there are Empty Squares
+		num, e = strconv.Atoi(string(val))
+		if e == nil {
+			for j = 0; j < num; j++ {
 				b.board[posCount] = '.'
 				posCount--
 			}
 			continue FenLoop
 		}
-		switch {
-		case val == '/':
+		if val == '/' {
 			continue FenLoop
-		case val == ' ':
-			gameInfo = fen[idx:len(fen)]
-			fmt.Println(gameInfo)
-			break FenLoop
-		default:
-			break
 		}
+		// Is regular Piece
 		b.board[posCount] = byte(val)
-		posCount--			
+		posCount--
+		if val == ' ' {
+			break FenLoop
+		}
 	}
+
+	//b.toMove = res[2] 
+	//b.fen = fen
 	return nil
 }
 
@@ -1236,12 +1242,28 @@ Loop:
 			case input == "/test-fen":
 				fen1 := `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`
 				fen2 := `6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w - - 2 42`
+				fen3 := `rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2`
+				fen4 := `rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQ - 1 2`
 				_ = board.LoadFen(fen1)
 				fmt.Print(board.String())
 				time.Sleep(2000 * time.Millisecond)
 				_ = board.LoadFen(fen2)
 				fmt.Print(board.String())
-				time.Sleep(2000 * time.Millisecond)				
+				time.Sleep(2000 * time.Millisecond)
+				err := board.LoadFen(fen3)
+				fmt.Println("Black to Move")
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					fmt.Print(board.String())
+					time.Sleep(2000 * time.Millisecond)				}
+				err := board.LoadFen(fen4)
+				fmt.Println("Limited Castle for black")
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					fmt.Print(board.String())
+					time.Sleep(2000 * time.Millisecond)				}				
 			default:
 				fmt.Println("Mysterious input")
 			}
