@@ -33,14 +33,14 @@ type Board struct {
 	moves     int    // the count of moves
 	check     bool
 	// Map for display grid
-	pgnMap   map[string]int    // the pgn format
+	pgnMap map[string]int // the pgn format
 	//pieceMap map[int]string    // coord to standard notation
-	pieces   map[string]string // the unicode fonts
+	pieces map[string]string // the unicode fonts
 	// Game Positions
-	fen        string // Game position
-	pgn        string // Game history
-	headers    string // Pgn format
-	pattern    *regexp.Regexp // For parsing PGN
+	fen     string         // Game position
+	pgn     string         // Game history
+	headers string         // Pgn format
+	pattern *regexp.Regexp // For parsing PGN
 
 }
 
@@ -93,7 +93,6 @@ func NewBoard() Board {
 		pattern: pattern,
 	}
 }
-
 
 // Return PNG String
 func (b *Board) PgnString() string {
@@ -228,9 +227,9 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// Make sure new position doesn't put in check
 	isWhite := b.toMove == "w"
-	possible := *b // slices are  still pointing...
+	possible := *b                 // slices are  still pointing...
 	boardCopy := make([]byte, 120) // b.board is Pointer
-	copy(boardCopy, b.board) 
+	copy(boardCopy, b.board)
 	possible.board = boardCopy
 	// Check possibilities
 	possible.updateBoard(orig, dest, val, empassant, isCastle)
@@ -253,7 +252,7 @@ func (b *Board) Move(orig, dest int) error {
 		copy2 := make([]byte, 120)
 		copy(copy2, b.board)
 		possible.board = copy2
-		if isWhite && dest < orig  {
+		if isWhite && dest < orig {
 			//possible.board[1])
 			//King side, 13
 			possible.updateBoard(orig, 13, 'K',
@@ -291,7 +290,6 @@ func (b *Board) updateBoard(orig, dest int,
 	} else if b.board[orig] == 'P' && dest > 80 {
 		isPromotion = true
 	}
-	fmt.Println(isPromotion)
 	// Check for castle deactivation
 	if b.board[orig] == 'r' || b.board[orig] == 'R' {
 		switch { // Castle
@@ -311,10 +309,10 @@ func (b *Board) updateBoard(orig, dest int,
 	if isCastle {
 		if dest > orig { // queen side
 			b.board[dest-2],
-			b.board[dest-3] = val, b.board[dest]
+				b.board[dest-3] = val, b.board[dest]
 		} else { // king side
 			b.board[dest+1],
-			b.board[dest+2] = val, b.board[dest]
+				b.board[dest+2] = val, b.board[dest]
 		}
 		b.board[dest] = '.'
 	} else if isPromotion {
@@ -363,15 +361,15 @@ func (b *Board) isPlayerInCheck() bool {
 	}
 	return false
 }
-		
+
 // Check if target is in Check
 func (b *Board) isInCheck(target int) bool {
 	isWhite := b.isUpper(target)
 	k := b.board[target]
-	
+
 	// store all the orig of the opponents pieces
 	attackers := make([]int, 0, 16)
-	
+
 	for idx, val := range b.board {
 		matchWhite, _ := regexp.MatchString(`[PNBRQK]`,
 			string(val))
@@ -386,7 +384,7 @@ func (b *Board) isInCheck(target int) bool {
 	//fmt.Println("white ", isWhite, "attackers ", attackers, "king", k)
 	// check for valid attacks
 	for _, val := range attackers {
-		p := string(bytes.ToUpper(b.board[val:val +1]))
+		p := string(bytes.ToUpper(b.board[val : val+1]))
 		switch {
 		case p == "P":
 			e := b.validPawn(val, target, k)
@@ -397,13 +395,13 @@ func (b *Board) isInCheck(target int) bool {
 		case p == "N":
 			e := b.validKnight(val, target)
 			if e == nil {
-				fmt.Println("Knight check")				
+				fmt.Println("Knight check")
 				return true
 			}
 		case p == "B":
 			e := b.validBishop(val, target)
 			if e == nil {
-				fmt.Println("Bishop check")				
+				fmt.Println("Bishop check")
 				return true
 			}
 		case p == "R":
@@ -414,15 +412,15 @@ func (b *Board) isInCheck(target int) bool {
 			}
 		case p == "Q":
 			e := b.validQueen(val, target)
-			if e == nil  {
+			if e == nil {
 				return true
 			}
 		case p == "K":
 			e := b.validKing(val, target, false)
 			if e == nil {
 				return true
-			}			
-		}		
+			}
+		}
 	}
 	// if nothing was valid, return false
 	return false
@@ -494,6 +492,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	}
 	return nil
 }
+
 // Validate Knight move.
 func (b *Board) validKnight(orig int, dest int) error {
 	var possibilities [8]int
@@ -510,6 +509,7 @@ func (b *Board) validKnight(orig int, dest int) error {
 	}
 	return errors.New("Illegal Knight Move")
 }
+
 // Validate Bishop move.
 func (b *Board) validBishop(orig int, dest int) error {
 	// Check if other pieces are in the way
@@ -551,6 +551,7 @@ func (b *Board) validBishop(orig int, dest int) error {
 	}
 	return nil
 }
+
 // Validate rook move.
 func (b *Board) validRook(orig int, dest int) error {
 	// Check if pieces are in the way
@@ -592,6 +593,7 @@ func (b *Board) validRook(orig int, dest int) error {
 	}
 	return nil
 }
+
 // Validate queen move.
 func (b *Board) validQueen(orig int, dest int) error {
 	err := errors.New("Illegal Queen Move")
@@ -601,15 +603,15 @@ func (b *Board) validQueen(orig int, dest int) error {
 	diagA8 := remainder%9 == 0                    // Diag a8h1
 	diagA1 := remainder%11 == 0                   // Diag a1h8
 	// Check if moves through not-empty squares
-	if horizontal {                               // 1st
+	if horizontal { // 1st
 		if remainder < 0 {
-			for i := orig-1; i > dest; i-- {
+			for i := orig - 1; i > dest; i-- {
 				if b.board[i] != '.' {
 					return err
 				}
 			}
 		} else { // go right
-			for i := orig+1; i < dest; i++ {
+			for i := orig + 1; i < dest; i++ {
 				if b.board[i] != '.' {
 					return err
 				}
@@ -628,7 +630,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 					return err
 				}
 			}
-		}		
+		}
 	} else if diagA8 {
 		if dest > orig { // go to bottem left
 			for i := orig + 9; i <= dest-9; i += 9 {
@@ -656,7 +658,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 					return err
 				}
 			}
-		}		
+		}
 	} else {
 		return errors.New("Illegal Queen Move")
 	}
@@ -723,8 +725,6 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	}
 	return nil
 }
-
-
 
 // Parse a pgn move
 // Infer the origin piece
@@ -973,7 +973,7 @@ func (b *Board) ParseMove(move string) error {
 				// TODO
 				// if move doesn't already have check..
 				b.pgn += "+ "
-			// check for checkmate?
+				// check for checkmate?
 			} else {
 				b.pgn += " " // add space
 			}
@@ -1066,7 +1066,7 @@ Loop:
 			case input == "/help":
 				fmt.Print("\n", manuel)
 			case input == "/quit":
-				break Loop//os.Exit(1)
+				break Loop //os.Exit(1)
 			case input == "/new":
 				board = NewBoard()
 				fmt.Print(board.String())
@@ -1130,7 +1130,7 @@ Loop:
 			turn = "Black"
 		}
 		fmt.Println("\n-------------------")
-		panel := "Debug Mode:\nMove: "+strconv.Itoa(board.moves)+" | Castle: "+string(board.castle)+"\nCheck: "+strconv.FormatBool(board.check)+" | Turn: "+string(turn)
+		panel := "Debug Mode:\nMove: " + strconv.Itoa(board.moves) + " | Castle: " + string(board.castle) + "\nCheck: " + strconv.FormatBool(board.check) + " | Turn: " + string(turn)
 		// TODO use formats.
 		fmt.Println(panel)
 		if e != nil {
