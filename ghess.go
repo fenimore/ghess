@@ -1026,31 +1026,30 @@ func (b *Board) LoadFen(fen string) error {
 	// return errors.New("Not valid FEN")
 	// Parse Fen
 	b.fen = fen
-	zeroCount := 0
 	posCount := 88
+	gameInfo := ""
 	//var gotTurn, gotCastle, gotEmpassant, gotMove bool
 	//var turn, castle, emp, move string
 FenLoop:
-	for _, val := range fen {
-		fmt.Println(string(val), "   at   ", posCount, zeroCount)
+	for idx, val := range fen {
+		// First, make sure it's a relevant position
+		if (posCount%10) == 0 {// || (posCount+1)%10 == 0 {
+			posCount -= 2
+		}
 		i, err := strconv.Atoi(string(val))
 		if err == nil {
 			for j := 0; j < i; j++ {
-				fmt.Println("printing .... ", posCount, string(val))
 				b.board[posCount] = '.'
 				posCount--
 			}
 			continue FenLoop
 		}
-		// First, make sure it's a relevant position
-		if (posCount%10) == 0 {// || (posCount+1)%10 == 0 {
-			posCount -= 2
-			//zeroCount = 0
-		}
 		switch {
 		case val == '/':
 			continue FenLoop
 		case val == ' ':
+			gameInfo = fen[idx:len(fen)]
+			fmt.Println(gameInfo)
 			break FenLoop
 		default:
 			break
@@ -1098,7 +1097,11 @@ func (b *Board) Position() string {
 	}
 
 	if b.empassant != 0 {
-		emp = b.pieceMap[b.empassant]
+		if b.toMove == "w" {
+			emp = b.pieceMap[b.empassant+10]
+		} else {
+			emp = b.pieceMap[b.empassant-10]
+		}
 	}
 	b.fen = pos+" "+b.toMove+" "+string(b.castle[:4])+" "+emp+" 0 "+strconv.Itoa(b.moves)
 	return b.fen
@@ -1251,7 +1254,7 @@ Loop:
 			turn = "Black"
 		}
 		fmt.Println("\n-------------------")
-		panel := "Debug Mode:\nMove: " + strconv.Itoa(board.moves) + " | Castle: " + string(board.castle) + "\nCheck: " + strconv.FormatBool(board.check) + " | Turn: " + string(turn)
+		panel := "Debug Mode:\nMove: " + strconv.Itoa(board.moves) + " | Castle: " + string(board.castle) + "\nCheck: " + strconv.FormatBool(board.check) + " | Turn: " + string(turn)+"\nEmpassant: "+strconv.Itoa(board.empassant)
 		// TODO use formats.
 		fmt.Println(panel)
 		if e != nil {
