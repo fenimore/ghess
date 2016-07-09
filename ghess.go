@@ -1032,26 +1032,23 @@ func (b *Board) LoadFen(fen string) error {
 	//var turn, castle, emp, move string
 FenLoop:
 	for _, val := range fen {
-		// First, make sure it's a relevant position
-		if (posCount%10) == 0 {// || (posCount+1)%10 == 0 {
-			posCount -= 2
-		}
-		// Check if there are empty squares to print
-		if zeroCount > 0 {
-			limit := zeroCount
-			for i := 0; i <= limit; i++ {
+		fmt.Println(string(val), "   at   ", posCount, zeroCount)
+		i, err := strconv.Atoi(string(val))
+		if err == nil {
+			for j := 0; j < i; j++ {
+				fmt.Println("printing .... ", posCount, string(val))
 				b.board[posCount] = '.'
-				zeroCount--
 				posCount--
 			}
 			continue FenLoop
 		}
-		i, err := strconv.Atoi(string(val))
+		// First, make sure it's a relevant position
+		if (posCount%10) == 0 {// || (posCount+1)%10 == 0 {
+			posCount -= 2
+			//zeroCount = 0
+		}
 		switch {
 		case val == '/':
-			continue FenLoop
-		case err == nil:
-			zeroCount = i
 			continue FenLoop
 		case val == ' ':
 			break FenLoop
