@@ -90,7 +90,7 @@ func NewBoard() Board {
 
 	// Regex Pattern for matching pgn moves
 	pgnPattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
-	fenPattern, _ := regexp.Compile(`([PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8})\s(w|b)\s([KQkq-]{1,4})\s([a-h][36]|-)\s(\d\s\d)`)
+	fenPattern, _ := regexp.Compile(`([PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8})\s(w|b)\s([KQkq-]{1,4})\s([a-h][36]|-)\s\d\s([1-9]?[1-9])`)
 	return Board{
 		board:   b,
 		castle:  []byte(`KQkq`),
@@ -1024,16 +1024,14 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 func (b *Board) LoadFen(fen string) error {
 // Treat fen input
 	fen = strings.TrimRight(fen, "\r\n")
-	b.fen = fen
 	matches := b.fenPattern.MatchString(fen)
 	if !matches {
 		return errors.New("Invalid FEN")
 	}
 	res := b.fenPattern.FindStringSubmatch(fen)
 	posCount := 88 // First position to fill
-	//var gotTurn, gotCastle, gotEmpassant, gotMove bool
-	//var turn, castle, emp, move string
-	for _, val := range fen { // res[1] {
+	//
+	for _, val := range res[1] { // res[1] {
 		// First, make sure it's a relevant position
 		if (posCount%10) == 0 {// || (posCount+1)%10 == 0 {
 			posCount -= 2
@@ -1053,9 +1051,6 @@ func (b *Board) LoadFen(fen string) error {
 		// Is regular Piece
 		b.board[posCount] = byte(val)
 		posCount--
-		if val == ' ' {
-			break
-		}
 	}
 	// Update Board value
 	// Castle 
@@ -1077,11 +1072,11 @@ func (b *Board) LoadFen(fen string) error {
 		}
 	}
 	// Empassant
-	if res[4] != '-' {
-		emp := pgnMap[res[4]]
+	if res[4] != "-" {
+		emp := b.pgnMap[res[4]]
 		if emp < 40 {
 			// white pawn
-		} else emp > 60 {
+		} else if emp > 60 {
 		} else {
 			return errors.New("Invalid FEN empassant")
 		}
@@ -1089,7 +1084,8 @@ func (b *Board) LoadFen(fen string) error {
 		b.empassant = 0
 	}
 	// Turn
-	b.toMove = res[2] 
+	turns, _ := strconv.Atoi(res[5])
+	b.moves = turns
 	b.fen = fen
 	return nil
 }
@@ -1282,6 +1278,7 @@ Loop:
 				fmt.Print(board.String())
 				time.Sleep(2000 * time.Millisecond)
 				_ = board.LoadFen(fen2)
+				fmt.Print(board.getPanel())
 				fmt.Print(board.String())
 				time.Sleep(2000 * time.Millisecond)
 				err := board.LoadFen(fen3)
@@ -1313,7 +1310,7 @@ Loop:
 		fmt.Println("\n-------------------")
 
 		// TODO use formats.
-		fmt.Println(board.getPanel())
+		fmt.Print(board.getPanel())
 		if e != nil {
 			fmt.Printf("   [Error: %v]\n", e)
 		}
@@ -1326,7 +1323,12 @@ Loop:
 }
 
 func (board *Board) getPanel() string {
-	panel := "Debug Mode:\nMove: "+ strconv.Itoa(board.moves) + " | Castle: " + string(board.castle) + "\nCheck: " + strconv.FormatBool(board.check) + " | Turn: " + board.toMove+"\nEmpassant: "+strconv.Itoa(board.empassant)
+	panel := "|Debug Panel:\n|Castle: " +
+		string(board.castle) +
+		" | Move: "+ strconv.Itoa(board.moves) + "\n|Check: " +
+		strconv.FormatBool(board.check) + " | Turn: "+
+		board.toMove+"\n|Empassant: "+
+		strconv.Itoa(board.empassant)+"\n"
 	return panel
 }
 
