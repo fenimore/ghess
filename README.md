@@ -15,12 +15,13 @@ A Golang chess engine, fumbling along...
 
 
 # Features
-- Most rules are implement
-  * except:
+- Basic rules are implemented
+  * Except:
   * Only queen promotion
   * no Checkmate
+  * no disambigious pgn parsing :/
 - PGN import export parse
-- FEN export
+- FEN import export
 - Cli interface
 
 
@@ -72,7 +73,8 @@ A Golang chess engine, fumbling along...
 
 ### Basic Functionality
 
-- FEN export
+- PGN parse errors
+- FEN turn signification???
 
 ### Search & Evaluate
 

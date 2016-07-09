@@ -1058,6 +1058,7 @@ func (b *Board) LoadFen(fen string) error {
 		}
 	}
 	// Update Board value
+	// Castle 
 	b.castle = []byte("----")
 	for _, v := range res[3] {
 		switch {
@@ -1075,6 +1076,19 @@ func (b *Board) LoadFen(fen string) error {
 			break
 		}
 	}
+	// Empassant
+	if res[4] != '-' {
+		emp := pgnMap[res[4]]
+		if emp < 40 {
+			// white pawn
+		} else emp > 60 {
+		} else {
+			return errors.New("Invalid FEN empassant")
+		}
+	} else {
+		b.empassant = 0
+	}
+	// Turn
 	b.toMove = res[2] 
 	b.fen = fen
 	return nil
@@ -1154,6 +1168,8 @@ go-chess
 Commands:
 	quit - exit game
 	new - new game
+        print - print game
+        panel - print game info
 	coordinates - print board coordinates
 	pgn - print PGN history
 	fen - print FEN position
@@ -1190,6 +1206,8 @@ Loop:
 				fmt.Print(board.String())
 			case input == "/print":
 				fmt.Print(board.String())
+			case input == "/panel":
+				fmt.Print(board.getPanel())
 			case input == "/coordinates":
 				fmt.Println("Coordinates:")
 				board.Coordinates()
@@ -1205,6 +1223,7 @@ Loop:
 				if err != nil {
 					fmt.Println(err)
 				}
+				fmt.Print(board.getPanel())
 				fmt.Print(board.String())
 			case input == "/load-fen":
 				var err error
@@ -1214,6 +1233,7 @@ Loop:
 				if err != nil {
 					fmt.Println(err)
 				}
+				fmt.Print(board.getPanel())
 				fmt.Print(board.String())
 			case input == "/fen":
 				fmt.Println("FEN position:")
