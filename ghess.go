@@ -1286,3 +1286,70 @@ func (b Board) isUpper(x int) bool {
 		return false
 	}
 }
+
+
+/*
+Search
+*/
+// Find all pieces
+// Find all targetsquares
+// find all valid moves
+// choose one at random
+
+
+func (b *board) SearchForValid() {
+	isWhite := b.toMove == "W"
+	movers := make([]int, 0, 16)
+	targets := make([]int, 0, 64)
+	for _, i := range b.board {
+		if isWhite && b.isUpper(i){
+			movers = append(movers, idx)
+		} else if !isWhite && !b.isUpper(i) {
+			movers = append(movers, idx)
+		} else {
+			targets = append(targets, idx)
+		}
+	}
+
+	for _, val := range movers {
+		piece := string(bytes.ToUpper(b.board[val : val+1]))
+		for _, possible := range targets {
+			switch {
+			case p == "P":
+				e := b.validPawn(val, target, k)
+				if e == nil {
+					//fmt.Println("Pawn check")
+					return true
+				}
+			case p == "N":
+				e := b.validKnight(val, target)
+				if e == nil {
+					//fmt.Println("Knight check")
+					return true
+				}
+			case p == "B":
+				e := b.validBishop(val, target)
+				if e == nil {
+					//fmt.Println("Bishop check")
+					return true
+				}
+			case p == "R":
+				e := b.validRook(val, target)
+				if e == nil {
+					//fmt.Println("Rook check")
+					return true
+				}
+			case p == "Q":
+				e := b.validQueen(val, target)
+				if e == nil {
+					return true
+				}
+			case p == "K":
+				e := b.validKing(val, target, false)
+				if e == nil {
+					return true
+				}
+			}
+		}
+	}
+}
