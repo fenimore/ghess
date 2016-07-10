@@ -21,7 +21,6 @@ package ghess
 
 import (
 	"bufio"
-	"bytes"
 	"errors"
 	"fmt"
 	"os"
@@ -30,6 +29,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"bytes"
 )
 
 // The chessboard type
@@ -1297,14 +1297,19 @@ Search
 // choose one at random
 
 
-func (b *board) SearchForValid() {
-	isWhite := b.toMove == "W"
+func (b *Board) SearchForValid() {
+	isWhite := b.toMove == "w"
 	movers := make([]int, 0, 16)
 	targets := make([]int, 0, 64)
-	for _, i := range b.board {
-		if isWhite && b.isUpper(i){
+	var d byte
+	for idx, val := range b.board {
+		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
+				continue
+		}
+		if isWhite && b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
-		} else if !isWhite && !b.isUpper(i) {
+			fmt.Println(movers)
+		} else if !isWhite && !b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
 		} else {
 			targets = append(targets, idx)
@@ -1312,43 +1317,65 @@ func (b *board) SearchForValid() {
 	}
 
 	for _, val := range movers {
-		piece := string(bytes.ToUpper(b.board[val : val+1]))
-		for _, possible := range targets {
+		p := string(bytes.ToUpper(b.board[val : val+1]))
+		for _, target := range targets {
+			if target%10 == 0 || (target+1)%10 == 0 || target > 88 || target < 11 {
+				continue
+			}
+			if isWhite {
+				d = []byte(bytes.ToLower(b.board[target : target+1]))[0]
+			} else {
+				d = []byte(bytes.ToLower(b.board[target : target+1]))[0]
+			}
 			switch {
 			case p == "P":
-				e := b.validPawn(val, target, k)
+				e := b.validPawn(val, target, d)
 				if e == nil {
-					//fmt.Println("Pawn check")
-					return true
+					// valid move
+					fmt.Println("valid pawn move")
+					fmt.Println("Origin: ", val, "Target", target)
 				}
 			case p == "N":
 				e := b.validKnight(val, target)
 				if e == nil {
-					//fmt.Println("Knight check")
-					return true
+					// valid move
+					fmt.Println("valid knight move")
+					fmt.Println("Origin: ", val, "Target", target)
+					fmt.Println(b.pieceMap[val])
 				}
 			case p == "B":
 				e := b.validBishop(val, target)
 				if e == nil {
-					//fmt.Println("Bishop check")
-					return true
+					// valid move
+					fmt.Println("validMove")
+					fmt.Println("Origin: ", val, "Target", target)
 				}
 			case p == "R":
 				e := b.validRook(val, target)
 				if e == nil {
-					//fmt.Println("Rook check")
-					return true
+					// valid move
+					fmt.Println("Origin: ", val, "Target", target)
+					fmt.Println("validMove")					
 				}
 			case p == "Q":
 				e := b.validQueen(val, target)
 				if e == nil {
-					return true
+					fmt.Println("Origin: ", val, "Target", target)
+					//valid move			
+					fmt.Println("valid move")
 				}
 			case p == "K":
 				e := b.validKing(val, target, false)
 				if e == nil {
-					return true
+					// valid move
+					fmt.Println("valid move")
 				}
+				// Castle
+				e = b.validKing(val, target, true)
+				if e == nil {
+					// valid move
+					fmt.Println("valid castle")
+				}				
 			}
 		}
 	}
