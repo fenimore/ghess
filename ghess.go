@@ -704,6 +704,10 @@ func (b *Board) validQueen(orig int, dest int) error {
 // Validate king move.
 // Check for castle
 func (b *Board) validKing(orig int, dest int, castle bool) error {
+	validCastle := dest != 88 && dest != 81 && dest != 11 && dest != 18
+	if validCastle && castle {
+		return errors.New("Castle by moving K to R position")
+	}	
 	castlerr := errors.New("Something is in your way")
 	noCastle := errors.New("Castle on this side is foutu")
 	var possibilities [8]int
@@ -1319,6 +1323,9 @@ func (b *Board) SearchForValid() {
 	for _, val := range movers {
 		p := string(bytes.ToUpper(b.board[val : val+1]))
 		for _, target := range targets {
+			if val == 14 && target == 11 {
+					fmt.Println("this should work")
+				}
 			if target%10 == 0 || (target+1)%10 == 0 || target > 88 || target < 11 {
 				continue
 			}
@@ -1360,21 +1367,23 @@ func (b *Board) SearchForValid() {
 			case p == "Q":
 				e := b.validQueen(val, target)
 				if e == nil {
+					fmt.Println("valid Queen move")
 					fmt.Println("Origin: ", val, "Target", target)
-					//valid move			
-					fmt.Println("valid move")
 				}
 			case p == "K":
 				e := b.validKing(val, target, false)
 				if e == nil {
-					// valid move
-					fmt.Println("valid move")
+					fmt.Println("valid King move")
+					fmt.Print("Origin: ", val, "Target", target)					
 				}
 				// Castle
 				e = b.validKing(val, target, true)
+				if val == 14 && target == 11 {
+					fmt.Println("this should work")
+				}
 				if e == nil {
-					// valid move
-					fmt.Println("valid castle")
+					fmt.Println("valid Castle")
+					fmt.Print("Origin: ", val, "Target", target)
 				}				
 			}
 		}
