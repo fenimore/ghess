@@ -54,3 +54,15 @@ func ExampleCastleThroughCheck() {
 	// Output:
 	// Cannot Castle through check
 }
+
+func ExampleMoveIntoCheck() {
+	game := NewBoard()
+	hist := `1. e4 e5 2. Qf3 Qg5 3. Qxf7 Ke7`
+	var err error
+	game, err = game.LoadPgn(hist)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// Output:
+	// Cannot move into Check
+}

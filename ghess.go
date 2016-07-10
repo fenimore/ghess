@@ -4,8 +4,6 @@ Fenimore Love 2016
 GPLv3
 
 TODO: Search and Evaluation
-TODO: Fen PGN reading
-TODO: Fen output
 
 Exported Methods:
 Position()
@@ -1177,14 +1175,6 @@ Commands:
 	new - new game
         print - print game
         panel - print game info
-	coordinates - print board coordinates
-	pgn - print PGN history
-	fen - print FEN position
-	set-headers - set PGN headers
-	headers - print game info
-Tests:
-	test-castle
-        test-pgn - load a pgn game
 `
 	reader := bufio.NewReader(os.Stdin)
 	// welcome message
@@ -1213,100 +1203,6 @@ Loop:
 				fmt.Print(board.String())
 			case input == "/print":
 				fmt.Print(board.String())
-			case input == "/panel":
-				fmt.Print(board.getPanel())
-			case input == "/coordinates":
-				fmt.Println("Coordinates:")
-				board.Coordinates()
-			case input == "/pgn":
-				fmt.Println("PGN history:")
-				fmt.Println(board.headers,
-					board.pgn, "\n")
-			case input == "/load-pgn":
-				var err error
-				fmt.Print("Enter PGN history: ")
-				history, _ := reader.ReadString('\n')
-				board, err = board.LoadPgn(history)
-				if err != nil {
-					fmt.Println(err)
-				}
-				fmt.Print(board.getPanel())
-				fmt.Print(board.String())
-			case input == "/load-fen":
-				var err error
-				fmt.Print("Enter FEN position: ")
-				position, _ := reader.ReadString('\n')
-				err = board.LoadFen(position)
-				if err != nil {
-					fmt.Println(err)
-				}
-				fmt.Print(board.getPanel())
-				fmt.Print(board.String())
-			case input == "/fen":
-				fmt.Println("FEN position:")
-				fmt.Println(board.Position())
-			case input == "/set-headers":
-				fmt.Println("Set Headers:")
-				fmt.Print("White: ")
-				inWhite, _ := reader.ReadString('\n')
-				fmt.Print("Black: ")
-				inBlack, _ := reader.ReadString('\n')
-				board.SetHeaders(inWhite, inBlack)
-			case input == "/headers":
-				fmt.Println(board.headers)
-			case input == "/test-pgn":
-				hist := `1. Nf3 Nc6 2. d4 d5 3. c4 e6 4. e3 Nf6 5. Nc3 Be7 6. a3 O-O 7. b4 a6 8. Be2 Re8 9. O-O Bf8 10. c5 g6 11. b5 axb5 12. Bxb5 Bd7 13. h3 Na5 14. Bd3 Nc6 15. Rb1 Qc8 16. Nb5 e5 17. Be2 e4 18. Ne1 h6 19. Nc2 g5 20. f3 exf3 21. Bxf3 g4 22. hxg4 Bxg4 23. Nxc7 Qxc7 24. Bxg4 Nxg4 25. Qxg4+ Bg7 26. Nb4 Nxb4 27. Rxb4 Ra6 28. Rf5 Re4 29. Qh5 Rg6 30. Qh3 Qc8 31. Qf3 Qd7 32. Rb2 Bxd4 33. exd4 Re1+ 34. Kh2 Rxc1 35. Qxd5 Qe7 36. g3 Qc7 37. Rf4 b6 38. a4 Rg5 39. cxb6 Rxd5 40. bxc7 Rxc7 41. Rb5 Rc2+`
-				var err error
-				board, err = board.LoadPgn(hist)
-				if err != nil {
-					fmt.Println(err)
-				}
-				fmt.Print(board.String())
-				if board.check {
-					fmt.Println("****Check!****")
-				}
-			case input == "/test-castle-check":
-				hist := `1. e4 e5 2. d4 d5 3. Bh6 Bh3 4. Nxh3 Nxh6 5. Qg4 Qg5 6. Na3 Na6 7. Qf5 Qg4 8. Qg5 Bc5 9. Bc4 dxe4 10. dxe5 f6 11. exf6 gxf6 12. Qxf6 Bb4+ 13. c3 e3`
-				var err error
-				board, err = board.LoadPgn(hist)
-				if err != nil {
-					fmt.Println(err)
-				}
-			case input == "/test-check":
-				hist := `1. e4 e5 2. Qf3 Qg5 3. Qxf7`
-				var err error
-				board, err = board.LoadPgn(hist)
-				if err != nil {
-					fmt.Println(err)
-				}
-				fmt.Print(board.String())
-			case input == "/test-fen":
-				fen1 := `rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1`
-				fen2 := `6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w - - 2 42`
-				fen3 := `rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R bKQkq - 1 2`
-				fen4 := `r3kb1r/pp2ppp1/2pn1n1p/3bN3/1PN5/5P2/PB1RB1PP/R5K1 w kq - 1 19`
-				_ = board.LoadFen(fen1)
-				fmt.Print(board.String())
-				time.Sleep(2000 * time.Millisecond)
-				_ = board.LoadFen(fen2)
-				fmt.Print(board.getPanel())
-				fmt.Print(board.String())
-				time.Sleep(2000 * time.Millisecond)
-				err := board.LoadFen(fen3)
-				fmt.Println("Black to Move")
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					fmt.Print(board.String())
-					time.Sleep(2000 * time.Millisecond)				}
-				err = board.LoadFen(fen4)
-				fmt.Println("Castle")
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					fmt.Print(board.getPanel())
-					fmt.Print(board.String())
-					time.Sleep(2000 * time.Millisecond)				}				
 			default:
 				fmt.Println("Mysterious input")
 			}
@@ -1321,7 +1217,6 @@ Loop:
 		fmt.Println("\n-------------------")
 
 		// TODO use formats.
-		fmt.Print(board.getPanel())
 		if e != nil {
 			fmt.Printf("   [Error: %v]\n", e)
 		}
@@ -1345,16 +1240,6 @@ func (b *Board) Stats() map[string]string {
 	m["check"] = strconv.FormatBool(b.check)
 	m["headers"] = b.headers
 	return m
-}
-
-func (board *Board) getPanel() string {
-	panel := "|Debug Panel:\n|Castle: " +
-		string(board.castle) +
-		" | Move: "+ strconv.Itoa(board.moves) + "\n|Check: " +
-		strconv.FormatBool(board.check) + " | Turn: "+
-		board.toMove+"\n|Empassant: "+
-		strconv.Itoa(board.empassant)+"\n"
-	return panel
 }
 
 // Set pgnHeaders for a pgn export
