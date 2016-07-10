@@ -62,8 +62,6 @@ type Board struct {
 // Initialize starting values
 func NewBoard() Board {
 	b := make([]byte, 120)
-	fmt.Println("Initializing new Chess game\n")
-
 	// starting position
 	b = []byte(`           RNBKQBNR  PPPPPPPP  ........  ........  ........  ........  pppppppp  rnbkqbnr                                `)
 
@@ -425,25 +423,25 @@ func (b *Board) isInCheck(target int) bool {
 		case p == "P":
 			e := b.validPawn(val, target, k)
 			if e == nil {
-				fmt.Println("Pawn check")
+				//fmt.Println("Pawn check")
 				return true
 			}
 		case p == "N":
 			e := b.validKnight(val, target)
 			if e == nil {
-				fmt.Println("Knight check")
+				//fmt.Println("Knight check")
 				return true
 			}
 		case p == "B":
 			e := b.validBishop(val, target)
 			if e == nil {
-				fmt.Println("Bishop check")
+				//fmt.Println("Bishop check")
 				return true
 			}
 		case p == "R":
 			e := b.validRook(val, target)
 			if e == nil {
-				fmt.Println("Rook check")
+				//fmt.Println("Rook check")
 				return true
 			}
 		case p == "Q":
@@ -1025,7 +1023,6 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 	game := NewBoard()
 	result := game.pgnPattern.FindAllString(match, -1)
 	for _, val := range result {
-		fmt.Println("Move: ", game.moves)
 		err := game.ParseMove(val)
 		if err != nil {
 			return game, err
@@ -1254,7 +1251,7 @@ Loop:
 				inWhite, _ := reader.ReadString('\n')
 				fmt.Print("Black: ")
 				inBlack, _ := reader.ReadString('\n')
-				board.setHeaders(inWhite, inBlack)
+				board.SetHeaders(inWhite, inBlack)
 			case input == "/headers":
 				fmt.Println(board.headers)
 			case input == "/test-pgn":
@@ -1361,7 +1358,7 @@ func (board *Board) getPanel() string {
 }
 
 // Set pgnHeaders for a pgn export
-func (b *Board) setHeaders(w, bl string) {
+func (b *Board) SetHeaders(w, bl string) {
 	w = strings.TrimRight(w, "\r\n")
 	bl = strings.TrimRight(bl, "\r\n")
 	y, m, d := time.Now().Date()
