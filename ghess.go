@@ -24,6 +24,7 @@ import (
 
 // The chessboard type
 type Board struct {
+	// MUst be renamed!!!!!!
 	board []byte // piece position
 	// Game Variables
 	castle    []byte // castle possibility KQkq or ----
@@ -370,6 +371,7 @@ func (b *Board) updateBoard(orig, dest int,
 	}
 }
 
+// change to upper case
 // Check if current player is in Check
 func (b *Board) isPlayerInCheck() bool {
 	isWhite := b.toMove == "w"
