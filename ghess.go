@@ -6,6 +6,18 @@ GPLv3
 TODO: Search and Evaluation
 TODO: Fen PGN reading
 TODO: Fen output
+
+Exported Methods:
+Position()
+ParseMove()
+Move()
+LoadPgn()
+LoadFen()
+NewBoard()
+Stats()
+String()
+PgnString()
+
 */
 package ghess
 
@@ -1094,10 +1106,6 @@ func (b *Board) LoadFen(fen string) error {
 
 // Get FEN position
 func (b *Board) Position() string {
-	// b.board -> Fen
-	//rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-	//first := ""
-	// FIRST RANK
 	pos := ""
 	emp := "-"
 	zeroTicker := 0
@@ -1109,20 +1117,24 @@ func (b *Board) Position() string {
 		if b.board[i] == '.' {
 			zeroTicker++
 		} else if zeroTicker > 0 && b.board[i] != '.'{
-			fmt.Print(strconv.Itoa(zeroTicker))
-			fmt.Print(string(b.board[i]))
+			pos += strconv.Itoa(zeroTicker)
+			pos += string(b.board[i])
+			//fmt.Print(strconv.Itoa(zeroTicker))
+			//fmt.Print(string(b.board[i]))
 			zeroTicker = 0
 		} else {
-
-			fmt.Print(string(b.board[i]))
+			pos += string(b.board[i])
+			//fmt.Print(string(b.board[i]))
 		}
 		if (i-1)%10 == 0 && i > 10 { // hit edge
 			if zeroTicker > 0 {
-				fmt.Print(strconv.Itoa(zeroTicker))
+				pos += strconv.Itoa(zeroTicker)
+				//fmt.Print(strconv.Itoa(zeroTicker))
 			}
 			zeroTicker = 0
 			if i > 11 {
-				fmt.Print("/")
+				pos += "/"
+				//fmt.Print("/")
 			}
 		}
 
@@ -1322,6 +1334,20 @@ Loop:
 		}
 	}
 	fmt.Println("\nGood Game.")
+}
+
+// Give program data of current game.
+func (b *Board) Stats() map[string]string {
+	_ = b.Position()
+	m := make(map[string]string)
+	m["turn"] = b.toMove
+	m["move"] = strconv.Itoa(b.moves)
+	m["castling"] = string(b.castle)
+	m["position"] = b.fen
+	m["history"] = b.pgn
+	m["check"] = strconv.FormatBool(b.check)
+	m["headers"] = b.headers
+	return m
 }
 
 func (board *Board) getPanel() string {
