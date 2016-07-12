@@ -23,7 +23,12 @@ A Golang chess engine, fumbling along...
 - PGN import export parse
 - FEN import export
 - Cli interface
+- random game!
 
+## Search and Evaluate
+
+- look for all possible moves
+- look for all valid moves
 
 ## Board struct
 - A board object
@@ -78,8 +83,7 @@ A Golang chess engine, fumbling along...
 
 ### Search & Evaluate
 
-- Look for all possible moves
-- Look for all valid moves
+- Look for all valid moves | Not done..
 - Give all moves a score
 
 ### Extra features
