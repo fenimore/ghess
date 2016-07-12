@@ -7,6 +7,7 @@ import "regexp"
 import "os"
 import "strconv"
 import "strings"
+import "time"
 
 
 func main() {
@@ -112,6 +113,17 @@ Loop:
 				origs, dests := game.SearchForValid()
 				fmt.Println(origs)
 				fmt.Println(dests)
+			case input == "/rand":
+
+				origs, dests := game.SearchForValid()
+				game.MoveRandom(origs, dests)				
+			case input == "/random-game":
+				for {
+					origs, dests := game.SearchForValid()
+					game.MoveRandom(origs, dests)
+					fmt.Print(game.String())
+					time.Sleep(4000 * time.Millisecond)
+				}
 			default:
 				fmt.Println("Mysterious input")
 			}

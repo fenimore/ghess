@@ -30,6 +30,7 @@ import (
 	"time"
 	"unicode"
 	"bytes"
+	"math/rand"
 )
 
 // The chessboard type
@@ -1366,7 +1367,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				e := b.validBishop(val, target)
 				if e == nil {
 					// valid move
-					fmt.Println("validMove")
+					fmt.Println("valid Bishop Move")
 					fmt.Println("Origin: ", val, "Target", target)
 					fmt.Println("************")
 					validMoveCount++
@@ -1377,7 +1378,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				e := b.validRook(val, target)
 				if e == nil {
 					// valid move
-					fmt.Println("validMove")
+					fmt.Println("valid Rook Move")
 					fmt.Println("Origin: ", val, "Target", target)
 					origs = append(origs, val)
 					dests = append(dests, target);					
@@ -1421,4 +1422,13 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	}
 	fmt.Println(validMoveCount)
 	return origs, dests
+}
+
+func (b *Board) MoveRandom(origs, dests []int) error {
+	randomMove := rand.Intn(len(origs))
+	e := b.Move(origs[randomMove], dests[randomMove])
+	if e != nil {
+		return e
+	}
+	return nil
 }
