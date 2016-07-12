@@ -1301,25 +1301,29 @@ Search
 // choose one at random
 
 
-func (b *Board) SearchForValid() {
+func (b *Board) SearchForValid() ([]int, []int) {
 	isWhite := b.toMove == "w"
 	movers := make([]int, 0, 16)
 	targets := make([]int, 0, 64)
+	origs := make([]int, 0, 16)
+	dests := make([]int, 0, 64)
 	var d byte
+	var validMoveCount int
 	for idx, val := range b.board {
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
 				continue
 		}
 		if isWhite && b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
-			fmt.Println(movers)
+
 		} else if !isWhite && !b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
 		} else {
 			targets = append(targets, idx)
 		}
 	}
-
+	fmt.Println("List of Movers")
+	fmt.Println(movers)
 	for _, val := range movers {
 		p := string(bytes.ToUpper(b.board[val : val+1]))
 		for _, target := range targets {
@@ -1341,6 +1345,10 @@ func (b *Board) SearchForValid() {
 					// valid move
 					fmt.Println("valid pawn move")
 					fmt.Println("Origin: ", val, "Target", target)
+					fmt.Println("************")
+					validMoveCount++
+					origs = append(origs, val)
+					dests = append(dests, target);
 				}
 			case p == "N":
 				e := b.validKnight(val, target)
@@ -1349,6 +1357,10 @@ func (b *Board) SearchForValid() {
 					fmt.Println("valid knight move")
 					fmt.Println("Origin: ", val, "Target", target)
 					fmt.Println(b.pieceMap[val])
+					fmt.Println("************")
+					origs = append(origs, val)
+					dests = append(dests, target);
+					validMoveCount++
 				}
 			case p == "B":
 				e := b.validBishop(val, target)
@@ -1356,36 +1368,57 @@ func (b *Board) SearchForValid() {
 					// valid move
 					fmt.Println("validMove")
 					fmt.Println("Origin: ", val, "Target", target)
+					fmt.Println("************")
+					validMoveCount++
+					origs = append(origs, val)
+					dests = append(dests, target)
 				}
 			case p == "R":
 				e := b.validRook(val, target)
 				if e == nil {
 					// valid move
+					fmt.Println("validMove")
 					fmt.Println("Origin: ", val, "Target", target)
-					fmt.Println("validMove")					
+					origs = append(origs, val)
+					dests = append(dests, target);					
+					fmt.Println("************")
+					validMoveCount++
+
 				}
 			case p == "Q":
 				e := b.validQueen(val, target)
 				if e == nil {
 					fmt.Println("valid Queen move")
 					fmt.Println("Origin: ", val, "Target", target)
+					origs = append(origs, val)
+					dests = append(dests, target)					
+					fmt.Println("************")
+					validMoveCount++					
 				}
 			case p == "K":
 				e := b.validKing(val, target, false)
 				if e == nil {
 					fmt.Println("valid King move")
-					fmt.Print("Origin: ", val, "Target", target)					
+					fmt.Println("Origin: ", val, "Target", target)
+					origs = append(origs, val)
+					dests = append(dests, target)
+					fmt.Println("************")
+					validMoveCount++					
 				}
 				// Castle
 				e = b.validKing(val, target, true)
-				if val == 14 && target == 11 {
-					fmt.Println("this should work")
-				}
+				// Castling validation is totally messed up
 				if e == nil {
 					fmt.Println("valid Castle")
-					fmt.Print("Origin: ", val, "Target", target)
+					fmt.Println("Origin: ", val, "Target", target)
+					fmt.Println("************")
+					validMoveCount++
+					origs = append(origs, val)
+					dests = append(dests, target);					
 				}				
 			}
 		}
 	}
+	fmt.Println(validMoveCount)
+	return origs, dests
 }

@@ -109,7 +109,9 @@ Loop:
 				info = game.Stats()
 				fmt.Println(info["headers"])
 			case input == "/test":
-				game.SearchForValid()
+				origs, dests := game.SearchForValid()
+				fmt.Println(origs)
+				fmt.Println(dests)
 			default:
 				fmt.Println("Mysterious input")
 			}
