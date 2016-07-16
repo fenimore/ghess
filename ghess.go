@@ -1342,9 +1342,6 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				e := b.validPawn(val, target, d)
 				if e == nil {
 					// valid move
-					fmt.Println("Pawn move")
-					fmt.Println("Origin: ", val, "Target", target)
-					fmt.Println("************")
 					validMoveCount++
 					origs = append(origs, val)
 					dests = append(dests, target)
@@ -1353,9 +1350,6 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				e := b.validKnight(val, target)
 				if e == nil {
 					// valid move
-					fmt.Println("Knight move")
-					fmt.Println("Origin: ", val, "Target", target)
-					fmt.Println("************")
 					origs = append(origs, val)
 					dests = append(dests, target)
 					validMoveCount++
@@ -1363,10 +1357,6 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			case p == "B":
 				e := b.validBishop(val, target)
 				if e == nil {
-					// valid move
-					fmt.Println("Bishop Move")
-					fmt.Println("Origin: ", val, "Target", target)
-					fmt.Println("************")
 					validMoveCount++
 					origs = append(origs, val)
 					dests = append(dests, target)
@@ -1374,33 +1364,23 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			case p == "R":
 				e := b.validRook(val, target)
 				if e == nil {
-					// valid move
-					fmt.Println("Rook Move")
-					fmt.Println("Origin: ", val, "Target", target)
 					origs = append(origs, val)
 					dests = append(dests, target)
-					fmt.Println("************")
 					validMoveCount++
 
 				}
 			case p == "Q":
 				e := b.validQueen(val, target)
 				if e == nil {
-					fmt.Println("Queen move")
-					fmt.Println("Origin: ", val, "Target", target)
 					origs = append(origs, val)
 					dests = append(dests, target)
-					fmt.Println("************")
 					validMoveCount++
 				}
 			case p == "K":
 				e := b.validKing(val, target, false)
 				if e == nil {
-					fmt.Println("King move")
-					fmt.Println("Origin: ", val, "Target", target)
 					origs = append(origs, val)
 					dests = append(dests, target)
-					fmt.Println("************")
 					validMoveCount++
 				}
 				// Castle
@@ -1408,9 +1388,6 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				// Castling validation is totally messed up
 				fmt.Println(e, target)
 				if e == nil {
-					fmt.Println("Castle")
-					fmt.Println("Origin: ", val, "Target", target)
-					fmt.Println("************")
 					validMoveCount++
 					origs = append(origs, val)
 					dests = append(dests, target)
