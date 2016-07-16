@@ -21,16 +21,16 @@ package ghess
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 	"unicode"
-	"bytes"
-	"math/rand"
 )
 
 // The chessboard type
@@ -45,16 +45,15 @@ type Board struct {
 	moves     int    // the count of moves
 	check     bool
 	// Map for display grid
-	pgnMap map[string]int // the pgn format
+	pgnMap   map[string]int    // the pgn format
 	pieceMap map[int]string    // coord to standard notation
-	pieces map[string]string // the unicode fonts
+	pieces   map[string]string // the unicode fonts
 	// Game Positions
-	fen     string         // Game position
-	pgn     string         // Game history
-	headers string         // Pgn format
+	fen        string         // Game position
+	pgn        string         // Game history
+	headers    string         // Pgn format
 	pgnPattern *regexp.Regexp // For parsing PGN
 	fenPattern *regexp.Regexp
-
 }
 
 // Create a new Board in the starting position
@@ -102,14 +101,14 @@ func NewBoard() Board {
 	pgnPattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
 	fenPattern, _ := regexp.Compile(`([PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8})\s(w|b)\s([KQkq-]{1,4})\s([a-h][36]|-)\s\d\s([1-9]?[1-9])`)
 	return Board{
-		board:   b,
-		castle:  []byte(`KQkq`),
-		pgnMap:  m,
-		pieceMap: p,
-		pieces:  r,
-		toMove:  "w",
-		score:   "*",
-		moves:   1,
+		board:      b,
+		castle:     []byte(`KQkq`),
+		pgnMap:     m,
+		pieceMap:   p,
+		pieces:     r,
+		toMove:     "w",
+		score:      "*",
+		moves:      1,
 		pgnPattern: pgnPattern,
 		fenPattern: fenPattern,
 	}
@@ -326,7 +325,7 @@ func (b *Board) updateBoard(orig, dest int,
 			b.castle[2] = '-'
 		}
 	} else if isCastle {
-		kingSide  := orig > dest
+		kingSide := orig > dest
 		queenSide := orig < dest
 		switch {
 		case isWhite && kingSide:
@@ -713,7 +712,7 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	// validCastle is a not so valid castle position
 	if validCastle && castle {
 		return errors.New("Castle by moving K to R position")
-	}	
+	}
 	castlerr := errors.New("Something is in your way")
 	noCastle := errors.New("Castle on this side is foutu")
 	var possibilities [8]int
@@ -1041,7 +1040,7 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 
 // Parse fen and update Board.board
 func (b *Board) LoadFen(fen string) error {
-// Treat fen input
+	// Treat fen input
 	fen = strings.TrimRight(fen, "\r\n")
 	matches := b.fenPattern.MatchString(fen)
 	if !matches {
@@ -1052,7 +1051,7 @@ func (b *Board) LoadFen(fen string) error {
 	//
 	for _, val := range res[1] { // res[1] {
 		// First, make sure it's a relevant position
-		if (posCount%10) == 0 {// || (posCount+1)%10 == 0 {
+		if (posCount % 10) == 0 { // || (posCount+1)%10 == 0 {
 			posCount -= 2
 		}
 		// Check if there are Empty Squares
@@ -1062,17 +1061,17 @@ func (b *Board) LoadFen(fen string) error {
 				b.board[posCount] = '.'
 				posCount--
 			}
-			continue 
+			continue
 		}
 		if val == '/' {
-			continue 
+			continue
 		}
 		// Is regular Piece
 		b.board[posCount] = byte(val)
 		posCount--
 	}
 	// Update Board value
-	// Castle 
+	// Castle
 	b.castle = []byte("----")
 	for _, v := range res[3] {
 		switch {
@@ -1121,7 +1120,7 @@ func (b *Board) Position() string {
 		// Cycle backwards and tally empty squares
 		if b.board[i] == '.' {
 			zeroTicker++
-		} else if zeroTicker > 0 && b.board[i] != '.'{
+		} else if zeroTicker > 0 && b.board[i] != '.' {
 			pos += strconv.Itoa(zeroTicker)
 			pos += string(b.board[i])
 			//fmt.Print(strconv.Itoa(zeroTicker))
@@ -1152,7 +1151,7 @@ func (b *Board) Position() string {
 			emp = b.pieceMap[b.empassant-10]
 		}
 	}
-	b.fen = pos+" "+b.toMove+" "+string(b.castle[:4])+" "+emp+" 0 "+strconv.Itoa(b.moves)
+	b.fen = pos + " " + b.toMove + " " + string(b.castle[:4]) + " " + emp + " 0 " + strconv.Itoa(b.moves)
 	return b.fen
 }
 
@@ -1297,7 +1296,6 @@ func (b Board) isUpper(x int) bool {
 	}
 }
 
-
 /*
 Search
 */
@@ -1311,7 +1309,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	var validMoveCount int
 	for idx, val := range b.board {
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
-				continue
+			continue
 		}
 		// This is why Castle search-valid doens't work
 		if isWhite && b.isUpper(idx) && val != '.' {
@@ -1329,8 +1327,8 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		p := string(bytes.ToUpper(b.board[val : val+1]))
 		for _, target := range targets {
 			if val == 14 && target == 11 {
-					fmt.Println("this should work")
-				}
+				fmt.Println("this should work")
+			}
 			if target%10 == 0 || (target+1)%10 == 0 || target > 88 || target < 11 {
 				continue
 			}
@@ -1349,7 +1347,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 					fmt.Println("************")
 					validMoveCount++
 					origs = append(origs, val)
-					dests = append(dests, target);
+					dests = append(dests, target)
 				}
 			case p == "N":
 				e := b.validKnight(val, target)
@@ -1359,7 +1357,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 					fmt.Println("Origin: ", val, "Target", target)
 					fmt.Println("************")
 					origs = append(origs, val)
-					dests = append(dests, target);
+					dests = append(dests, target)
 					validMoveCount++
 				}
 			case p == "B":
@@ -1380,7 +1378,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 					fmt.Println("Rook Move")
 					fmt.Println("Origin: ", val, "Target", target)
 					origs = append(origs, val)
-					dests = append(dests, target);					
+					dests = append(dests, target)
 					fmt.Println("************")
 					validMoveCount++
 
@@ -1391,9 +1389,9 @@ func (b *Board) SearchForValid() ([]int, []int) {
 					fmt.Println("Queen move")
 					fmt.Println("Origin: ", val, "Target", target)
 					origs = append(origs, val)
-					dests = append(dests, target)					
+					dests = append(dests, target)
 					fmt.Println("************")
-					validMoveCount++					
+					validMoveCount++
 				}
 			case p == "K":
 				e := b.validKing(val, target, false)
@@ -1403,7 +1401,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 					origs = append(origs, val)
 					dests = append(dests, target)
 					fmt.Println("************")
-					validMoveCount++					
+					validMoveCount++
 				}
 				// Castle
 				e = b.validKing(val, target, true)
@@ -1415,8 +1413,8 @@ func (b *Board) SearchForValid() ([]int, []int) {
 					fmt.Println("************")
 					validMoveCount++
 					origs = append(origs, val)
-					dests = append(dests, target);					
-				}				
+					dests = append(dests, target)
+				}
 			}
 		}
 	}
