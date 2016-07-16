@@ -59,7 +59,6 @@ type Board struct {
 }
 
 // Create a new Board in the starting position
-// Initialize starting values
 func NewBoard() Board {
 	b := make([]byte, 120)
 	// starting position
@@ -116,14 +115,16 @@ func NewBoard() Board {
 	}
 }
 
-// Return PNG String
+// Return PNG String.
+// Concatnate headers and history
 func (b *Board) PgnString() string {
 	return b.headers + b.pgn
 }
 
-// Create printable board
+// Return a string printable board
+// White position
+// TODO: Rotation
 func (b *Board) String() string {
-	// TODO Rotate Board
 	game := b.board
 	p := b.pieces
 	var printBoard string
@@ -143,10 +144,10 @@ func (b *Board) String() string {
 	return printBoard
 }
 
-// Wrapper in for standard notation positions
+// Wrapper in for standard notation positions.
+// TODO: use two coordinates, include piece value
+//e2e4
 func (b *Board) standardWrapper(orig, dest string) error {
-	// TODO: use two coordinates, include piece value
-	//e2e4
 	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
 	if e != nil {
 		return e
@@ -155,7 +156,7 @@ func (b *Board) standardWrapper(orig, dest string) error {
 }
 
 // Validate move
-// Change byte values to new values
+// Change byte values to new values.
 func (b *Board) Move(orig, dest int) error {
 	if b.CheckMate {
 		return errors.New("Cannot Move in Checkmate")
@@ -352,7 +353,7 @@ LoopSearch:
 	return nil
 }
 
-// Updates board, useless without Move() validation
+// Updates board, useless without validation
 func (b *Board) updateBoard(orig, dest int,
 	val byte, isEmpassant, isCastle bool) {
 	isWhite := b.toMove == "w"
@@ -435,8 +436,9 @@ func (b *Board) updateBoard(orig, dest int,
 	}
 }
 
-// change to upper case
+
 // Check if current player is in Check
+// TODO: Change to upper case
 func (b *Board) isPlayerInCheck() bool {
 	isWhite := b.toMove == "w"
 	for idx, val := range b.board {
@@ -450,7 +452,7 @@ func (b *Board) isPlayerInCheck() bool {
 	return false
 }
 
-// Check if target is in Check
+// Check if target King is in Check
 func (b *Board) isInCheck(target int) bool {
 	isWhite := b.isUpper(target)
 	k := b.board[target]
@@ -758,7 +760,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 }
 
 // Validate king move.
-// Check for castle
+// Check for castle.
 func (b *Board) validKing(orig int, dest int, castle bool) error {
 	validCastle := dest != 88 && dest != 81 && dest != 11 && dest != 18
 	// validCastle is a not so valid castle position
@@ -820,6 +822,7 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 
 // Parse a pgn move
 // Infer the origin piece
+// TODO: disambiguiation
 func (b *Board) ParseMove(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
 	// Variables
@@ -1077,8 +1080,9 @@ func (b *Board) ParseMove(move string) error {
 }
 
 // Read a pgn match
+// TODO: ignore header strings eg [White]
 func (b *Board) LoadPgn(match string) (Board, error) {
-	// TODO: ignore header strings
+
 	game := NewBoard()
 	result := game.pgnPattern.FindAllString(match, -1)
 	for _, val := range result {
@@ -1175,22 +1179,17 @@ func (b *Board) Position() string {
 		} else if zeroTicker > 0 && b.board[i] != '.' {
 			pos += strconv.Itoa(zeroTicker)
 			pos += string(b.board[i])
-			//fmt.Print(strconv.Itoa(zeroTicker))
-			//fmt.Print(string(b.board[i]))
 			zeroTicker = 0
 		} else {
 			pos += string(b.board[i])
-			//fmt.Print(string(b.board[i]))
 		}
 		if (i-1)%10 == 0 && i > 10 { // hit edge
 			if zeroTicker > 0 {
 				pos += strconv.Itoa(zeroTicker)
-				//fmt.Print(strconv.Itoa(zeroTicker))
 			}
 			zeroTicker = 0
 			if i > 11 {
 				pos += "/"
-				//fmt.Print("/")
 			}
 		}
 
@@ -1207,16 +1206,14 @@ func (b *Board) Position() string {
 	return b.fen
 }
 
-/*
-Main thread
-*/
+// Play game in terminal
 func main() {
 	board := NewBoard()
 	PlayGame(board)
 }
 
 // Take user input and commands
-// TODO: make a method of board
+// See ui/clichess.go for more robust client
 func PlayGame(board Board) { // TODO Rotate Board
 	var turn string
 	welcome := `
@@ -1319,7 +1316,7 @@ func (b *Board) SetHeaders(w, bl string) {
 	b.headers = white + "\n" + black + "\n" + date + "\n" + result + "\n"
 }
 
-// Print the Board.Move() coordinate
+// Print the Board.Move() coordinates
 func (b *Board) Coordinates() {
 	// TODO Rotate Board
 	game := b.board
@@ -1340,6 +1337,8 @@ func (b *Board) Coordinates() {
 }
 
 // Check if byte in board is upper case.
+// If Uppercase, it is either white player
+// TODO: or it is empty square? 
 func (b Board) isUpper(x int) bool {
 	//compare = []byte(bytes.ToLower(b))[0]
 	compare := byte(unicode.ToUpper(rune(b.board[x])))
@@ -1353,6 +1352,10 @@ func (b Board) isUpper(x int) bool {
 /*
 Search
 */
+
+// Find and test the validity of all
+// possible Move(orig, dest).
+// TODO: it doesn't invalidate in check
 func (b *Board) SearchForValid() ([]int, []int) {
 	isWhite := b.toMove == "w"
 	movers := make([]int, 0, 16)
@@ -1451,6 +1454,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	return origs, dests
 }
 
+// Make a random move from lists of valid moves
 func (b *Board) MoveRandom(origs, dests []int) error {
 	randomMove := rand.Intn(len(origs))
 	e := b.Move(origs[randomMove], dests[randomMove])

@@ -81,6 +81,7 @@ A Golang chess engine, fumbling along...
 - FEN turn signification???
 - Variables should be exported, capitalized
 - Checkmate should update PGN headers
+- Checkmate should # pgn
 
 ### Search & Evaluate
 
