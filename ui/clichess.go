@@ -40,6 +40,9 @@ Commands:
 	fen - print FEN position
 	set-headers - set PGN headers
 	headers - print game info
+        random-game - play random game
+        rand - make a random move
+        valid - show valid moves
 `
 	reader := bufio.NewReader(os.Stdin)
 	// welcome message
@@ -109,7 +112,7 @@ Loop:
 			case input == "/headers":
 				info = game.Stats()
 				fmt.Println(info["headers"])
-			case input == "/test":
+			case input == "/valid":
 				origs, dests := game.SearchForValid()
 				fmt.Println(origs)
 				fmt.Println(dests)

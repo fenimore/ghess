@@ -13,6 +13,9 @@ A Golang chess engine, fumbling along...
        :a::b::c::d::e::f::g::h:
     Black to move: 
 
+# Instructions
+- ghess.go is the chess program. Run clichess.go, in the `ui/` directory in order to play chess.
+
 
 # Features
 - Basic rules are implemented
@@ -67,7 +70,7 @@ A Golang chess engine, fumbling along...
 
 ## TODO
 
-- TESTS
+- More tests
 
 ### Basic rules
 
