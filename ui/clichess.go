@@ -31,7 +31,7 @@ go-chess
     Prefix commands with / - slash
 
 Commands:
-	quit - exit game
+	quit or exit - exit game
 	new - new game
         print - print game
         panel - print game info
@@ -64,7 +64,7 @@ Loop:
 			switch {
 			case input == "/help":
 				fmt.Print("\n", manuel)
-			case input == "/quit":
+			case input == "/quit" || input == "/exit":
 				break Loop 
 			case input == "/new":
 				game = ghess.NewBoard()

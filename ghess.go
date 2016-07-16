@@ -35,7 +35,7 @@ import (
 
 // The chessboard type
 type Board struct {
-	// MUst be renamed!!!!!!
+	// renamed?
 	board []byte // piece position
 	// Game Variables
 	castle    []byte // castle possibility KQkq or ----
@@ -1300,12 +1300,6 @@ func (b Board) isUpper(x int) bool {
 /*
 Search
 */
-// Find all pieces
-// Find all targetsquares
-// find all valid moves
-// choose one at random
-
-
 func (b *Board) SearchForValid() ([]int, []int) {
 	isWhite := b.toMove == "w"
 	movers := make([]int, 0, 16)
@@ -1348,7 +1342,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				e := b.validPawn(val, target, d)
 				if e == nil {
 					// valid move
-					fmt.Println("valid pawn move")
+					fmt.Println("Pawn move")
 					fmt.Println("Origin: ", val, "Target", target)
 					fmt.Println("************")
 					validMoveCount++
@@ -1359,9 +1353,8 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				e := b.validKnight(val, target)
 				if e == nil {
 					// valid move
-					fmt.Println("valid knight move")
+					fmt.Println("Knight move")
 					fmt.Println("Origin: ", val, "Target", target)
-					fmt.Println(b.pieceMap[val])
 					fmt.Println("************")
 					origs = append(origs, val)
 					dests = append(dests, target);
@@ -1371,7 +1364,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				e := b.validBishop(val, target)
 				if e == nil {
 					// valid move
-					fmt.Println("valid Bishop Move")
+					fmt.Println("Bishop Move")
 					fmt.Println("Origin: ", val, "Target", target)
 					fmt.Println("************")
 					validMoveCount++
@@ -1382,7 +1375,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				e := b.validRook(val, target)
 				if e == nil {
 					// valid move
-					fmt.Println("valid Rook Move")
+					fmt.Println("Rook Move")
 					fmt.Println("Origin: ", val, "Target", target)
 					origs = append(origs, val)
 					dests = append(dests, target);					
@@ -1393,7 +1386,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			case p == "Q":
 				e := b.validQueen(val, target)
 				if e == nil {
-					fmt.Println("valid Queen move")
+					fmt.Println("Queen move")
 					fmt.Println("Origin: ", val, "Target", target)
 					origs = append(origs, val)
 					dests = append(dests, target)					
@@ -1403,7 +1396,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			case p == "K":
 				e := b.validKing(val, target, false)
 				if e == nil {
-					fmt.Println("valid King move")
+					fmt.Println("King move")
 					fmt.Println("Origin: ", val, "Target", target)
 					origs = append(origs, val)
 					dests = append(dests, target)
@@ -1414,7 +1407,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				e = b.validKing(val, target, true)
 				// Castling validation is totally messed up
 				if e == nil {
-					fmt.Println("valid Castle")
+					fmt.Println("Castle")
 					fmt.Println("Origin: ", val, "Target", target)
 					fmt.Println("************")
 					validMoveCount++
@@ -1424,7 +1417,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			}
 		}
 	}
-	fmt.Println(validMoveCount)
+	fmt.Println("Valid move count: ", validMoveCount)
 	return origs, dests
 }
 
@@ -1436,3 +1429,7 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 	}
 	return nil
 }
+
+/*
+Evaluate
+*/
