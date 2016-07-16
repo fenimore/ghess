@@ -99,6 +99,7 @@ A Golang chess engine, fumbling along...
 
 - qe4 crashes
 - Enfait, crashes when corrupt basic input...
+- Load Fen doesn't print corrent turn (UI)
 
 ### Notes...
 
@@ -107,6 +108,8 @@ A Golang chess engine, fumbling along...
     rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2
     rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
 	8/5p2/8/p5P1/k7/8/1K6/8 w - - 0 1
+	6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5
+
 
 ### License;
 

@@ -40,10 +40,11 @@ type Board struct {
 	// Game Variables
 	castle    []byte // castle possibility KQkq or ----
 	empassant int    // square vulnerable to empassant
-	score     string
+	Score     string
 	toMove    string // Next move is w or b
 	moves     int    // the count of moves
 	check     bool
+	CheckMate bool // start Capitalizing
 	// Map for display grid
 	pgnMap   map[string]int    // the pgn format
 	pieceMap map[int]string    // coord to standard notation
@@ -54,6 +55,7 @@ type Board struct {
 	headers    string         // Pgn format
 	pgnPattern *regexp.Regexp // For parsing PGN
 	fenPattern *regexp.Regexp
+	
 }
 
 // Create a new Board in the starting position
@@ -107,7 +109,7 @@ func NewBoard() Board {
 		pieceMap:   p,
 		pieces:     r,
 		toMove:     "w",
-		score:      "*",
+		Score:      "*",
 		moves:      1,
 		pgnPattern: pgnPattern,
 		fenPattern: fenPattern,
@@ -295,10 +297,13 @@ func (b *Board) Move(orig, dest int) error {
 	b.updateBoard(orig, dest, val, isEmpassant, isCastle)
 
 	// Look for Checkmate
+	// Check all possibl moves after a check
 	isCheck = b.isPlayerInCheck()
 	if isCheck {
+		isCheckMate := false
 		origs, dests := b.SearchForValid()
 		isWhite = b.toMove == "w"
+LoopSearch:
 		for idx, o := range origs {
 			p := *b // p for possible
 			boardCopy := make([]byte, 120)
@@ -308,9 +313,11 @@ func (b *Board) Move(orig, dest int) error {
 			p.board = boardCopy
 			p.castle = castleCopy
 			// need to add isEmp and isCas
-			p.updateBoard(o, dests[idx], p.board[o], false, false)
+			isEmp := false
+			isCas := false
+			p.updateBoard(o, dests[idx], p.board[o],
+				isEmp, isCas)
 			var king int
-			//isWhite = !isWhite // ????
 			for idx, val := range p.board {
 				if isWhite && val == 'K' {
 					king = idx
@@ -321,22 +328,19 @@ func (b *Board) Move(orig, dest int) error {
 				}
 			}
 			isCheck := p.isInCheck(king)
-			// If they are all check
-			// It is check mate
+			if isCheck {
+				isCheckMate = true
+				continue LoopSearch
+			} else {
+				isCheckMate = false
+				break LoopSearch
+			}
 		}
-	}					
-			
+		if isCheckMate {
+			b.CheckMate = true
 		}
 	}
 
-	if len(origs) < 1 { 
-		return errors.New("Check Mate")
-		if b.toMove != "w" { // loser's turn
-			b.score = "1-0" 
-		} else {
-			b.score = "0-1"
-		}
-	}
 	return nil
 }
 
