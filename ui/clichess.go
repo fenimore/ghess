@@ -132,9 +132,15 @@ Loop:
 				for {
 					origs, dests := game.SearchForValid()
 					game.MoveRandom(origs, dests)
+					info = game.Stats()
+					fmt.Println("Move ", info["moves"])
 					fmt.Print(game.String())
 					time.Sleep(3000 * time.Millisecond)
+					if game.CheckMate {
+						break
+					}
 				}
+				fmt.Println(game.Score)
 			default:
 				fmt.Println("Mysterious input")
 			}
