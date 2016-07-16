@@ -293,10 +293,10 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// update real board
 	b.updateBoard(orig, dest, val, empassant, isCastle)
-	origs, _ := b.SearchForValid()
-	if len(origs) < 1 {
-		return errors.New("Check Mate")
-	}
+	//origs, _ := b.SearchForValid()
+	//if len(origs) < 1 {
+	//return errors.New("Check Mate")
+	//}
 	return nil
 }
 
@@ -1327,7 +1327,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		p := string(bytes.ToUpper(b.board[val : val+1]))
 		for _, target := range targets {
 			if val == 14 && target == 11 {
-				fmt.Println("this should work")
+				//fmt.Println("this should work")
 			}
 			if target%10 == 0 || (target+1)%10 == 0 || target > 88 || target < 11 {
 				continue
@@ -1341,7 +1341,6 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			case p == "P":
 				e := b.validPawn(val, target, d)
 				if e == nil {
-					// valid move
 					validMoveCount++
 					origs = append(origs, val)
 					dests = append(dests, target)
@@ -1349,7 +1348,6 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			case p == "N":
 				e := b.validKnight(val, target)
 				if e == nil {
-					// valid move
 					origs = append(origs, val)
 					dests = append(dests, target)
 					validMoveCount++
@@ -1395,7 +1393,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			}
 		}
 	}
-	fmt.Println("Valid move count: ", validMoveCount)
+	//fmt.Println("Valid move count: ", validMoveCount)
 	return origs, dests
 }
 
