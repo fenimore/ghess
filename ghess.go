@@ -293,10 +293,15 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// update real board
 	b.updateBoard(orig, dest, val, empassant, isCastle)
-	//origs, _ := b.SearchForValid()
-	//if len(origs) < 1 {
-	//return errors.New("Check Mate")
-	//}
+	origs, _ := b.SearchForValid()
+	if len(origs) < 1 { 
+		return errors.New("Check Mate")
+		if b.toMove != "w" { // loser's turn
+			b.score = "1-0" 
+		} else {
+			b.score = "0-1"
+		}
+	}
 	return nil
 }
 
@@ -1321,8 +1326,8 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			targets = append(targets, idx)
 		}
 	}
-	fmt.Println("List of Movers")
-	fmt.Println(movers)
+	//fmt.Println("List of Movers")
+	//fmt.Println(movers)
 	for _, val := range movers {
 		p := string(bytes.ToUpper(b.board[val : val+1]))
 		for _, target := range targets {
@@ -1384,7 +1389,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				// Castle
 				e = b.validKing(val, target, true)
 				// Castling validation is totally messed up
-				fmt.Println(e, target)
+				//fmt.Println(e, target)
 				if e == nil {
 					validMoveCount++
 					origs = append(origs, val)
