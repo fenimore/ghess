@@ -307,7 +307,24 @@ func (b *Board) Move(orig, dest int) error {
 			copy(castleCopy, b.castle)
 			p.board = boardCopy
 			p.castle = castleCopy
-			p.updateBoard(o, dests[idx], p.board[o], 
+			// need to add isEmp and isCas
+			p.updateBoard(o, dests[idx], p.board[o], false, false)
+			var king int
+			//isWhite = !isWhite // ????
+			for idx, val := range p.board {
+				if isWhite && val == 'K' {
+					king = idx
+					break
+				} else if !isWhite && val == 'k' {
+					king = idx
+					break
+				}
+			}
+			isCheck := p.isInCheck(king)
+			// If they are all check
+			// It is check mate
+		}
+	}					
 			
 		}
 	}
