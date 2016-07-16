@@ -5,7 +5,8 @@ GPLv3
 
 TODO: Search and Evaluation
 
-Exported Methods:
+Exported Methods and Functions:
+
 Position()
 ParseMove()
 Move()
@@ -34,8 +35,8 @@ import (
 )
 
 // The chessboard type
+// TODO: Make Upper Case? M-c for upper case
 type Board struct {
-	// renamed?
 	board []byte // piece position
 	// Game Variables
 	castle    []byte // castle possibility KQkq or ----
@@ -55,7 +56,6 @@ type Board struct {
 	headers    string         // Pgn format
 	pgnPattern *regexp.Regexp // For parsing PGN
 	fenPattern *regexp.Regexp
-	
 }
 
 // Create a new Board in the starting position
@@ -162,8 +162,8 @@ func (b *Board) Move(orig, dest int) error {
 		return errors.New("Cannot Move in Checkmate")
 	}
 	val := b.board[orig]
-	var o byte         // supposed starting square
-	var d byte         // supposed destination
+	var o byte           // supposed starting square
+	var d byte           // supposed destination
 	var isEmpassant bool //refactor?
 	var isCastle bool
 	if b.toMove == "w" {
@@ -307,7 +307,7 @@ func (b *Board) Move(orig, dest int) error {
 		isCheckMate := false
 		origs, dests := b.SearchForValid()
 		isWhite = b.toMove == "w"
-LoopSearch:
+	LoopSearch:
 		for idx, o := range origs {
 			p := *b // p for possible
 			boardCopy := make([]byte, 120)
@@ -435,7 +435,6 @@ func (b *Board) updateBoard(orig, dest int,
 		b.check = false
 	}
 }
-
 
 // Check if current player is in Check
 // TODO: Change to upper case
@@ -1064,11 +1063,11 @@ func (b *Board) ParseMove(move string) error {
 				b.pgn += strconv.Itoa(b.moves) + ". "
 			}
 			b.pgn += (move)
-			if b.check {
-				// TODO
-				// if move doesn't already have check..
+			if b.CheckMate {
+				b.pgn += "# "
+			} else 	if b.check {
+				// TODO if move doesn't already have check..
 				b.pgn += "+ "
-				// check for checkmate?
 			} else {
 				b.pgn += " " // add space
 			}
@@ -1161,6 +1160,7 @@ func (b *Board) LoadFen(fen string) error {
 	turns, _ := strconv.Atoi(res[5])
 	b.moves = turns
 	b.fen = fen
+	b.toMove = res[2]
 	return nil
 }
 
@@ -1338,7 +1338,7 @@ func (b *Board) Coordinates() {
 
 // Check if byte in board is upper case.
 // If Uppercase, it is either white player
-// TODO: or it is empty square? 
+// TODO: or it is empty square?
 func (b Board) isUpper(x int) bool {
 	//compare = []byte(bytes.ToLower(b))[0]
 	compare := byte(unicode.ToUpper(rune(b.board[x])))
