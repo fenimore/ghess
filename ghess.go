@@ -34,18 +34,18 @@ import (
 	"unicode"
 )
 
-// The chessboard type
+// Board is a chessboard type
 // TODO: Make Upper Case? M-c for upper case
 type Board struct {
 	board []byte // piece position
 	// Game Variables
 	castle    []byte // castle possibility KQkq or ----
 	empassant int    // square vulnerable to empassant
-	Score     string
+	score     string
 	toMove    string // Next move is w or b
 	moves     int    // the count of moves
 	check     bool
-	CheckMate bool // start Capitalizing
+	checkmate bool // start Capitalizing
 	// Map for display grid
 	pgnMap   map[string]int    // the pgn format
 	pieceMap map[int]string    // coord to standard notation
@@ -108,7 +108,7 @@ func NewBoard() Board {
 		pieceMap:   p,
 		pieces:     r,
 		toMove:     "w",
-		Score:      "*",
+		score:      "*",
 		moves:      1,
 		pgnPattern: pgnPattern,
 		fenPattern: fenPattern,
@@ -158,7 +158,7 @@ func (b *Board) standardWrapper(orig, dest string) error {
 // Validate move
 // Change byte values to new values.
 func (b *Board) Move(orig, dest int) error {
-	if b.CheckMate {
+	if b.checkmate {
 		return errors.New("Cannot Move in Checkmate")
 	}
 	val := b.board[orig]
@@ -341,11 +341,11 @@ func (b *Board) Move(orig, dest int) error {
 			}
 		}
 		if isCheckMate {
-			b.CheckMate = true
+			b.checkmate = true
 			if b.toMove == "w" {
-				b.Score = "0-1"
+				b.score = "0-1"
 			} else {
-				b.Score = "1-0"
+				b.score = "1-0"
 			}
 		}
 	}
@@ -819,8 +819,9 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	return nil
 }
 
-// Parse a pgn move
-// Infer the origin piece
+// ParseMove infers origin and destination
+// coordinates from a pgn notation move. Check
+// and Check Mate notations will be added automatically.
 // TODO: disambiguiation
 func (b *Board) ParseMove(move string) error {
 	move = strings.TrimRight(move, "\r\n") // prepare for input
@@ -1063,7 +1064,7 @@ func (b *Board) ParseMove(move string) error {
 				b.pgn += strconv.Itoa(b.moves) + ". "
 			}
 			b.pgn += (move)
-			if b.CheckMate {
+			if b.checkmate {
 				b.pgn += "# "
 			} else 	if b.check {
 				// TODO if move doesn't already have check..
@@ -1078,8 +1079,8 @@ func (b *Board) ParseMove(move string) error {
 	}
 }
 
-// Read a pgn match
-// TODO: ignore header strings eg [White]
+// LoadPgn reads a pgn match.
+// TODO: ignore header strings eg [White].
 func (b *Board) LoadPgn(match string) (Board, error) {
 
 	game := NewBoard()
@@ -1093,7 +1094,7 @@ func (b *Board) LoadPgn(match string) (Board, error) {
 	return game, nil
 }
 
-// Parse fen and update Board.board
+// LoadFen Parse FEN string and update Board.board.
 func (b *Board) LoadFen(fen string) error {
 	// Treat fen input
 	fen = strings.TrimRight(fen, "\r\n")
@@ -1164,7 +1165,7 @@ func (b *Board) LoadFen(fen string) error {
 	return nil
 }
 
-// Get FEN position
+// Position returns string FEN position.
 func (b *Board) Position() string {
 	pos := ""
 	emp := "-"
@@ -1212,30 +1213,19 @@ func main() {
 	PlayGame(board)
 }
 
-// Take user input and commands
-// See ui/clichess.go for more robust client
-func PlayGame(board Board) { // TODO Rotate Board
+// PlayGame takes user input and commands.
+// See ui/clichess.go for more robust client.
+func PlayGame(board Board) {
 	var turn string
 	welcome := `
 ********
-go-chess
-    Enter /help for more options
+    go-chess
 
     /~ |_ _  _ _
     \_|||(/__\_\
 
 `
-	manuel := `Help:
-    Prefix commands with / - slash
-
-Commands:
-	quit - exit game
-	new - new game
-        print - print game
-        panel - print game info
-`
 	reader := bufio.NewReader(os.Stdin)
-	// welcome message
 	fmt.Println(welcome)
 	fmt.Print(board.String())
 
@@ -1252,8 +1242,6 @@ Loop:
 		if isCmd {
 			input = strings.TrimRight(input, "\r\n")
 			switch {
-			case input == "/help":
-				fmt.Print("\n", manuel)
 			case input == "/quit":
 				break Loop //os.Exit(1)
 			case input == "/new":
@@ -1273,20 +1261,23 @@ Loop:
 			turn = "Black"
 		}
 		fmt.Println("\n-------------------")
-
 		// TODO use formats.
 		if e != nil {
 			fmt.Printf("   [Error: %v]\n", e)
 		}
 		fmt.Print(board.String())
-		if board.check {
+		if board.checkmate {
+			fmt.Println("****CheckMate!****")
+		} else 	if board.check {
 			fmt.Println("****Check!****")
 		}
 	}
 	fmt.Println("\nGood Game.")
 }
 
-// Give program data of current game.
+// Stats returns program data of current game
+// in map[string]string.
+// Todo, replace with exported struct attirbutes.
 func (b *Board) Stats() map[string]string {
 	_ = b.Position()
 	m := make(map[string]string)
@@ -1297,12 +1288,12 @@ func (b *Board) Stats() map[string]string {
 	m["history"] = b.pgn
 	m["check"] = strconv.FormatBool(b.check)
 	m["headers"] = b.headers
-	m["score"] = b.Score
-	m["checkmate"] = strconv.FormatBool(b.CheckMate)
+	m["score"] = b.score
+	m["checkmate"] = strconv.FormatBool(b.checkmate)
 	return m
 }
 
-// Set pgnHeaders for a pgn export
+// SetHeaders sets pgnHeaders for a pgn export.
 func (b *Board) SetHeaders(w, bl string) {
 	w = strings.TrimRight(w, "\r\n")
 	bl = strings.TrimRight(bl, "\r\n")
@@ -1316,7 +1307,8 @@ func (b *Board) SetHeaders(w, bl string) {
 	b.headers = white + "\n" + black + "\n" + date + "\n" + result + "\n"
 }
 
-// Print the Board.Move() coordinates
+// Coordinates prints the int values used
+// for Board.Move()
 func (b *Board) Coordinates() {
 	// TODO Rotate Board
 	game := b.board
@@ -1336,9 +1328,10 @@ func (b *Board) Coordinates() {
 	fmt.Println(printBoard)
 }
 
-// Check if byte in board is upper case.
+// isUpper is a wrapper to check if byte in
+// Board.board is upper case.
 // If Uppercase, it is either white player
-// TODO: or it is empty square?
+// [TODO] or it is empty square.
 func (b Board) isUpper(x int) bool {
 	//compare = []byte(bytes.ToLower(b))[0]
 	compare := byte(unicode.ToUpper(rune(b.board[x])))
@@ -1353,8 +1346,9 @@ func (b Board) isUpper(x int) bool {
 Search
 */
 
-// Find and test the validity of all
-// possible Move(orig, dest).
+// SearchForValid returns lists of int coordinates
+// for valid origins and destinations of the current
+// player.
 // TODO: it doesn't invalidate in check
 func (b *Board) SearchForValid() ([]int, []int) {
 	isWhite := b.toMove == "w"
@@ -1454,7 +1448,8 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	return origs, dests
 }
 
-// Make a random move from lists of valid moves
+// MoveRandom, pick move from lists of valid moves.
+// Return an error, such as checkmate or draw.
 func (b *Board) MoveRandom(origs, dests []int) error {
 	randomMove := rand.Intn(len(origs))
 	e := b.Move(origs[randomMove], dests[randomMove])

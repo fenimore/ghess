@@ -21,14 +21,17 @@ func PlayGame(game ghess.Board) { // TODO Rotate Board
 	welcome := `
 ********
 go-chess
-    Enter /help for more options
 
     /~ |_ _  _ _
     \_|||(/__\_\
 
+
+    Enter /help for more options
+
 `
-	manuel := `Help:
-    Prefix commands with / - slash
+	manuel := `    Help:
+    Prefix commands with /  (slash)
+    C-+ to enlarge font size
 
 Commands:
 	quit or exit - exit game
@@ -49,9 +52,9 @@ Commands:
 	// welcome message
 	fmt.Println(welcome)
 	fmt.Print(game.String())
-	info = game.Stats()
 Loop:
 	for {
+		info = game.Stats()
 		if info["turn"] == "w" {
 			turn = "White"
 		} else {
@@ -79,10 +82,12 @@ Loop:
 				fmt.Println("Coordinates:")
 				game.Coordinates()
 			case input == "/score":
-				if game.CheckMate {
+				checkMate, _ := strconv.ParseBool(info["checkmate"])
+				score := info["score"]
+				if checkMate { // TODO: or draw
 					fmt.Println("Game over")
 				}
-				fmt.Println("Score: ", game.Score)
+				fmt.Println("Score: ", score)
 			case input == "/pgn":
 				fmt.Println("PGN history:")
 				fmt.Println(game.PgnString())
@@ -105,6 +110,8 @@ Loop:
 				if err != nil {
 					fmt.Println(err)
 				}
+				info := game.Stats()
+				fmt.Print(getPanel(info))
  				fmt.Print(game.String())
 			case input == "/fen":
 				fmt.Println("FEN position:")
@@ -136,11 +143,12 @@ Loop:
 					fmt.Println("Move ", info["moves"])
 					fmt.Print(game.String())
 					time.Sleep(3000 * time.Millisecond)
-					if game.CheckMate {
+					gameOver, _ := strconv.ParseBool(info["checkmate"])
+					if gameOver {
 						break
 					}
 				}
-				fmt.Println(game.Score)
+				fmt.Println(info["score"])
 			default:
 				fmt.Println("Mysterious input")
 			}
@@ -161,7 +169,8 @@ Loop:
 		}
 		fmt.Print(game.String())
 		ch,_:= strconv.ParseBool(info["check"])
-		if game.CheckMate{
+		checkmate, _ := strconv.ParseBool(info["checkmate"])
+		if checkmate {
 			fmt.Println("****Check and Mate.****")
 		} else 	if ch {
 			fmt.Println("****Check!****")
@@ -171,7 +180,7 @@ Loop:
 }
 
 func getPanel(m map[string]string) string {
-	return "|Debug Pane:\n|Move: "+m["move"]+" Turn: "+m["turn"]+
+	return "| Panel:\n|Move: "+m["move"]+" Turn: "+m["turn"]+
 		"\n|Check: "+m["check"]+" Castle: "+m["castling"]+
 		"\n|Score: "+m["score"]+" Mate: "+m["checkmate"]+"\n"
 }
