@@ -157,6 +157,9 @@ func (b *Board) standardWrapper(orig, dest string) error {
 // Validate move
 // Change byte values to new values
 func (b *Board) Move(orig, dest int) error {
+	if b.CheckMate {
+		return errors.New("Cannot Move in Checkmate")
+	}
 	val := b.board[orig]
 	var o byte         // supposed starting square
 	var d byte         // supposed destination
@@ -297,7 +300,7 @@ func (b *Board) Move(orig, dest int) error {
 	b.updateBoard(orig, dest, val, isEmpassant, isCastle)
 
 	// Look for Checkmate
-	// Check all possibl moves after a check
+	// Check all possibl moves after a check?
 	isCheck = b.isPlayerInCheck()
 	if isCheck {
 		isCheckMate := false

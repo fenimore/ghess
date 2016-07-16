@@ -66,3 +66,40 @@ func ExampleMoveIntoCheck() {
 	// Output:
 	// Cannot move into Check
 }
+
+func ExampleLoadFen() {
+	game := NewBoard()
+	fen := "6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5"
+	var err error
+	err = game.LoadFen(fen)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Success")
+	}
+	fen = "6Q1/8/8/p7/k7/5p2/1K6/A w ---- - 0 5"
+	err = game.LoadFen(fen)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Success")
+	}
+
+	//Output:
+	// Success
+	// Invalid FEN
+}
+
+func ExampleCheckMate() {
+	game := NewBoard()
+	fen := "6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5"
+	_ = game.LoadFen(fen)
+	fmt.Println(game.CheckMate)
+	game.ParseMove("Qc4")
+	fmt.Println(game.CheckMate)
+
+	// Output:
+	// false
+	// true
+}
+	

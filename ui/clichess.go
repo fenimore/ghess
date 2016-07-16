@@ -149,7 +149,9 @@ Loop:
 		}
 		fmt.Print(game.String())
 		ch,_:= strconv.ParseBool(info["check"])
-		if ch {
+		if game.CheckMate{
+			fmt.Println("****Check and Mate.****")
+		} else 	if ch {
 			fmt.Println("****Check!****")
 		}
 	}
