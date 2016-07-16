@@ -294,6 +294,10 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// update real board
 	b.updateBoard(orig, dest, val, empassant, isCastle)
+	origs, _ := b.SearchForValid()
+	if len(origs) < 1 {
+		return errors.New("Check Mate")
+	}
 	return nil
 }
 

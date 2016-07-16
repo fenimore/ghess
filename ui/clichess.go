@@ -114,9 +114,11 @@ Loop:
 				fmt.Println(origs)
 				fmt.Println(dests)
 			case input == "/rand":
-
 				origs, dests := game.SearchForValid()
-				game.MoveRandom(origs, dests)				
+				e := game.MoveRandom(origs, dests)
+				if e != nil {
+					fmt.Println(e)
+				}
 			case input == "/random-game":
 				for {
 					origs, dests := game.SearchForValid()
