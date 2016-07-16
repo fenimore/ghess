@@ -341,6 +341,11 @@ LoopSearch:
 		}
 		if isCheckMate {
 			b.CheckMate = true
+			if b.toMove == "w" {
+				b.Score = "0-1"
+			} else {
+				b.Score = "1-0"
+			}
 		}
 	}
 
@@ -1295,6 +1300,8 @@ func (b *Board) Stats() map[string]string {
 	m["history"] = b.pgn
 	m["check"] = strconv.FormatBool(b.check)
 	m["headers"] = b.headers
+	m["score"] = b.Score
+	m["checkmate"] = strconv.FormatBool(b.CheckMate)
 	return m
 }
 

@@ -38,6 +38,7 @@ Commands:
 	coordinates - print board coordinates
 	pgn - print PGN history
 	fen - print FEN position
+        score - print win/loss
 	set-headers - set PGN headers
 	headers - print game info
         random-game - play random game
@@ -77,6 +78,11 @@ Loop:
 			case input == "/coordinates":
 				fmt.Println("Coordinates:")
 				game.Coordinates()
+			case input == "/score":
+				if game.CheckMate {
+					fmt.Println("Game over")
+				}
+				fmt.Println("Score: ", game.Score)
 			case input == "/pgn":
 				fmt.Println("PGN history:")
 				fmt.Println(game.PgnString())
@@ -159,5 +165,7 @@ Loop:
 }
 
 func getPanel(m map[string]string) string {
-	return "|Debug Pane:\n|Move: "+m["move"]+" Turn: "+m["turn"]+"\n|Check: "+m["check"]+" Castle: "+m["castling"]+"\n"
+	return "|Debug Pane:\n|Move: "+m["move"]+" Turn: "+m["turn"]+
+		"\n|Check: "+m["check"]+" Castle: "+m["castling"]+
+		"\n|Score: "+m["score"]+" Mate: "+m["checkmate"]+"\n"
 }

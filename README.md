@@ -21,10 +21,9 @@ A Golang chess engine, fumbling along...
 - Basic rules are implemented
   * Except:
   * Only queen promotion
-  * no Checkmate
   * no disambigious pgn parsing :/
 - PGN import export parse
-- FEN import export
+- FEN import export parse
 - Cli interface
 - random game!
 
@@ -74,15 +73,13 @@ A Golang chess engine, fumbling along...
 
 ### Basic rules
 
-- Castle through check
-- Can't castle on check
-- Checkmate (a pgn notation)
-- Pawn promotion to Knight
+- Minor Pawn promotion
 
 ### Basic Functionality
 
 - PGN parse errors
 - FEN turn signification???
+- Variables should be exported, capitalized
 
 ### Search & Evaluate
 
@@ -100,6 +97,8 @@ A Golang chess engine, fumbling along...
 - qe4 crashes
 - Enfait, crashes when corrupt basic input...
 - Load Fen doesn't print corrent turn (UI)
+- Load FEN doesn't change check/checkmate values?
+
 
 ### Notes...
 
