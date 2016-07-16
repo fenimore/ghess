@@ -158,7 +158,7 @@ func (b *Board) Move(orig, dest int) error {
 	val := b.board[orig]
 	var o byte         // supposed starting square
 	var d byte         // supposed destination
-	var empassant bool //refactor?
+	var isEmpassant bool //refactor?
 	var isCastle bool
 	if b.toMove == "w" {
 		// check that orig is Upper
@@ -192,7 +192,7 @@ func (b *Board) Move(orig, dest int) error {
 		}
 		emp := dest - orig
 		if emp > 11 || emp < -11 {
-			empassant = true
+			isEmpassant = true
 		}
 	case p == "N":
 		e := b.validKnight(orig, dest)
@@ -245,7 +245,7 @@ func (b *Board) Move(orig, dest int) error {
 	possible.board = boardCopy
 	possible.castle = castleCopy
 	// Check possibilities
-	possible.updateBoard(orig, dest, val, empassant, isCastle)
+	possible.updateBoard(orig, dest, val, isEmpassant, isCastle)
 	// find mover's king
 	var king int
 	for idx, val := range possible.board {
@@ -292,8 +292,26 @@ func (b *Board) Move(orig, dest int) error {
 		}
 	}
 	// update real board
-	b.updateBoard(orig, dest, val, empassant, isCastle)
-	origs, _ := b.SearchForValid()
+	b.updateBoard(orig, dest, val, isEmpassant, isCastle)
+
+	// Look for Checkmate
+	isCheck = b.isPlayerInCheck()
+	if isCheck {
+		origs, dests := b.SearchForValid()
+		isWhite = b.toMove == "w"
+		for idx, o := range origs {
+			p := *b // p for possible
+			boardCopy := make([]byte, 120)
+			castleCopy := make([]byte, 4)
+			copy(boardCopy, b.board)
+			copy(castleCopy, b.castle)
+			p.board = boardCopy
+			p.castle = castleCopy
+			p.updateBoard(o, dests[idx], p.board[o], 
+			
+		}
+	}
+
 	if len(origs) < 1 { 
 		return errors.New("Check Mate")
 		if b.toMove != "w" { // loser's turn
@@ -307,7 +325,7 @@ func (b *Board) Move(orig, dest int) error {
 
 // Updates board, useless without Move() validation
 func (b *Board) updateBoard(orig, dest int,
-	val byte, empassant, isCastle bool) {
+	val byte, isEmpassant, isCastle bool) {
 	isWhite := b.toMove == "w"
 	// Check for Promotion
 	isPromotion := false
@@ -373,7 +391,7 @@ func (b *Board) updateBoard(orig, dest int,
 		b.moves++ // add one to move count
 		b.toMove = "w"
 	}
-	if empassant {
+	if isEmpassant {
 		b.empassant = dest
 	} else {
 		b.empassant = 0
