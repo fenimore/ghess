@@ -80,10 +80,13 @@ A Golang chess engine, fumbling along...
 - PGN parse errors
 - FEN turn signification???
 - Variables should be exported, capitalized
+- Checkmate should update PGN headers
 
 ### Search & Evaluate
 
-- Look for all valid moves | Not done..
+- Look for all valid moves
+   * There is a bug for castling possibilities
+   * and likely empassant...
 - Give all moves a score
 
 ### Extra features
