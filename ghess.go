@@ -710,6 +710,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 // Check for castle
 func (b *Board) validKing(orig int, dest int, castle bool) error {
 	validCastle := dest != 88 && dest != 81 && dest != 11 && dest != 18
+	// validCastle is a not so valid castle position
 	if validCastle && castle {
 		return errors.New("Castle by moving K to R position")
 	}	
@@ -1312,6 +1313,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
 				continue
 		}
+		// This is why Castle search-valid doens't work
 		if isWhite && b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
 
@@ -1406,6 +1408,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 				// Castle
 				e = b.validKing(val, target, true)
 				// Castling validation is totally messed up
+				fmt.Println(e, target)
 				if e == nil {
 					fmt.Println("Castle")
 					fmt.Println("Origin: ", val, "Target", target)

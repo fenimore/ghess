@@ -127,7 +127,7 @@ Loop:
 					origs, dests := game.SearchForValid()
 					game.MoveRandom(origs, dests)
 					fmt.Print(game.String())
-					time.Sleep(4000 * time.Millisecond)
+					time.Sleep(3000 * time.Millisecond)
 				}
 			default:
 				fmt.Println("Mysterious input")
