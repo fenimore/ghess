@@ -20,7 +20,7 @@ A Golang chess engine, fumbling along...
 # Features
 - Most rules are implemented:
   * No queen promotion
-  * PGN parsing is only partially disambiguous
+  * No queen PGN parse disambiguation
 - PGN import export parse
 - FEN import export parse
 - Cli interface
