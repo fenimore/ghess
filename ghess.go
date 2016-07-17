@@ -980,13 +980,22 @@ func (b *Board) ParseMove(move string) error {
 			possibilities[4], possibilities[5],
 			possibilities[6], possibilities[7] = dest+21,
 			dest+19, dest+12, dest+8, dest-8,
-			dest-12, dest-19, dest-21
+		dest-12, dest-19, dest-21
+	LoopKnight:
 		for _, possibility := range possibilities {
-			if b.board[possibility] == target {
-				orig = possibility
-				break
+			if column != 0 { // Disambiguate
+				disambig := possibility%10 == column
+				if b.board[possibility] == target && disambig{
+					orig = possibility
+					break LoopKnight
+				}
+			} else {
+				if b.board[possibility] == target {
+					orig = possibility
+					break LoopKnight
+				}
 			}
-		}
+		}		
 	case piece == "B": // Bishop Parse
 		var possibilities [14]int
 		ticker := 0
