@@ -90,6 +90,36 @@ func ExampleLoadFen() {
 	// Invalid FEN
 }
 
+func ExampleEmpassant() {
+	game := NewBoard()
+	fen := "rnbqkbnr/pp1ppppp/8/4P3/2p5/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3"
+	_ = game.LoadFen(fen)
+	fmt.Println("Empassant:")
+	fmt.Println(game.empassant)
+	fmt.Println(string(game.board[37]), string(game.board[47]))
+	game.ParseMove("b4")
+	fmt.Println(game.empassant)
+	fmt.Println(string(game.board[37]), string(game.board[47]))	
+	game.ParseMove("cxb3")
+	fmt.Println(game.empassant)
+	fmt.Println(string(game.board[37]), string(game.board[47]))	
+	game.ParseMove("cxb3")
+	fmt.Println("C column:")
+	fmt.Println(string(game.board[26]))// c pawn should be empty
+
+	// Output:
+	// Empassant:	
+	// 0
+	// . .
+	// 47
+	// . P
+	// 0
+	// p .
+	// C column:
+	// .
+	
+}
+
 func ExampleCheckMate() {
 	game := NewBoard()
 	fen := "6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5"
@@ -97,6 +127,7 @@ func ExampleCheckMate() {
 	fmt.Println(game.checkmate)
 	game.ParseMove("Qc4")
 	fmt.Println(game.checkmate)
+
 
 	// Output:
 	// false

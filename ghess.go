@@ -3,7 +3,7 @@ Go Chess Engine - Ghess
 Fenimore Love 2016
 GPLv3
 
-TODO: Search and Evaluation
+TODO: Evaluation
 
 Exported Methods and Functions:
 
@@ -200,6 +200,7 @@ func (b *Board) Move(orig, dest int) error {
 		if emp > 11 || emp < -11 {
 			isEmpassant = true
 		}
+		
 	case p == "N":
 		e := b.validKnight(orig, dest)
 		if e != nil {
@@ -355,16 +356,20 @@ func (b *Board) Move(orig, dest int) error {
 func (b *Board) updateBoard(orig, dest int,
 	val byte, isEmpassant, isCastle bool) {
 	isWhite := b.toMove == "w"
+	var isPromotion bool
+	//var attEmpassant bool
+	
 	// Check for Promotion
-	isPromotion := false
-	if b.board[orig] == 'p' && dest < 20 {
-		// is promotion
+	switch {
+	case b.board[orig] == 'p' && dest < 20:
 		isPromotion = true
-	} else if b.board[orig] == 'P' && dest > 80 {
+	case b.board[orig] == 'P' && dest > 80:
 		isPromotion = true
 	}
+	
 	// Check for castle deactivation
-	if b.board[orig] == 'r' || b.board[orig] == 'R' {
+	switch {
+	case b.board[orig] == 'r' || b.board[orig] == 'R':
 		switch { // Castle
 		case orig == b.pgnMap["a1"]:
 			b.castle[1] = '-'
@@ -375,7 +380,7 @@ func (b *Board) updateBoard(orig, dest int,
 		case orig == b.pgnMap["h8"]:
 			b.castle[2] = '-'
 		}
-	} else if isCastle {
+	case isCastle:
 		kingSide := orig > dest
 		queenSide := orig < dest
 		switch {
@@ -389,8 +394,28 @@ func (b *Board) updateBoard(orig, dest int,
 			b.castle[2], b.castle[3] = '-', '-'
 		}
 	}
+
+	// Check for Attack on Empassant
+	if val == 'p' || val == 'P' {
+		switch {
+		case dest-orig == 9 || dest-orig == 11:
+			if b.board[dest] == '.' {
+				// White offset
+				b.board[dest-10] = '.'
+				
+			}
+		case orig-dest == 9 || orig-dest == 11:
+			if b.board[dest] == '.' {
+				// Black Offset
+				b.board[dest+10] = '.'
+			}
+		}
+	}
+	
+	
 	// Set origin
 	b.board[orig] = '.'
+
 	// Set destination
 	if isCastle {
 		if dest > orig { // queen side
@@ -411,6 +436,7 @@ func (b *Board) updateBoard(orig, dest int,
 	} else { // Normal Move/Capture
 		b.board[dest] = val
 	}
+	
 	// TODO check for Check
 	// Update Game variables
 	if b.toMove == "w" {
@@ -559,18 +585,13 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 			return err
 		}
 	case remainder == 9 || remainder == 11:
-		// Attack vector
 		if b.board[dest] == d && d != '.' {
 			// Proper attack
 		} else if b.board[dest] == d && dest+empOffset == b.empassant {
 			// Empassant attack
-			if b.board[dest+empOffset] == empTarget {
-				// is the right case
-				// TODO move this to UpdateBoard
-				b.board[b.empassant] = '.'
-			} else {
+			if b.board[dest+empOffset] != empTarget {
 				return err
-			}
+			} 
 		} else {
 			return err
 		}
@@ -828,6 +849,7 @@ func (b *Board) ParseMove(move string) error {
 	var attacker string // left of x
 	//var precise string // for multiple possibilities
 	var target byte // the piece to move, in proper case
+	var column int
 
 	// Status
 	isCastle := false
@@ -847,8 +869,26 @@ func (b *Board) ParseMove(move string) error {
 		attacker = res[1]
 		if attacker == strings.ToLower(attacker) {
 			piece = "P"
+			switch {
+			case attacker == "a":
+				column = 8
+			case attacker == "b":
+				column = 7
+			case attacker == "c":
+				column = 6
+			case attacker == "d":
+				column = 5
+			case attacker == "e":
+				column = 4
+			case attacker == "f":
+				column = 3
+			case attacker == "g":
+				column = 2
+			case attacker == "h":
+				column = 1
+			}
 		} else { // if  upper case, forcement a piece
-			piece = res[1]
+			piece = attacker
 		}
 		square = res[2]
 	} else if isCastle {
@@ -917,7 +957,8 @@ func (b *Board) ParseMove(move string) error {
 					dest+20
 			}
 		}
-		if b.board[possibilities[0]] == target {
+		disambig := column != 0 && possibilities[0]%10 == column
+		if b.board[possibilities[0]] == target && disambig {
 			orig = possibilities[0]
 		} else if b.board[possibilities[1]] == target {
 			orig = possibilities[1]
