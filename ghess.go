@@ -950,10 +950,14 @@ func (b *Board) ParseMove(move string) error {
 	if b.toMove == "b" {
 		if piece != "" {
 			target = []byte(strings.ToLower(piece))[0]
+		} else {
+			return errors.New("Invalid Input")
 		}
 	} else {
 		if piece != "" {
 			target = []byte(piece)[0]
+		} else {
+			return errors.New("Invalid Input")
 		}
 	}
 	switch {
