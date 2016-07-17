@@ -200,7 +200,7 @@ func (b *Board) Move(orig, dest int) error {
 		if emp > 11 || emp < -11 {
 			isEmpassant = true
 		}
-		
+
 	case p == "N":
 		e := b.validKnight(orig, dest)
 		if e != nil {
@@ -275,19 +275,19 @@ func (b *Board) Move(orig, dest int) error {
 		switch {
 		case isWhite && dest < orig:
 			possible.updateBoard(orig, 13, 'K',
-				false, false)   //King side, 13
+				false, false) //King side, 13
 			king = 13
 		case isWhite && dest > orig:
 			possible.updateBoard(orig, 15, 'K',
-				false, false)   // Queen side, 15
+				false, false) // Queen side, 15
 			king = 15
 		case !isWhite && dest < orig:
 			possible.updateBoard(orig, 83, 'k',
-				false, false)	// King 83
+				false, false) // King 83
 			king = 83
 		case !isWhite && dest > orig:
 			possible.updateBoard(orig, 85, 'k',
-				false, false)	// Queen 85
+				false, false) // Queen 85
 			king = 85
 		}
 
@@ -358,7 +358,7 @@ func (b *Board) updateBoard(orig, dest int,
 	isWhite := b.toMove == "w"
 	var isPromotion bool
 	//var attEmpassant bool
-	
+
 	// Check for Promotion
 	switch {
 	case b.board[orig] == 'p' && dest < 20:
@@ -366,7 +366,7 @@ func (b *Board) updateBoard(orig, dest int,
 	case b.board[orig] == 'P' && dest > 80:
 		isPromotion = true
 	}
-	
+
 	// Check for castle deactivation
 	switch {
 	case b.board[orig] == 'r' || b.board[orig] == 'R':
@@ -402,7 +402,7 @@ func (b *Board) updateBoard(orig, dest int,
 			if b.board[dest] == '.' {
 				// White offset
 				b.board[dest-10] = '.'
-				
+
 			}
 		case orig-dest == 9 || orig-dest == 11:
 			if b.board[dest] == '.' {
@@ -411,8 +411,7 @@ func (b *Board) updateBoard(orig, dest int,
 			}
 		}
 	}
-	
-	
+
 	// Set origin
 	b.board[orig] = '.'
 
@@ -436,7 +435,7 @@ func (b *Board) updateBoard(orig, dest int,
 	} else { // Normal Move/Capture
 		b.board[dest] = val
 	}
-	
+
 	// TODO check for Check
 	// Update Game variables
 	if b.toMove == "w" {
@@ -591,7 +590,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 			// Empassant attack
 			if b.board[dest+empOffset] != empTarget {
 				return err
-			} 
+			}
 		} else {
 			return err
 		}
@@ -871,7 +870,7 @@ func (b *Board) ParseMove(move string) error {
 	rows[6] = [8]int{68, 67, 66, 65, 64, 63, 62, 61}
 	rows[7] = [8]int{78, 77, 76, 75, 74, 73, 72, 71}
 	rows[8] = [8]int{88, 87, 86, 85, 84, 83, 82, 81}
-	
+
 	// Status
 	isCastle := false
 	isWhite := b.toMove == "w"
@@ -894,13 +893,13 @@ func (b *Board) ParseMove(move string) error {
 			piece = string(attacker[0])
 			if len(res[1]) > 1 {
 				i, err := strconv.Atoi(string(res[1][1]))
-				if err == nil && i != 0{
+				if err == nil && i != 0 {
 					row = rows[i]
 				} else {
 					c := string(res[1][1])
 					column = columns[c]
 				}
-			}			
+			}
 		}
 		square = res[2]
 	} else if isCastle {
@@ -931,7 +930,7 @@ func (b *Board) ParseMove(move string) error {
 		} else if chars == 4 {
 			if len(res[1]) > 1 {
 				i, err := strconv.Atoi(string(res[1][1]))
-				if err == nil && i != 0{
+				if err == nil && i != 0 {
 					row = rows[i]
 				} else {
 					c := string(res[1][1])
@@ -989,7 +988,7 @@ func (b *Board) ParseMove(move string) error {
 		firstDisambig := column != 0 && possibilities[0]%10 == column
 		secondDisambig := column != 0 && possibilities[1]%10 == column
 		firstPoss := b.board[possibilities[0]] == target
-		secondPoss := b.board[possibilities[1]] == target		
+		secondPoss := b.board[possibilities[1]] == target
 		if firstPoss && firstDisambig && isCapture {
 			orig = possibilities[0]
 		} else if secondPoss && secondDisambig && isCapture {
@@ -1008,7 +1007,7 @@ func (b *Board) ParseMove(move string) error {
 			possibilities[4], possibilities[5],
 			possibilities[6], possibilities[7] = dest+21,
 			dest+19, dest+12, dest+8, dest-8,
-		        dest-12, dest-19, dest-21
+			dest-12, dest-19, dest-21
 	LoopKnight:
 		for _, possibility := range possibilities {
 			if column != 0 { // Disambiguate
@@ -1032,7 +1031,7 @@ func (b *Board) ParseMove(move string) error {
 					break LoopKnight
 				}
 			}
-		}		
+		}
 	case piece == "B": // Bishop Parse
 		var possibilities [14]int
 		ticker := 0
@@ -1104,7 +1103,7 @@ func (b *Board) ParseMove(move string) error {
 		for _, possibility := range possibilities {
 			if column != 0 { // Disambiguate
 				disambig := possibility%10 == column
-				if b.board[possibility] == target && disambig{
+				if b.board[possibility] == target && disambig {
 					orig = possibility
 					err := b.validRook(orig, dest)
 					if err != nil {
@@ -1182,7 +1181,7 @@ func (b *Board) ParseMove(move string) error {
 			b.pgn += (move)
 			if b.checkmate {
 				b.pgn += "# "
-			} else 	if b.check {
+			} else if b.check {
 				// TODO if move doesn't already have check..
 				b.pgn += "+ "
 			} else {
@@ -1384,7 +1383,7 @@ Loop:
 		fmt.Print(board.String())
 		if board.checkmate {
 			fmt.Println("****CheckMate!****")
-		} else 	if board.check {
+		} else if board.check {
 			fmt.Println("****Check!****")
 		}
 	}

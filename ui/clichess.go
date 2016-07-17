@@ -155,9 +155,16 @@ Loop:
 					origs, dests := game.SearchForValid()
 					game.MoveRandom(origs, dests)
 					info = game.Stats()
-					fmt.Println("Move ", info["moves"])
+					fmt.Println("Move ", info["move"])
 					fmt.Print(game.String())
-					time.Sleep(3000 * time.Millisecond)
+					time.Sleep(500 * time.Millisecond)
+					fmt.Print(".")
+					time.Sleep(500 * time.Millisecond)
+					fmt.Print(".")
+					time.Sleep(500 * time.Millisecond)
+					fmt.Print(".")
+					time.Sleep(500 * time.Millisecond)
+					fmt.Print(".")
 					gameOver, _ := strconv.ParseBool(info["checkmate"])
 					if gameOver {
 						break
