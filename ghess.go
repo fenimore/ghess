@@ -50,6 +50,7 @@ type Board struct {
 	pgnMap   map[string]int    // the pgn format
 	pieceMap map[int]string    // coord to standard notation
 	pieces   map[string]string // the unicode fonts
+	rows     map[int][8]int       // rows for white/black squaring
 	// Game Positions
 	fen        string         // Game position
 	pgn        string         // Game history
@@ -98,6 +99,17 @@ func NewBoard() Board {
 	r["k"], r["K"] = "\u2654", "\u265A"
 	r["."] = "\u00B7"
 
+	// Rows
+	rows := make(map[int][8]int)
+	rows[1] = [8]int{18, 17, 16, 15, 14, 13, 12, 11}
+	rows[2] = [8]int{28, 27, 26, 25, 24, 23, 22, 21}
+	rows[3] = [8]int{38, 37, 36, 35, 34, 33, 32, 31}
+	rows[4] = [8]int{48, 47, 46, 45, 44, 43, 42, 41}
+	rows[5] = [8]int{58, 57, 56, 55, 54, 53, 52, 51}
+	rows[6] = [8]int{68, 67, 66, 65, 64, 63, 62, 61}
+	rows[7] = [8]int{78, 77, 76, 75, 74, 73, 72, 71}
+	rows[8] = [8]int{88, 87, 86, 85, 84, 83, 82, 81}
+	
 	// Regex Pattern for matching pgn moves
 	pgnPattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
 	fenPattern, _ := regexp.Compile(`([PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8})\s(w|b)\s([KQkq-]{1,4})\s([a-h][36]|-)\s\d\s([1-9]?[1-9])`)
@@ -107,6 +119,7 @@ func NewBoard() Board {
 		pgnMap:     m,
 		pieceMap:   p,
 		pieces:     r,
+		rows: rows,
 		toMove:     "w",
 		score:      "*",
 		moves:      1,
@@ -125,6 +138,27 @@ func (b *Board) PgnString() string {
 // White position
 // TODO: Rotation
 func (b *Board) String() string {
+	//white square
+	// odds odd
+	// evens even
+	var blackSquares []int
+	for j := 1; j < 9; j++ {
+		if j%2 == 0{
+			//even
+			for _, v := range b.rows[j] {
+				if v%2 == 0 {
+					blackSquares = append(blackSquares, v)
+				}
+			}
+		} else { //odd
+			for _, v := range b.rows[j] {
+				if v%2 != 0 {
+					blackSquares = append(blackSquares, v)
+				}
+			}			
+		}
+		fmt.Println(blackSquares)	
+	}
 	game := b.board
 	p := b.pieces
 	var printBoard string
@@ -136,7 +170,11 @@ func (b *Board) String() string {
 			printBoard += string(game[i]) + ": "
 			continue
 		}
-		printBoard += "|" + p[string(game[i])] + "|"
+		if game[i] == '.' {
+			// do something
+		} else {
+			printBoard += "|" + p[string(game[i])] + "|"
+		}
 	}
 
 	printBoard += "\n"
@@ -861,16 +899,6 @@ func (b *Board) ParseMove(move string) error {
 	columns["g"] = 2
 	columns["h"] = 1
 
-	rows := make(map[int][8]int)
-	rows[1] = [8]int{18, 17, 16, 15, 14, 13, 12, 11}
-	rows[2] = [8]int{28, 27, 26, 25, 24, 23, 22, 21}
-	rows[3] = [8]int{38, 37, 36, 35, 34, 33, 32, 31}
-	rows[4] = [8]int{48, 47, 46, 45, 44, 43, 42, 41}
-	rows[5] = [8]int{58, 57, 56, 55, 54, 53, 52, 51}
-	rows[6] = [8]int{68, 67, 66, 65, 64, 63, 62, 61}
-	rows[7] = [8]int{78, 77, 76, 75, 74, 73, 72, 71}
-	rows[8] = [8]int{88, 87, 86, 85, 84, 83, 82, 81}
-
 	// Status
 	isCastle := false
 	isWhite := b.toMove == "w"
@@ -894,7 +922,7 @@ func (b *Board) ParseMove(move string) error {
 			if len(res[1]) > 1 {
 				i, err := strconv.Atoi(string(res[1][1]))
 				if err == nil && i != 0 {
-					row = rows[i]
+					row = b.rows[i]
 				} else {
 					c := string(res[1][1])
 					column = columns[c]
@@ -931,7 +959,7 @@ func (b *Board) ParseMove(move string) error {
 			if len(res[1]) > 1 {
 				i, err := strconv.Atoi(string(res[1][1]))
 				if err == nil && i != 0 {
-					row = rows[i]
+					row = b.rows[i]
 				} else {
 					c := string(res[1][1])
 					column = columns[c]
