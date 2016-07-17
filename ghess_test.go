@@ -120,6 +120,21 @@ func ExampleEmpassantAndDisambigPawn() {
 	
 }
 
+func ExamplePgnDisambigPiece() {
+	fen := "1nbqkbnr/1pppppp1/r7/p6p/P6P/7R/1PPPPPP1/RNBQKBN1 w -Qk- - 0 4"
+	game := NewBoard()
+	_ = game.LoadFen(fen)
+	//fmt.Println(string(game.board[37]), string(game.board[47]))
+	err := game.ParseMove("Rha3")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(game.String())
+
+	// Output:
+	// What?
+}
+
 func ExampleCheckMate() {
 	game := NewBoard()
 	fen := "6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5"

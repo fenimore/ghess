@@ -146,7 +146,7 @@ func (b *Board) String() string {
 
 // Wrapper in for standard notation positions.
 // TODO: use two coordinates, include piece value
-//e2e4
+// e2e4
 func (b *Board) standardWrapper(orig, dest string) error {
 	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
 	if e != nil {
@@ -164,7 +164,7 @@ func (b *Board) Move(orig, dest int) error {
 	val := b.board[orig]
 	var o byte           // supposed starting square
 	var d byte           // supposed destination
-	var isEmpassant bool //refactor?
+	var isEmpassant bool // refactor?
 	var isCastle bool
 	if b.toMove == "w" {
 		// check that orig is Upper
@@ -851,6 +851,16 @@ func (b *Board) ParseMove(move string) error {
 	var target byte // the piece to move, in proper case
 	var column int
 
+	columns := make(map[string]int)
+	columns["a"] = 8
+	columns["b"] = 7
+	columns["c"] = 6
+	columns["d"] = 5
+	columns["e"] = 4
+	columns["f"] = 3
+	columns["g"] = 2
+	columns["h"] = 1
+	
 	// Status
 	isCastle := false
 	isWhite := b.toMove == "w"
@@ -863,32 +873,15 @@ func (b *Board) ParseMove(move string) error {
 		// be nice
 		isCastle = true
 	}
-
-	// Either is catpure or not
+	// Either is capture or not
 	if isCapture {
 		attacker = res[1]
 		if attacker == strings.ToLower(attacker) {
 			piece = "P"
-			switch {
-			case attacker == "a":
-				column = 8
-			case attacker == "b":
-				column = 7
-			case attacker == "c":
-				column = 6
-			case attacker == "d":
-				column = 5
-			case attacker == "e":
-				column = 4
-			case attacker == "f":
-				column = 3
-			case attacker == "g":
-				column = 2
-			case attacker == "h":
-				column = 1
-			}
+			column = columns[attacker]
 		} else { // if  upper case, forcement a piece
 			piece = attacker
+			//fmt.Println(piece)
 		}
 		square = res[2]
 	} else if isCastle {
@@ -917,8 +910,11 @@ func (b *Board) ParseMove(move string) error {
 			piece = res[1]
 			square = res[2] //move[0]
 		} else if chars == 4 {
-			piece = res[1] // remove second char
-			//precise = move
+			if len(res[1]) > 1 {
+				c := string(res[1][1])
+				column = columns[c]
+			}
+			piece = string(res[1][0]) // remove second char
 			square = res[2]
 		} else {
 			return errors.New("Not enough input")
@@ -1056,13 +1052,25 @@ func (b *Board) ParseMove(move string) error {
 		}
 	Looposs:
 		for _, possibility := range possibilities {
-			if b.board[possibility] == target {
-				orig = possibility
-				err := b.validRook(orig, dest)
-				if err != nil {
-					continue
+			if column != 0 { // Disambiguate
+				disambig := possibility%10 == column
+				if b.board[possibility] == target && disambig{
+					orig = possibility
+					err := b.validRook(orig, dest)
+					if err != nil {
+						continue
+					}
+					break Looposs
 				}
-				break Looposs
+			} else {
+				if b.board[possibility] == target {
+					orig = possibility
+					err := b.validRook(orig, dest)
+					if err != nil {
+						continue
+					}
+					break Looposs
+				}
 			}
 		}
 	case piece == "Q": // Queen Parse
