@@ -151,7 +151,21 @@ Loop:
 					fmt.Println(e)
 				}
 			case input == "/random-game":
+				reader := bufio.NewReader(os.Stdin)
+				exit := false
+			LoopRand:
 				for {
+					go func() {
+						time.Sleep(3000 * time.Millisecond)
+						_, err := reader.ReadString('\n')
+						if err != nil {
+							fmt.Println(err)
+						}
+						exit = true
+					}()
+					if exit == true {
+						break LoopRand
+					}
 					origs, dests := game.SearchForValid()
 					game.MoveRandom(origs, dests)
 					info = game.Stats()
