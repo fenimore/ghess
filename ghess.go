@@ -957,8 +957,13 @@ func (b *Board) ParseMove(move string) error {
 					dest+20
 			}
 		}
-		disambig := column != 0 && possibilities[0]%10 == column
+		// Disambiguate
+		disambig := column != 0 && possibilities[0]%10 == column && isCapture
 		if b.board[possibilities[0]] == target && disambig {
+			orig = possibilities[0]
+		} else if b.board[possibilities[1]] == target && disambig {
+			orig = possibilities[1]
+		} else if b.board[possibilities[0]] == target {
 			orig = possibilities[0]
 		} else if b.board[possibilities[1]] == target {
 			orig = possibilities[1]
