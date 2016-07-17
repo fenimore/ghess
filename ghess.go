@@ -958,14 +958,17 @@ func (b *Board) ParseMove(move string) error {
 			}
 		}
 		// Disambiguate
-		disambig := column != 0 && possibilities[0]%10 == column && isCapture
-		if b.board[possibilities[0]] == target && disambig {
+		firstDisambig := column != 0 && possibilities[0]%10 == column
+		secondDisambig := column != 0 && possibilities[1]%10 == column
+		firstPoss := b.board[possibilities[0]] == target
+		secondPoss := b.board[possibilities[1]] == target		
+		if firstPoss && firstDisambig && isCapture {
 			orig = possibilities[0]
-		} else if b.board[possibilities[1]] == target && disambig {
+		} else if secondPoss && secondDisambig && isCapture {
 			orig = possibilities[1]
-		} else if b.board[possibilities[0]] == target {
+		} else if firstPoss {
 			orig = possibilities[0]
-		} else if b.board[possibilities[1]] == target {
+		} else if secondPoss {
 			orig = possibilities[1]
 		}
 	case piece == "N": // Knight Parse
