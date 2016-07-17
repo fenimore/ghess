@@ -142,8 +142,18 @@ func ExamplePgnDisambigRookAttack() {
 		fmt.Println(err)
 	}
 	err = game.ParseMove("Rfxd5")
-	fmt.Print(string(game.board[53]))
+	fmt.Println(string(game.board[53]))
+
+	hist = `6k1/8/3r1p2/5R2/P2P2Pp/7K/5r2/5R2 w ---- - 0 47`
+	err = game.LoadFen(hist)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.ParseMove("R1xf2")
+	fmt.Println(string(game.board[13]))
+	
 	// Output:
+	// .
 	// .
 }
 

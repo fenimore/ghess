@@ -893,8 +893,13 @@ func (b *Board) ParseMove(move string) error {
 		} else { // if  upper case, forcement a piece
 			piece = string(attacker[0])
 			if len(res[1]) > 1 {
-				c := string(res[1][1])
-				column = columns[c]
+				i, err := strconv.Atoi(string(res[1][1]))
+				if err == nil && i != 0{
+					row = rows[i]
+				} else {
+					c := string(res[1][1])
+					column = columns[c]
+				}
 			}			
 		}
 		square = res[2]
@@ -926,7 +931,7 @@ func (b *Board) ParseMove(move string) error {
 		} else if chars == 4 {
 			if len(res[1]) > 1 {
 				i, err := strconv.Atoi(string(res[1][1]))
-				if err != nil && i > 0{
+				if err == nil && i != 0{
 					row = rows[i]
 				} else {
 					c := string(res[1][1])
@@ -1102,7 +1107,7 @@ func (b *Board) ParseMove(move string) error {
 			} else if row[0] != 0 { // Disambiguate
 				for _, r := range row {
 					disambig := b.board[possibility] == target &&
-						b.board[possibility] == byte(r)
+						possibility == r
 					if disambig {
 						orig = possibility
 						err := b.validRook(orig, dest)
