@@ -90,7 +90,7 @@ func ExampleLoadFen() {
 	// Invalid FEN
 }
 
-func ExampleEmpassant() {
+func ExampleEmpassantAndDisambigPawn() {
 	game := NewBoard()
 	fen := "rnbqkbnr/pp1ppppp/8/4P3/2p5/8/PPPP1PPP/RNBQKBNR w KQkq - 0 3"
 	_ = game.LoadFen(fen)

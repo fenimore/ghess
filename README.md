@@ -18,19 +18,18 @@ A Golang chess engine, fumbling along...
 
 
 # Features
-- Basic rules are implemented
-  * Except:
-  * Only queen promotion
-  * no disambigious pgn parsing :/
+- Most rules are implemented:
+  * No queen promotion
+  * PGN parsing is only partially disambiguous
 - PGN import export parse
 - FEN import export parse
 - Cli interface
-- random game!
+- Random game!
 
 ## Search and Evaluate
 
-- look for all possible moves
-- look for all valid moves
+- looks for all possible moves
+- looks for all valid moves
 
 ## Board struct
 - A board object
