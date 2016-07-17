@@ -1576,5 +1576,5 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 }
 
 /*
-Evaluate
+TODO: Evaluate
 */
