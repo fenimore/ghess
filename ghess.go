@@ -547,21 +547,19 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 		empTarget = 'P'
 	}
 	// What sort of move
-	if remainder == 10 {
-		// regular move
+	switch {
+	case remainder == 10:
 		if b.board[dest] != '.' {
 			return err
 		}
-	} else if remainder == 20 { // two spaces
-		// double starter move
+	case remainder == 20:
 		if orig > 28 && b.toMove == "w" { // Only from 2nd rank
 			return err
 		} else if orig < 70 && b.toMove == "b" {
 			return err
 		}
-	} else if remainder == 9 || remainder == 11 {
+	case remainder == 9 || remainder == 11:
 		// Attack vector
-		// check if b.board[dest+10] == '.'
 		if b.board[dest] == d && d != '.' {
 			// Proper attack
 		} else if b.board[dest] == d && dest+empOffset == b.empassant {
@@ -576,7 +574,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 		} else {
 			return err
 		}
-	} else {
+	default:
 		return errors.New("Not valid Pawn move.")
 	}
 	return nil
