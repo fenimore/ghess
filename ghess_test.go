@@ -148,6 +148,7 @@ func ExamplePgnDisambigRookAttack() {
 }
 
 func ExamplePgnDisambigKnight() {
+	// Column Disambig
 	fen := `2bqr1k1/r3bp1p/p1np1np1/1p2p3/3NP1PN/1B2BP2/PPPQ3P/2KR3R w - - 0 17`
 	game := NewBoard()
 	err := game.LoadFen(fen)
@@ -155,8 +156,19 @@ func ExamplePgnDisambigKnight() {
 		fmt.Println(err)
 	}
 	err = game.ParseMove("Nhf5")
-	fmt.Print(string(game.board[14]))
+	fmt.Println(string(game.board[14]))
+	// Row Disambig
+	fen = `r5nr/Np1k3p/n4Q2/8/1bB4q/N1P1p3/PP3PPP/R3K2R w KQ - 1 19`
+	game = NewBoard()
+	err = game.LoadFen(fen)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.ParseMove("N7b5")
+	fmt.Println(string(game.board[83]))
+
 	// Output:
+	// .
 	// .
 }
 

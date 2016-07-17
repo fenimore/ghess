@@ -850,6 +850,7 @@ func (b *Board) ParseMove(move string) error {
 	//var precise string // for multiple possibilities
 	var target byte // the piece to move, in proper case
 	var column int
+	var row [8]int
 
 	columns := make(map[string]int)
 	columns["a"] = 8
@@ -860,6 +861,16 @@ func (b *Board) ParseMove(move string) error {
 	columns["f"] = 3
 	columns["g"] = 2
 	columns["h"] = 1
+
+	rows := make(map[int][8]int)
+	rows[1] = [8]int{18, 17, 16, 15, 14, 13, 12, 11}
+	rows[2] = [8]int{28, 27, 26, 25, 24, 23, 22, 21}
+	rows[3] = [8]int{38, 37, 36, 35, 34, 33, 32, 31}
+	rows[4] = [8]int{48, 47, 46, 45, 44, 43, 42, 41}
+	rows[5] = [8]int{58, 57, 56, 55, 54, 53, 52, 51}
+	rows[6] = [8]int{68, 67, 66, 65, 64, 63, 62, 61}
+	rows[7] = [8]int{78, 77, 76, 75, 74, 73, 72, 71}
+	rows[8] = [8]int{88, 87, 86, 85, 84, 83, 82, 81}
 	
 	// Status
 	isCastle := false
@@ -885,7 +896,6 @@ func (b *Board) ParseMove(move string) error {
 				c := string(res[1][1])
 				column = columns[c]
 			}			
-			//fmt.Println(piece)
 		}
 		square = res[2]
 	} else if isCastle {
@@ -915,8 +925,13 @@ func (b *Board) ParseMove(move string) error {
 			square = res[2] //move[0]
 		} else if chars == 4 {
 			if len(res[1]) > 1 {
-				c := string(res[1][1])
-				column = columns[c]
+				i, err := strconv.Atoi(string(res[1][1]))
+				if err != nil && i > 0{
+					row = rows[i]
+				} else {
+					c := string(res[1][1])
+					column = columns[c]
+				}
 			}
 			piece = string(res[1][0]) // remove second char
 			square = res[2]
@@ -980,14 +995,23 @@ func (b *Board) ParseMove(move string) error {
 			possibilities[4], possibilities[5],
 			possibilities[6], possibilities[7] = dest+21,
 			dest+19, dest+12, dest+8, dest-8,
-		dest-12, dest-19, dest-21
+		        dest-12, dest-19, dest-21
 	LoopKnight:
 		for _, possibility := range possibilities {
 			if column != 0 { // Disambiguate
 				disambig := possibility%10 == column
-				if b.board[possibility] == target && disambig{
+				if b.board[possibility] == target && disambig {
 					orig = possibility
 					break LoopKnight
+				}
+			} else if row[0] != 0 { // Disambiguate
+				for _, r := range row {
+					disambig := b.board[possibility] == target &&
+						b.board[possibility] == byte(r)
+					if disambig {
+						orig = possibility
+						break LoopKnight
+					}
 				}
 			} else {
 				if b.board[possibility] == target {
@@ -1063,7 +1087,7 @@ func (b *Board) ParseMove(move string) error {
 			possibilities[ticker] = i
 			ticker++
 		}
-	Looposs:
+	LoopRook:
 		for _, possibility := range possibilities {
 			if column != 0 { // Disambiguate
 				disambig := possibility%10 == column
@@ -1073,7 +1097,20 @@ func (b *Board) ParseMove(move string) error {
 					if err != nil {
 						continue
 					}
-					break Looposs
+					break LoopRook
+				}
+			} else if row[0] != 0 { // Disambiguate
+				for _, r := range row {
+					disambig := b.board[possibility] == target &&
+						b.board[possibility] == byte(r)
+					if disambig {
+						orig = possibility
+						err := b.validRook(orig, dest)
+						if err != nil {
+							continue
+						}
+						break LoopRook
+					}
 				}
 			} else {
 				if b.board[possibility] == target {
@@ -1082,7 +1119,7 @@ func (b *Board) ParseMove(move string) error {
 					if err != nil {
 						continue
 					}
-					break Looposs
+					break LoopRook
 				}
 			}
 		}
