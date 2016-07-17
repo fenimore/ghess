@@ -94,9 +94,9 @@ func ExampleCheckMate() {
 	game := NewBoard()
 	fen := "6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5"
 	_ = game.LoadFen(fen)
-	fmt.Println(game.CheckMate)
+	fmt.Println(game.checkmate)
 	game.ParseMove("Qc4")
-	fmt.Println(game.CheckMate)
+	fmt.Println(game.checkmate)
 
 	// Output:
 	// false

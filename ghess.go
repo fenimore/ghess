@@ -271,27 +271,25 @@ func (b *Board) Move(orig, dest int) error {
 		copy2 := make([]byte, 120)
 		copy(copy2, b.board)
 		possible.board = copy2
-		if isWhite && dest < orig {
-			//King side, 13
+		switch {
+		case isWhite && dest < orig:
 			possible.updateBoard(orig, 13, 'K',
-				false, false)
+				false, false)   //King side, 13
 			king = 13
-		} else if isWhite && dest > orig {
+		case isWhite && dest > orig:
 			possible.updateBoard(orig, 15, 'K',
-				false, false)
-			// Queen side, 15
+				false, false)   // Queen side, 15
 			king = 15
-		} else if !isWhite && dest < orig {
+		case !isWhite && dest < orig:
 			possible.updateBoard(orig, 83, 'k',
-				false, false)
-			// King 83
+				false, false)	// King 83
 			king = 83
-		} else if !isWhite && dest > orig {
+		case !isWhite && dest > orig:
 			possible.updateBoard(orig, 85, 'k',
-				false, false)
-			// Queen 85
+				false, false)	// Queen 85
 			king = 85
 		}
+
 		isCheck = possible.isInCheck(king)
 		if isCheck {
 			return errors.New("Cannot Castle through check")

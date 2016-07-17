@@ -29,24 +29,34 @@ go-chess
     Enter /help for more options
 
 `
-	manuel := `    Help:
+	manuel := `
+go-chess
+    /~ |_ _  _ _
+    \_|||(/__\_\
+
+Help:
     Prefix commands with /  (slash)
     C-+ to enlarge font size
 
+PGN Input Example:
+    e4
+    e5
+    Nf3
+
 Commands:
-	quit or exit - exit game
-	new - new game
-        print - print game
-        panel - print game info
-	coordinates - print board coordinates
-	pgn - print PGN history
-	fen - print FEN position
-        score - print win/loss
-	set-headers - set PGN headers
-	headers - print game info
-        random-game - play random game
-        rand - make a random move
-        valid - show valid moves
+    quit or exit - exit game
+    new - new game
+    print - print game
+    panel - print game info
+    coordinates - print board coordinates
+    pgn - print PGN history
+    fen - print FEN position
+    score - print win/loss
+    set-headers - set PGN headers
+    headers - print game info
+    random-game - play random game
+    rand - make a random move
+    valid - show valid moves
 `
 	reader := bufio.NewReader(os.Stdin)
 	// welcome message
@@ -180,7 +190,7 @@ Loop:
 }
 
 func getPanel(m map[string]string) string {
-	return "| Panel:\n|Move: "+m["move"]+" Turn: "+m["turn"]+
+	return "|Move: "+m["move"]+" Turn: "+m["turn"]+
 		"\n|Check: "+m["check"]+" Castle: "+m["castling"]+
 		"\n|Score: "+m["score"]+" Mate: "+m["checkmate"]+"\n"
 }
