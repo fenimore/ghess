@@ -880,7 +880,11 @@ func (b *Board) ParseMove(move string) error {
 			piece = "P"
 			column = columns[attacker]
 		} else { // if  upper case, forcement a piece
-			piece = attacker
+			piece = string(attacker[0])
+			if len(res[1]) > 1 {
+				c := string(res[1][1])
+				column = columns[c]
+			}			
 			//fmt.Println(piece)
 		}
 		square = res[2]

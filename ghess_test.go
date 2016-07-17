@@ -120,7 +120,7 @@ func ExampleEmpassantAndDisambigPawn() {
 	
 }
 
-func ExamplePgnDisambigPiece() {
+func ExamplePgnDisambigRook() {
 	fen := "1nbqkbnr/1pppppp1/r7/p6p/P6P/7R/1PPPPPP1/RNBQKBN1 w -Qk- - 0 4"
 	game := NewBoard()
 	_ = game.LoadFen(fen)
@@ -129,11 +129,25 @@ func ExamplePgnDisambigPiece() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(game.String())
+	fmt.Println(string(game.board[31]))
 
 	// Output:
-	// What?
+	// .
 }
+
+func ExamplePgnDisambigRookAttack() {
+	hist := `1. Nf3 Nc6 2. d4 d5 3. c4 e6 4. e3 Nf6 5. Nc3 Be7 6. a3 O-O 7. b4 a6 8. Be2 Re8 9. O-O Bf8 10. c5 g6 11. b5 axb5 12. Bxb5 Bd7 13. h3 Na5 14. Bd3 Nc6 15. Rb1 Qc8 16. Nb5 e5 17. Be2 e4 18. Ne1 h6 19. Nc2 g5 20. f3 exf3 21. Bxf3 g4 22. hxg4 Bxg4 23. Nxc7 Qxc7 24. Bxg4 Nxg4 25. Qxg4+ Bg7 26. Nb4 Nxb4 27. Rxb4 Ra6 28. Rf5 Re4 29. Qh5 Rg6 30. Qh3 Qc8 31. Qf3 Qd7 32. Rb2 Bxd4 33. exd4 Re1+ 34. Kh2 Rxc1 35. Qxd5 Qe7 36. g3 Qc7 37. Rf4 b6 38. a4 Rg5 39. cxb6 Rxd5 40. bxc7 Rxc7 41. Rb5 Rc2+ 42. Kh3 h5 43. Rf5 h4 44. g4 f6`
+	game := NewBoard()
+	game, err := game.LoadPgn(hist)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.ParseMove("Rfxd5")
+	fmt.Print(string(game.board[53]))
+	// Output:
+	// .
+}
+	
 
 func ExampleCheckMate() {
 	game := NewBoard()
