@@ -153,16 +153,17 @@ Loop:
 			case input == "/random-game":
 				reader := bufio.NewReader(os.Stdin)
 				exit := false
+				go func() {
+					_, err := reader.ReadString('\n')
+					if err != nil {
+						fmt.Println(err)
+					}
+					exit = true
+				}()
+				fmt.Println("Press Return to stop game")
+				time.Sleep(1000 * time.Millisecond)
 			LoopRand:
 				for {
-					go func() {
-						time.Sleep(3000 * time.Millisecond)
-						_, err := reader.ReadString('\n')
-						if err != nil {
-							fmt.Println(err)
-						}
-						exit = true
-					}()
 					if exit == true {
 						break LoopRand
 					}
