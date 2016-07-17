@@ -948,9 +948,13 @@ func (b *Board) ParseMove(move string) error {
 	dest := b.pgnMap[square]
 	// The piece will be saved as case sensitive byte
 	if b.toMove == "b" {
-		target = []byte(strings.ToLower(piece))[0]
+		if piece != "" {
+			target = []byte(strings.ToLower(piece))[0]
+		}
 	} else {
-		target = []byte(piece)[0]
+		if piece != "" {
+			target = []byte(piece)[0]
+		}
 	}
 	switch {
 	case piece == "P": // Pawn Parse
