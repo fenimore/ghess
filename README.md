@@ -17,8 +17,11 @@ A Golang chess engine, fumbling along...
 
 
 # Instructions
-- ghess.go is the chess program. Run clichess.go, in the `ui/` directory in order to play a game of chess.
+`ghess.go` is a go package responsible for representing a chess board, parsing PGN input, and validating moves. In the `ui/` directory, `clichess.go` is a simple interface for testing.
 
+After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
+
+    go run ui/clichess.go
 
 # Features
 - Most rules are implemented:
@@ -67,7 +70,7 @@ A Golang chess engine, fumbling along...
 - 120 bytes
 - 11 - 18 1st rank
 - 81 - 88 8th rank
-
+- Does it seem backwards?
 
 ## TODO
 
@@ -75,42 +78,36 @@ A Golang chess engine, fumbling along...
 
 ### Basic rules
 
-- Minor Pawn promotion
+- Minor pawn promotion.
 
 ### Basic Functionality
 
 - PGN parse errors
-- FEN turn signification???
 - Variables should be exported, capitalized
-- Checkmate should update PGN headers
-- Checkmate should # pgn
+- Checkmate should update PGN headers/history
 
 ### Search & Evaluate
 
 - Look for all valid moves
    * There is a bug for castling possibilities
    * and likely empassant...
+   * and moving into castle
 - Give all moves a score
 
 ### Extra features
 
 - Move history/ Undo
-- Save game history to board (not automatic)?
-- Save as two coordinates, with piece specifier
+  * Save game history to board (not automatic)?
+  * Save as two coordinates, with piece specifier
 
 ### Bugs:
 
-- qe4 crashes
-- Enfait, crashes when corrupt basic input...
-- Load Fen doesn't print corrent turn (UI)
 - Load FEN doesn't change check/checkmate values?
 
 
 ### Notes...
 
     rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-	rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1
-    rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2
     rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
 	8/5p2/8/p5P1/k7/8/1K6/8 w - - 0 1
 	6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5
