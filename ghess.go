@@ -156,7 +156,7 @@ func (b *Board) String() string {
 		}
 		if game[i] == '.' {
 			_, ok := r[i]
-			if !ok { // white square
+			if ok { // white square
 				printBoard += "|" + " " + "|"
 			} else { // black square
 				printBoard += "|" + "\u2591" + "|"
