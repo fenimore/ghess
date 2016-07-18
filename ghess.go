@@ -141,23 +141,12 @@ func (b *Board) String() string {
 	//white square
 	// odds odd
 	// evens even
-	var blackSquares []int
-	for j := 1; j < 9; j++ {
-		if j%2 == 0{
-			//even
-			for _, v := range b.rows[j] {
-				if v%2 == 0 {
-					blackSquares = append(blackSquares, v)
-				}
-			}
-		} else { //odd
-			for _, v := range b.rows[j] {
-				if v%2 != 0 {
-					blackSquares = append(blackSquares, v)
-				}
-			}			
-		}
-		fmt.Println(blackSquares)	
+	r := make(map[int]bool) // black squares
+	r[17], r[15], r[13], r[11], r[28],r[26], r[24], r[22], r[37], r[35], r[33], r[31], r[48], r[46], r[44], r[42], r[57], r[55], r[53], r[51], r[68], r[66], r[64], r[62], r[77], r[75], r[73], r[71], r[88], r[86], r[84], r[82] = false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+	
+	_, ok := r[12]
+	if !ok {
+		fmt.Println(ok)
 	}
 	game := b.board
 	p := b.pieces
@@ -171,7 +160,12 @@ func (b *Board) String() string {
 			continue
 		}
 		if game[i] == '.' {
-			// do something
+			_, ok := r[i]
+			if !ok { // white square
+				printBoard += "|" + " " + "|"
+			} else { // black square
+				printBoard += "|" + "\u2591" + "|"
+			}
 		} else {
 			printBoard += "|" + p[string(game[i])] + "|"
 		}
