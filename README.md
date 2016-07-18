@@ -1,17 +1,20 @@
 # go-chess || Ghess
 A Golang chess engine, fumbling along...
 
-    Move: 3 | Castle: KQkq | Turn:  Black
-    8: |♖||♘||♗||♕||♔||♗||·||♖|
-    7: |♙||♙||♙||·||♙||♙||♙||♙|
-    6: |·||·||·||·||·||♘||·||·|
-    5: |·||·||·||♙||·||·||·||·|
-    4: |·||·||♟||♟||·||·||·||·|
-    3: |·||·||·||·||·||♞||·||·|
-    2: |♟||♟||·||·||♟||♟||♟||♟|
-    1: |♜||♞||♝||♛||♚||♝||·||♜|
+    |Move:  3     Turn: b
+    |Check: false Castle: KQkq
+    |Mate:  false Score: *
+    8: |♖||♘||♗||♕||♔|| ||♘||♖|
+    7: |♙||♙||♙||♙|| ||♙||♙||♙|
+    6: |░|| ||░|| ||░|| ||░|| |
+    5: | ||░||♗||░||♙||░|| ||░|
+    4: |░|| ||░||♟||♟|| ||░|| |
+    3: | ||░|| ||░|| ||♞|| ||░|
+    2: |♟||♟||♟|| ||░||♟||♟||♟|
+    1: |♜||♞||♝||♛||♚||♝|| ||♜|
        :a::b::c::d::e::f::g::h:
     Black to move: 
+
 
 # Instructions
 - ghess.go is the chess program. Run clichess.go, in the `ui/` directory in order to play a game of chess.
