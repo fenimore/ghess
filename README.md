@@ -34,8 +34,10 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
 ## Search and Evaluate
 
-- looks for all possible moves
-- looks for all valid moves
+- looks for all possible and valid moves
+
+
+<hr>
 
 ## Board struct
 - A board object
@@ -72,6 +74,8 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 - 81 - 88 8th rank
 - Does it seem backwards?
 
+<hr>
+
 ## TODO
 
 ### Basic rules
@@ -97,11 +101,11 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
   * Save game history to board (not automatic)?
   * Save as two coordinates, with piece specifier
 
-### Bugs:
+### Bugs
 
 - Surely, something?
 
-### Notes...
+### Notes
 
     rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
     rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
