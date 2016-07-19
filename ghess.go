@@ -1184,17 +1184,15 @@ func (b *Board) ParseMove(move string) error {
 
 // LoadPgn reads a pgn match.
 // TODO: ignore header strings eg [White].
-func (b *Board) LoadPgn(match string) (Board, error) {
-
-	game := NewBoard()
-	result := game.pgnPattern.FindAllString(match, -1)
+func (b *Board) LoadPgn(match string) error {
+	result := b.pgnPattern.FindAllString(match, -1)
 	for _, val := range result {
-		err := game.ParseMove(val)
+		err := b.ParseMove(val)
 		if err != nil {
-			return game, err
+			return err
 		}
 	}
-	return game, nil
+	return nil
 }
 
 // LoadFen Parse FEN string and update Board.board.

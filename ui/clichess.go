@@ -110,7 +110,7 @@ Loop:
 				var err error
 				fmt.Print("Enter PGN history: ")
 				history, _ := reader.ReadString('\n')
-				game, err = game.LoadPgn(history)
+				err = game.LoadPgn(history)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -161,8 +161,8 @@ Loop:
 					}
 					exit = true
 				}()
-				fmt.Println("Press Return to stop game")
-				time.Sleep(1000 * time.Millisecond)
+				fmt.Println("\nPress Return to stop game\n")
+				time.Sleep(2000 * time.Millisecond)
 			LoopRand:
 				for {
 					if exit == true {

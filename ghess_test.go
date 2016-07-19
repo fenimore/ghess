@@ -24,7 +24,7 @@ func ExampleLoadPgnAndCheck() {
 	// 6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42
 	var err error
 	game := NewBoard()
-	game, err = game.LoadPgn(hist)
+	err = game.LoadPgn(hist)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -60,7 +60,7 @@ func ExampleMoveIntoCheck() {
 	game := NewBoard()
 	hist := `1. e4 e5 2. Qf3 Qg5 3. Qxf7 Ke7`
 	var err error
-	game, err = game.LoadPgn(hist)
+	err = game.LoadPgn(hist)
 	if err != nil {
 		fmt.Println(err)
 	}
