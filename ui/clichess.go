@@ -161,7 +161,7 @@ Loop:
 					}
 					exit = true
 				}()
-				fmt.Println("\nPress Return to stop game\n")
+				fmt.Println("\nPress Return to stop")
 				time.Sleep(2000 * time.Millisecond)
 			LoopRand:
 				for {
@@ -173,14 +173,7 @@ Loop:
 					info = game.Stats()
 					fmt.Println("Move ", info["move"])
 					fmt.Print(game.String())
-					time.Sleep(500 * time.Millisecond)
-					fmt.Print(".")
-					time.Sleep(500 * time.Millisecond)
-					fmt.Print(".")
-					time.Sleep(500 * time.Millisecond)
-					fmt.Print(".")
-					time.Sleep(500 * time.Millisecond)
-					fmt.Print(".")
+					think(true)
 					gameOver, _ := strconv.ParseBool(info["checkmate"])
 					check, _ := strconv.ParseBool(info["check"])
 					if check {
@@ -225,4 +218,22 @@ func getPanel(m map[string]string) string {
 	return "|Move:  "+m["move"]+"     Turn: "+m["turn"]+
 		"\n|Check: "+m["check"]+" Castle: "+m["castling"]+
 		"\n|Mate:  "+m["checkmate"]+" Score: "+m["score"]+"\n"
+}
+
+
+func think(long bool) {
+	var t int // time.Duration is no int
+	if long {
+		t = 500
+	} else {
+		t = 200
+	}
+	time.Sleep(time.Duration(t) * time.Millisecond)
+	fmt.Print(".")
+	time.Sleep(time.Duration(t) * time.Millisecond)
+	fmt.Print(".")
+	time.Sleep(time.Duration(t) * time.Millisecond)
+	fmt.Print(".")
+	time.Sleep(time.Duration(t) * time.Millisecond)
+	fmt.Print(".")
 }

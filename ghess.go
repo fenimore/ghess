@@ -1,23 +1,7 @@
-/*
-Go Chess Engine - Ghess
-Fenimore Love 2016
-GPLv3
-
-TODO: Evaluation
-
-Exported Methods and Functions:
-
-Position()
-ParseMove()
-Move()
-LoadPgn()
-LoadFen()
-NewBoard()
-Stats()
-String()
-PgnString()
-
-*/
+// Go Chess Engine - Ghess
+// Fenimore Love 2016
+// GPLv3
+// TODO: Evaluation
 package ghess
 
 import (
@@ -50,7 +34,7 @@ type Board struct {
 	pgnMap   map[string]int    // the pgn format
 	pieceMap map[int]string    // coord to standard notation
 	pieces   map[string]string // the unicode fonts
-	rows     map[int][8]int       // rows for white/black squaring
+	rows     map[int][8]int    // rows for white/black squaring
 	// Game Positions
 	fen        string         // Game position
 	pgn        string         // Game history
@@ -98,8 +82,7 @@ func NewBoard() Board {
 	r["q"], r["Q"] = "\u2655", "\u265B"
 	r["k"], r["K"] = "\u2654", "\u265A"
 	r["."] = "\u00B7"
-
-	// Rows
+	// Rows for PGN parsing
 	rows := make(map[int][8]int)
 	rows[1] = [8]int{18, 17, 16, 15, 14, 13, 12, 11}
 	rows[2] = [8]int{28, 27, 26, 25, 24, 23, 22, 21}
@@ -109,8 +92,7 @@ func NewBoard() Board {
 	rows[6] = [8]int{68, 67, 66, 65, 64, 63, 62, 61}
 	rows[7] = [8]int{78, 77, 76, 75, 74, 73, 72, 71}
 	rows[8] = [8]int{88, 87, 86, 85, 84, 83, 82, 81}
-	
-	// Regex Pattern for matching pgn moves
+	// Regex Patterns
 	pgnPattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
 	fenPattern, _ := regexp.Compile(`([PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8})\s(w|b)\s([KQkq-]{1,4})\s([a-h][36]|-)\s\d\s([1-9]?[1-9])`)
 	return Board{
@@ -119,7 +101,7 @@ func NewBoard() Board {
 		pgnMap:     m,
 		pieceMap:   p,
 		pieces:     r,
-		rows: rows,
+		rows:       rows,
 		toMove:     "w",
 		score:      "*",
 		moves:      1,
@@ -142,7 +124,7 @@ func (b *Board) String() string {
 	// odds odd
 	// evens even
 	r := make(map[int]bool) // black squares
-	r[17], r[15], r[13], r[11], r[28],r[26], r[24], r[22], r[37], r[35], r[33], r[31], r[48], r[46], r[44], r[42], r[57], r[55], r[53], r[51], r[68], r[66], r[64], r[62], r[77], r[75], r[73], r[71], r[88], r[86], r[84], r[82] = false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
+	r[17], r[15], r[13], r[11], r[28], r[26], r[24], r[22], r[37], r[35], r[33], r[31], r[48], r[46], r[44], r[42], r[57], r[55], r[53], r[51], r[68], r[66], r[64], r[62], r[77], r[75], r[73], r[71], r[88], r[86], r[84], r[82] = false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
 	game := b.board
 	p := b.pieces
 	var printBoard string
@@ -1161,7 +1143,7 @@ func (b *Board) ParseMove(move string) error {
 		err := b.Move(orig, dest)
 		if err == nil {
 			matchCheck, _ := regexp.MatchString(`+`, move)
-			matchMate, _  := regexp.MatchString(`#`, move)
+			matchMate, _ := regexp.MatchString(`#`, move)
 			// Update pgn History
 			if b.toMove == "b" {
 				b.pgn += strconv.Itoa(b.moves) + ". "
@@ -1459,7 +1441,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	dests := make([]int, 0, 64)
 	var d byte
 	var validMoveCount int
-	var king int	
+	var king int
 	for idx, val := range b.board {
 		if king == 0 && isWhite && val == 'K' {
 			king = idx
