@@ -1578,8 +1578,17 @@ func (b *Board) MoveBest() {
 	origs, dests := b.SearchForValid()
 	bests := b.EvaluateMoves(origs, dests)
 	// get best of bests and return the index
-	idx := len(bests) // place holder
-	b.Move(origs[idx], dests[idx])
+	var best int
+	var i int
+	for idx, val := range bests {
+		if val > best {
+			i = idx // save index
+		} else {
+			continue
+		}
+		
+	}
+	b.Move(origs[i], dests[i])
 }
 
 // EvaluateMoves() scores all valid moves.
