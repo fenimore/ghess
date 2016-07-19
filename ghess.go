@@ -110,19 +110,14 @@ func NewBoard() Board {
 	}
 }
 
-// Return PNG String.
-// Concatnate headers and history
+// PgnString() returns headers and pgn history.
 func (b *Board) PgnString() string {
 	return b.headers + b.pgn
 }
 
-// Return a string printable board
-// White position
-// TODO: Rotation
+// String() returns a string printable board.
+// TODO: rotate board for black position.
 func (b *Board) String() string {
-	//white square
-	// odds odd
-	// evens even
 	r := make(map[int]bool) // black squares
 	r[17], r[15], r[13], r[11], r[28], r[26], r[24], r[22], r[37], r[35], r[33], r[31], r[48], r[46], r[44], r[42], r[57], r[55], r[53], r[51], r[68], r[66], r[64], r[62], r[77], r[75], r[73], r[71], r[88], r[86], r[84], r[82] = false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
 	game := b.board
@@ -153,9 +148,8 @@ func (b *Board) String() string {
 	return printBoard
 }
 
-// Wrapper in for standard notation positions.
-// TODO: use two coordinates, include piece value
-// e2e4
+// standardWrapper() does pas grande chose mnt.
+// TODO: use two coordinates, include piece value?
 func (b *Board) standardWrapper(orig, dest string) error {
 	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
 	if e != nil {
@@ -164,8 +158,12 @@ func (b *Board) standardWrapper(orig, dest string) error {
 	return nil
 }
 
-// Validate move
-// Change byte values to new values.
+// Move() is the basic validation.
+// The origin and destination square are tested
+// in a dereferenced b.board to keep from moving
+// into check. The individual pieces are validated
+// in seperate methods. Finally this method updates
+// the board, updateBoard().
 func (b *Board) Move(orig, dest int) error {
 	if b.checkmate {
 		return errors.New("Cannot Move in Checkmate")
@@ -330,13 +328,13 @@ func (b *Board) Move(orig, dest int) error {
 	return nil
 }
 
-// Updates board, useless without validation
+// updateBaord() changes the byte values of board.
+// It is useless without validation from Move().
+// This method checks, and sets, Check for Board.board.
 func (b *Board) updateBoard(orig, dest int,
 	val byte, isEmpassant, isCastle bool) {
 	isWhite := b.toMove == "w"
 	var isPromotion bool
-	//var attEmpassant bool
-
 	// Check for Promotion
 	switch {
 	case b.board[orig] == 'p' && dest < 20:
@@ -344,7 +342,6 @@ func (b *Board) updateBoard(orig, dest int,
 	case b.board[orig] == 'P' && dest > 80:
 		isPromotion = true
 	}
-
 	// Check for castle deactivation
 	switch {
 	case b.board[orig] == 'r' || b.board[orig] == 'R':
@@ -437,8 +434,8 @@ func (b *Board) updateBoard(orig, dest int,
 	}
 }
 
-// Check if current player is in Check
-// TODO: Change to upper case
+// isPlayerInCheck(), current player is in Check.
+// TODO: Change to upper case?
 func (b *Board) isPlayerInCheck() bool {
 	isWhite := b.toMove == "w"
 	for idx, val := range b.board {
@@ -452,7 +449,8 @@ func (b *Board) isPlayerInCheck() bool {
 	return false
 }
 
-// Check if target King is in Check
+// isInCheck() checks if target King is in Check.
+// Automaticlaly checks for turn by the target King.
 func (b *Board) isInCheck(target int) bool {
 	isWhite := b.isUpper(target)
 	k := b.board[target]
@@ -516,7 +514,9 @@ func (b *Board) isInCheck(target int) bool {
 	return false
 }
 
-// Check: right-color, origin-empty, attack-enemy
+// basicValidation assures basic chess rules:
+// correct-color to move, origin is empty, and
+// only attack an enemy.
 func (b *Board) basicValidation(orig, dest int, o, d byte, isCastle bool) error {
 	// Check if it is the right turn
 	if b.board[orig] != o {
@@ -533,7 +533,7 @@ func (b *Board) basicValidation(orig, dest int, o, d byte, isCastle bool) error 
 	return nil
 }
 
-// validate Pawn Move
+// validatePawn Move
 func (b *Board) validPawn(orig int, dest int, d byte) error {
 	err := errors.New("Illegal Pawn Move")
 	var remainder int
@@ -578,7 +578,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	return nil
 }
 
-// Validate Knight move.
+// validateKnight move.
 func (b *Board) validKnight(orig int, dest int) error {
 	var possibilities [8]int
 	possibilities[0], possibilities[1],
@@ -595,7 +595,7 @@ func (b *Board) validKnight(orig int, dest int) error {
 	return errors.New("Illegal Knight Move")
 }
 
-// Validate Bishop move.
+// validateBishop move.
 func (b *Board) validBishop(orig int, dest int) error {
 	// Check if other pieces are in the way
 	err := errors.New("Illegal Bishop Move")
@@ -813,7 +813,7 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	return nil
 }
 
-// ParseMove infers origin and destination
+// ParseMove() infers origin and destination
 // coordinates from a pgn notation move. Check
 // and Check Mate notations will be added automatically.
 // TODO: disambiguiation
@@ -1164,7 +1164,7 @@ func (b *Board) ParseMove(move string) error {
 	}
 }
 
-// LoadPgn reads a pgn match.
+// LoadPgn() reads a pgn match.
 // TODO: ignore header strings eg [White].
 func (b *Board) LoadPgn(match string) error {
 	result := b.pgnPattern.FindAllString(match, -1)
@@ -1177,7 +1177,7 @@ func (b *Board) LoadPgn(match string) error {
 	return nil
 }
 
-// LoadFen Parse FEN string and update Board.board.
+// LoadFen() parses FEN string and update Board.board.
 func (b *Board) LoadFen(fen string) error {
 	// Treat fen input
 	fen = strings.TrimRight(fen, "\r\n")
@@ -1249,6 +1249,9 @@ func (b *Board) LoadFen(fen string) error {
 }
 
 // Position returns string FEN position.
+// It also sets the Board.fen attribute
+// to the most currect position. (b.fen
+// remains empty unil b.Position() is called)
 func (b *Board) Position() string {
 	pos := ""
 	emp := "-"
@@ -1296,7 +1299,7 @@ func main() {
 	PlayGame(board)
 }
 
-// PlayGame takes user input and commands.
+// PlayGame() takes user input and commands.
 // See ui/clichess.go for more robust client.
 func PlayGame(board Board) {
 	var turn string
@@ -1358,7 +1361,7 @@ Loop:
 	fmt.Println("\nGood Game.")
 }
 
-// Stats returns program data of current game
+// Stats() returns program data of current game
 // in map[string]string.
 // Todo, replace with exported struct attirbutes.
 func (b *Board) Stats() map[string]string {
@@ -1376,7 +1379,7 @@ func (b *Board) Stats() map[string]string {
 	return m
 }
 
-// SetHeaders sets pgnHeaders for a pgn export.
+// SetHeaders() sets pgnHeaders for a pgn export.
 func (b *Board) SetHeaders(w, bl string) {
 	w = strings.TrimRight(w, "\r\n")
 	bl = strings.TrimRight(bl, "\r\n")
