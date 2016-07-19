@@ -83,6 +83,7 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 - PGN parse errors
 - Variables should be exported, capitalized
 - Checkmate should update PGN headers/history
+- Flip board (UI problem)
 
 ### Search & Evaluate
 
