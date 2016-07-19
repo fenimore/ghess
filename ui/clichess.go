@@ -145,6 +145,8 @@ Loop:
 				fmt.Println(origs)
 				fmt.Println(dests)
 				fmt.Println("Total valid moves: ", len(origs))
+				game.EvaluateMoves(origs, dests)
+				
 			case input == "/rand":
 				origs, dests := game.SearchForValid()
 				e := game.MoveRandom(origs, dests)

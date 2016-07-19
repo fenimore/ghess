@@ -1578,15 +1578,18 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 TODO: Evaluate
 */
 
-func (b *Board) EvaluateMoves(origs, dests []int) (int, int) {
-	bests := make(map[int]int) // idx of origs and score
+func (b *Board) EvaluateMoves(origs, dests []int) []int {
+	var bests []int
 	for i, _ := range origs {
 		o := b.board[origs[i]]
 		d := dests[i]
-		p := bytes.ToUpper(o : o+1)[0]
-		b.Evaluate(p, d)
-				
+		p := byte(unicode.ToUpper(rune(o)))
+		s := b.Evaluate(p, d)
+		bests = append(bests, s) 		
 	}
+
+	fmt.Println(bests)
+	return bests
 }
 
 func (b *Board) Evaluate(piece byte, dest int) int {
