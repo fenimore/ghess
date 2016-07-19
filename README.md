@@ -80,7 +80,6 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
 ### Basic Functionality
 
-- PGN adds the + even if it already there...
 - Variables should be exported, capitalized
 - Checkmate should update PGN headers/history
 - Flip board (UI problem)
