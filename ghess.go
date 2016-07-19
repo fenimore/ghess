@@ -995,7 +995,7 @@ func (b *Board) ParseMove(move string) error {
 			} else {
 				if b.board[possibility] == target {
 					orig = possibility
-					break 
+					break
 				}
 			}
 		}
@@ -1577,3 +1577,13 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 /*
 TODO: Evaluate
 */
+
+func (b *Board) Evaluate(piece byte, dest int) int {
+	var score int
+	
+	isCenter := dest == 55 || dest == 44 || dest = 45 || dest = 54 
+	if piece == 'P' && isCenter {
+		score += 50
+	}
+	return score
+}
