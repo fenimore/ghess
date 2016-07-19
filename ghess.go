@@ -1167,6 +1167,7 @@ func (b *Board) ParseMove(move string) error {
 // LoadPgn() reads a pgn match.
 // TODO: ignore header strings eg [White].
 func (b *Board) LoadPgn(match string) error {
+	// Does this already ignore?
 	result := b.pgnPattern.FindAllString(match, -1)
 	for _, val := range result {
 		err := b.ParseMove(val)
