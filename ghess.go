@@ -1578,12 +1578,29 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 TODO: Evaluate
 */
 
+func (b *Board) EvaluateMoves(origs, dests []int) (int, int) {
+	bests := make(map[int]int) // idx of origs and score
+	for i, _ := range origs {
+		o := b.board[origs[i]]
+		d := dests[i]
+		p := bytes.ToUpper(o : o+1)[0]
+		b.Evaluate(p, d)
+				
+	}
+}
+
 func (b *Board) Evaluate(piece byte, dest int) int {
 	var score int
+	isCenter := dest == 55 || dest == 44 ||
+		dest == 45 || dest == 54
 	
-	isCenter := dest == 55 || dest == 44 || dest = 45 || dest = 54 
 	if piece == 'P' && isCenter {
 		score += 50
 	}
+
+	if b.board[dest] != '.' {
+		score += 100
+	}
+	
 	return score
 }
