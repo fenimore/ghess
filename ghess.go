@@ -331,9 +331,12 @@ func (b *Board) Move(orig, dest int) error {
 	isCheck = b.isPlayerInCheck()
 	if isCheck {
 		isCheckMate := false
-		origs, dests := b.SearchForValid()
+		origs, _ := b.SearchForValid()
 		isWhite = b.toMove == "w"
-	LoopSearch:
+		if len(origs) < 1 {
+			isCheckMate = true
+		}
+/*	LoopSearch:
 		for idx, o := range origs {
 			p := *b // p for possible
 			boardCopy := make([]byte, 120)
@@ -365,7 +368,7 @@ func (b *Board) Move(orig, dest int) error {
 				isCheckMate = false
 				break LoopSearch
 			}
-		}
+		}*/
 		if isCheckMate {
 			b.checkmate = true
 			if b.toMove == "w" {
@@ -1481,7 +1484,7 @@ Search
 // SearchForValid returns lists of int coordinates
 // for valid origins and destinations of the current
 // player.
-// TODO: it doesn't invalidate in check
+// TODO: castling is a mess
 func (b *Board) SearchForValid() ([]int, []int) {
 	isWhite := b.toMove == "w"
 	movers := make([]int, 0, 16)
@@ -1497,7 +1500,6 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		} else if king == 0 && !isWhite && val == 'k' {
 			king = idx
 		}
-
 		// Only look for 64 squares
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
 			continue
@@ -1514,8 +1516,6 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			targets = append(targets, idx)
 		}
 	}
-	//fmt.Println("List of Movers")
-	//fmt.Println(movers)
 	for _, val := range movers {
 		p := string(bytes.ToUpper(b.board[val : val+1]))
 		for _, target := range targets {
@@ -1601,6 +1601,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		if err != nil || isCheck {
 			// this deletes?, nooo it doesn't..
 			// Or atleast it doesn't keep the order.
+			// TODO: fix or delete this code:
 			origs = append(origs[:idx], origs[idx:]...)
 			dests = append(dests[:idx], dests[idx:]...)
 		} else {
