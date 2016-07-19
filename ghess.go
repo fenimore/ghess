@@ -1160,15 +1160,17 @@ func (b *Board) ParseMove(move string) error {
 	if orig != 0 && dest != 0 {
 		err := b.Move(orig, dest)
 		if err == nil {
+			matchCheck, _ := regexp.MatchString(`+`, move)
+			matchMate, _  := regexp.MatchString(`#`, move)
 			// Update pgn History
 			if b.toMove == "b" {
 				b.pgn += strconv.Itoa(b.moves) + ". "
 			}
 			b.pgn += (move)
-			if b.checkmate {
+			if b.checkmate && matchMate {
 				b.pgn += "# "
-			} else if b.check {
-				// TODO if move doesn't already have check..
+			} else if b.check && matchCheck {
+
 				b.pgn += "+ "
 			} else {
 				b.pgn += " " // add space
