@@ -1588,12 +1588,16 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	}
 	//fmt.Println("Valid move count: ", validMoveCount)
 	var realOrigs, realDests []int
-	for idx, _ := range origs {
+	for idx := 0; idx < len(origs); idx++ {
+
+		if b.board[origs[idx]] == 'k' || b.board[origs[idx]] == 'K' {
+			king = dests[idx]
+		}
+		fmt.Println(idx)
 		possible := *b
 		bCopy := make([]byte, 120)
 		copy(bCopy, b.board)
 		possible.board = bCopy
-		
 		err := possible.Move(origs[idx], dests[idx])
 		isCheck := possible.isInCheck(king)
 		//fmt.Println(isCheck)
