@@ -1497,10 +1497,13 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		} else if king == 0 && !isWhite && val == 'k' {
 			king = idx
 		}
-		
+
+		// Only look for 64 squares
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
 			continue
 		}
+
+		// TODO:
 		// This is why Castle search-valid doens't work
 		if isWhite && b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
@@ -1584,21 +1587,28 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		}
 	}
 	//fmt.Println("Valid move count: ", validMoveCount)
-	
+	var realOrigs, realDests []int
 	for idx, _ := range origs {
 		possible := *b
 		bCopy := make([]byte, 120)
 		copy(bCopy, b.board)
 		possible.board = bCopy
+		
 		err := possible.Move(origs[idx], dests[idx])
 		isCheck := possible.isInCheck(king)
 		//fmt.Println(isCheck)
-		// WHY DOESN"T THIS WORK?
 		if err != nil || isCheck {
+			// this deletes?, nooo it doesn't..
+			// Or atleast it doesn't keep the order.
 			origs = append(origs[:idx], origs[idx:]...)
 			dests = append(dests[:idx], dests[idx:]...)
+		} else {
+			realOrigs = append(realOrigs, origs[idx])
+			realDests = append(realDests, dests[idx])
 		}
 	}
+	fmt.Println(realOrigs)
+	fmt.Println(realDests)
 	return origs, dests
 }
 
