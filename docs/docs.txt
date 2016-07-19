@@ -1,0 +1,74 @@
+PACKAGE DOCUMENTATION
+
+package ghess
+    import "."
+
+    Go Chess Engine - Ghess Fenimore Love 2016 GPLv3 TODO: Evaluation
+
+FUNCTIONS
+
+func PlayGame(board Board)
+    PlayGame() takes user input and commands. See ui/clichess.go for more
+    robust client.
+
+TYPES
+
+type Board struct {
+    // contains filtered or unexported fields
+}
+    Board is a chessboard type TODO: Make Upper Case? M-c for upper case
+
+func NewBoard() Board
+    Create a new Board in the starting position
+
+func (b *Board) Coordinates()
+    Coordinates prints the int values used for Board.Move()
+
+func (b *Board) LoadFen(fen string) error
+    LoadFen() parses FEN string and update Board.board.
+
+func (b *Board) LoadPgn(match string) error
+    LoadPgn() reads a pgn match. TODO: ignore header strings eg [White].
+
+func (b *Board) Move(orig, dest int) error
+    Move() is the basic validation. The origin and destination square are
+    tested in a dereferenced b.board to keep from moving into check. The
+    individual pieces are validated in seperate methods. Finally this method
+    updates the board, updateBoard().
+
+func (b *Board) MoveRandom(origs, dests []int) error
+    MoveRandom, pick move from lists of valid moves. Return an error, such
+    as checkmate or draw.
+
+func (b *Board) ParseMove(move string) error
+    ParseMove() infers origin and destination coordinates from a pgn
+    notation move. Check and Check Mate notations will be added
+    automatically. TODO: disambiguiation
+
+func (b *Board) PgnString() string
+    PgnString() returns headers and pgn history.
+
+func (b *Board) Position() string
+    Position returns string FEN position. It also sets the Board.fen
+    attribute to the most currect position. (b.fen remains empty unil
+    b.Position() is called)
+
+func (b *Board) SearchForValid() ([]int, []int)
+    SearchForValid returns lists of int coordinates for valid origins and
+    destinations of the current player. TODO: castling is a mess
+
+func (b *Board) SetHeaders(w, bl string)
+    SetHeaders() sets pgnHeaders for a pgn export.
+
+func (b *Board) Stats() map[string]string
+    Stats() returns program data of current game in map[string]string. Todo,
+    replace with exported struct attirbutes.
+
+func (b *Board) String() string
+    String() returns a string printable board. TODO: rotate board for black
+    position.
+
+SUBDIRECTORIES
+
+	ui
+
