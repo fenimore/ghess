@@ -149,7 +149,8 @@ Loop:
 				bests := game.EvaluateMoves(origs,
 					dests)
 				fmt.Println("Scores: ", bests)
-				
+			case input == "/best":
+				game.MoveBest()
 			case input == "/rand":
 				origs, dests := game.SearchForValid()
 				e := game.MoveRandom(origs, dests)
