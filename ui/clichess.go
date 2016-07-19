@@ -144,8 +144,11 @@ Loop:
 				origs, dests := game.SearchForValid()
 				fmt.Println(origs)
 				fmt.Println(dests)
-				fmt.Println("Total valid moves: ", len(origs))
-				game.EvaluateMoves(origs, dests)
+				fmt.Println("Total valid moves: ",
+					len(origs))
+				bests := game.EvaluateMoves(origs,
+					dests)
+				fmt.Println("Scores: ", bests)
 				
 			case input == "/rand":
 				origs, dests := game.SearchForValid()

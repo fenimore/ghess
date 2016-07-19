@@ -1588,8 +1588,6 @@ func (b *Board) EvaluateMoves(origs, dests []int) []int {
 		s := b.Evaluate(p, d)
 		bests = append(bests, s) 		
 	}
-
-	fmt.Println(bests)
 	return bests
 }
 
@@ -1613,9 +1611,17 @@ func (b *Board) Evaluate(piece byte, dest int) int {
 			score += 50
 		case piece == 'N':
 			score += 25
+		}
 	}
 
-	// If is Capture!
+	// Check for open file of Rook?
+	// Check if on long access Bishop
+	// Check if puts in check?
+	// Should I be effecting the move?
+	// eg. possible.UpdateBoard()????
+
+	
+	// If is Capture
 	if b.board[dest] != '.' {
 		score += 100
 	}
