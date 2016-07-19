@@ -181,6 +181,10 @@ Loop:
 					time.Sleep(500 * time.Millisecond)
 					fmt.Print(".")
 					gameOver, _ := strconv.ParseBool(info["checkmate"])
+					check, _ := strconv.ParseBool(info["check"])
+					if check {
+						fmt.Println("****Check****")
+					}
 					if gameOver {
 						break
 					}

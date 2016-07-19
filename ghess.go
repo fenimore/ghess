@@ -1490,7 +1490,14 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	dests := make([]int, 0, 64)
 	var d byte
 	var validMoveCount int
+	var king int	
 	for idx, val := range b.board {
+		if king == 0 && isWhite && val == 'K' {
+			king = idx
+		} else if king == 0 && !isWhite && val == 'k' {
+			king = idx
+		}
+		
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
 			continue
 		}
@@ -1577,6 +1584,21 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		}
 	}
 	//fmt.Println("Valid move count: ", validMoveCount)
+	
+	for idx, _ := range origs {
+		possible := *b
+		bCopy := make([]byte, 120)
+		copy(bCopy, b.board)
+		possible.board = bCopy
+		err := possible.Move(origs[idx], dests[idx])
+		isCheck := possible.isInCheck(king)
+		//fmt.Println(isCheck)
+		// WHY DOESN"T THIS WORK?
+		if err != nil || isCheck {
+			origs = append(origs[:idx], origs[idx:]...)
+			dests = append(dests[:idx], dests[idx:]...)
+		}
+	}
 	return origs, dests
 }
 
