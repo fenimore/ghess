@@ -1574,9 +1574,13 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 	return nil
 }
 
-/*
-TODO: Evaluate
-*/
+func (b *Board) MoveBest() {
+	origs, dests := b.SearchForValid()
+	bests := b.EvaluateMoves(origs, dests)
+	// get best of bests and return the index
+	idx := len(bests) // place holder
+	b.Move(origs[idx], dests[idx])
+}
 
 // EvaluateMoves() scores all valid moves.
 func (b *Board) EvaluateMoves(origs, dests []int) []int {
