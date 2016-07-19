@@ -1246,6 +1246,7 @@ func (b *Board) LoadFen(fen string) error {
 	b.moves = turns
 	b.fen = fen
 	b.toMove = res[2]
+	b.check = b.isPlayerInCheck()
 	return nil
 }
 
