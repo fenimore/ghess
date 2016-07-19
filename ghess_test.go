@@ -88,7 +88,6 @@ func ExampleLoadFen() {
 	} else {
 		fmt.Println("Success")
 	}
-
 	fen = "6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42"
 	err = game.LoadFen(fen)
 	if err != nil {

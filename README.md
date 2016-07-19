@@ -89,7 +89,7 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 - Look for all valid moves
    * There is a bug for castling possibilities
    * and likely empassant...
-- Give all moves a score
+- Give all moves a score (mdr)
 
 ### Extra features
 
@@ -99,8 +99,7 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
 ### Bugs:
 
-- Load FEN doesn't change check/checkmate values?
-
+- Surely, something?
 
 ### Notes...
 
@@ -110,12 +109,6 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 	6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5
 
 
-from the godoc docs
- 
-    Notice this comment is a complete sentence that begins with the name of the element it describes. This important convention allows us to generate documentation in a variety of formats, from plain text to HTML to UNIX man pages, and makes it read better when tools truncate it for brevity, such as when they extract the first line or sentence. 
-
-
 ### License;
 
-Fenimore Love - 2016
-GPL
+    Fenimore Love - 2016 | GPL
