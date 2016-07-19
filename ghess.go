@@ -1547,8 +1547,11 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		}
 		possible := *b
 		bCopy := make([]byte, 120)
+		cCopy := make([]byte, 4)
 		copy(bCopy, b.board)
+		copy(cCopy, b.castle)
 		possible.board = bCopy
+		possible.castle = cCopy
 		err := possible.Move(origs[idx], dests[idx])
 		isCheck := possible.isInCheck(king)
 		if err != nil || isCheck {
