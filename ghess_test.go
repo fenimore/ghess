@@ -199,10 +199,19 @@ func ExampleCheckMate() {
 
 func ExampleSearchForValid() {
 	game := NewBoard()
+	o, d := game.SearchForValid()
+	fmt.Println(o)
+	fmt.Println(d)	
 	fen := "6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42"
 	_ = game.LoadFen(fen)
-	fmt.Print(game.String())
+	o, d = game.SearchForValid()	
+	fmt.Println(o)
+	fmt.Println(d)	
 
-		
+	// Output:
+	// [12 12 17 17 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28]
+	// [31 33 36 38 31 41 32 42 33 43 34 44 35 45 36 46 37 47 38 48]
+	// [21 21 21 21 43]
+	// [11 11 12 31 23]
 
 }

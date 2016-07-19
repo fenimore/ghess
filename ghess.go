@@ -332,43 +332,9 @@ func (b *Board) Move(orig, dest int) error {
 	if isCheck {
 		isCheckMate := false
 		origs, _ := b.SearchForValid()
-		isWhite = b.toMove == "w"
 		if len(origs) < 1 {
 			isCheckMate = true
 		}
-/*	LoopSearch:
-		for idx, o := range origs {
-			p := *b // p for possible
-			boardCopy := make([]byte, 120)
-			castleCopy := make([]byte, 4)
-			copy(boardCopy, b.board)
-			copy(castleCopy, b.castle)
-			p.board = boardCopy
-			p.castle = castleCopy
-			// need to add isEmp and isCas
-			isEmp := false
-			isCas := false
-			p.updateBoard(o, dests[idx], p.board[o],
-				isEmp, isCas)
-			var king int
-			for idx, val := range p.board {
-				if isWhite && val == 'K' {
-					king = idx
-					break
-				} else if !isWhite && val == 'k' {
-					king = idx
-					break
-				}
-			}
-			isCheck := p.isInCheck(king)
-			if isCheck {
-				isCheckMate = true
-				continue LoopSearch
-			} else {
-				isCheckMate = false
-				break LoopSearch
-			}
-		}*/
 		if isCheckMate {
 			b.checkmate = true
 			if b.toMove == "w" {

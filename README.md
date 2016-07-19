@@ -74,8 +74,6 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
 ## TODO
 
-- More tests
-
 ### Basic rules
 
 - Minor pawn promotion.
@@ -91,7 +89,6 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 - Look for all valid moves
    * There is a bug for castling possibilities
    * and likely empassant...
-   * and moving into castle
 - Give all moves a score
 
 ### Extra features
@@ -111,6 +108,7 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
     rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
 	8/5p2/8/p5P1/k7/8/1K6/8 w - - 0 1
 	6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5
+
 
 from the godoc docs
  
