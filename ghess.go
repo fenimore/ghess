@@ -1578,6 +1578,7 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 TODO: Evaluate
 */
 
+// EvaluateMoves() scores all valid moves.
 func (b *Board) EvaluateMoves(origs, dests []int) []int {
 	var bests []int
 	for i, _ := range origs {
@@ -1592,15 +1593,29 @@ func (b *Board) EvaluateMoves(origs, dests []int) []int {
 	return bests
 }
 
+// Evaluate() scores a move based on the piece
+// and its destination.
+// TODO: Must I acknowledge castling?
 func (b *Board) Evaluate(piece byte, dest int) int {
 	var score int
 	isCenter := dest == 55 || dest == 44 ||
 		dest == 45 || dest == 54
-	
-	if piece == 'P' && isCenter {
-		score += 50
+	isBorder := (dest-1)%10 == 0 || (dest+2)%10 == 0
+	if isBorder {
+		switch {
+		case piece == 'N':
+			score -= 10
+		}
+	}
+	if isCenter {
+		switch {
+		case piece == 'P':
+			score += 50
+		case piece == 'N':
+			score += 25
 	}
 
+	// If is Capture!
 	if b.board[dest] != '.' {
 		score += 100
 	}

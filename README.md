@@ -96,9 +96,9 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
 - Look for all valid moves
    * There is a bug for castling possibilities
-   * and likely empassant...
 - Give all moves a score (mdr)
-
+   * Am I even capable of this?
+   
 ### Extra features
 
 - Move history/ Undo
