@@ -1,5 +1,5 @@
 # go-chess || Ghess
-A Golang chess engine, fumbling along...
+A Golang chess engine, fumbling along... 
 
     |Move:  3     Turn: b
     |Check: false Castle: KQkq
@@ -109,6 +109,17 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 	6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5
 
 
-### License;
+### License
 
-    Fenimore Love - 2016 | GPL
+Copyright (C) 2016 Fenimore Love
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
