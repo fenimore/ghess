@@ -1588,19 +1588,16 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	}
 	//fmt.Println("Valid move count: ", validMoveCount)
 	var realOrigs, realDests []int
-	for idx := 0; idx < len(origs); idx++ {
-
+	for idx, _ := range origs {
 		if b.board[origs[idx]] == 'k' || b.board[origs[idx]] == 'K' {
 			king = dests[idx]
 		}
-		fmt.Println(idx)
 		possible := *b
 		bCopy := make([]byte, 120)
 		copy(bCopy, b.board)
 		possible.board = bCopy
 		err := possible.Move(origs[idx], dests[idx])
 		isCheck := possible.isInCheck(king)
-		//fmt.Println(isCheck)
 		if err != nil || isCheck {
 			// this deletes?, nooo it doesn't..
 			// Or atleast it doesn't keep the order.
@@ -1611,9 +1608,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			realDests = append(realDests, dests[idx])
 		}
 	}
-	fmt.Println(realOrigs)
-	fmt.Println(realDests)
-	return origs, dests
+	return realOrigs, realDests
 }
 
 // MoveRandom, pick move from lists of valid moves.
