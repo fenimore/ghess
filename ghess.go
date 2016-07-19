@@ -976,13 +976,12 @@ func (b *Board) ParseMove(move string) error {
 			possibilities[6], possibilities[7] = dest+21,
 			dest+19, dest+12, dest+8, dest-8,
 			dest-12, dest-19, dest-21
-	LoopKnight:
 		for _, possibility := range possibilities {
 			if column != 0 { // Disambiguate
 				disambig := possibility%10 == column
 				if b.board[possibility] == target && disambig {
 					orig = possibility
-					break LoopKnight
+					break 
 				}
 			} else if row[0] != 0 { // Disambiguate
 				for _, r := range row {
@@ -990,13 +989,13 @@ func (b *Board) ParseMove(move string) error {
 						b.board[possibility] == byte(r)
 					if disambig {
 						orig = possibility
-						break LoopKnight
+						break 
 					}
 				}
 			} else {
 				if b.board[possibility] == target {
 					orig = possibility
-					break LoopKnight
+					break 
 				}
 			}
 		}
@@ -1429,10 +1428,6 @@ func (b Board) isUpper(x int) bool {
 		return false
 	}
 }
-
-/*
-Search
-*/
 
 // SearchForValid returns lists of int coordinates
 // for valid origins and destinations of the current
