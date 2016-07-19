@@ -78,6 +78,10 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
 ## TODO
 
+1. more tests
+2. Benchmarks for Search and Validation?
+   * is it taking a while, or is it just me?
+
 ### Basic rules
 
 - Minor pawn promotion.
