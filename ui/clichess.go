@@ -9,7 +9,6 @@ import "strconv"
 import "strings"
 import "time"
 
-
 func main() {
 	game := ghess.NewBoard()
 	PlayGame(game)
@@ -84,7 +83,7 @@ Loop:
 			case input == "/help":
 				fmt.Print("\n", manuel)
 			case input == "/quit" || input == "/exit":
-				break Loop 
+				break Loop
 			case input == "/new":
 				game = ghess.NewBoard()
 				fmt.Print(game.String())
@@ -127,7 +126,7 @@ Loop:
 				}
 				info := game.Stats()
 				fmt.Print(getPanel(info))
- 				fmt.Print(game.String())
+				fmt.Print(game.String())
 			case input == "/fen":
 				fmt.Println("FEN position:")
 				fmt.Println(game.Position())
@@ -209,11 +208,11 @@ Loop:
 			fmt.Printf("|   [Error: %v]\n", e)
 		}
 		fmt.Print(game.String())
-		ch,_:= strconv.ParseBool(info["check"])
+		ch, _ := strconv.ParseBool(info["check"])
 		checkmate, _ := strconv.ParseBool(info["checkmate"])
 		if checkmate {
 			fmt.Println("****Check and Mate.****")
-		} else 	if ch {
+		} else if ch {
 			fmt.Println("****Check!****")
 		}
 	}
@@ -221,11 +220,10 @@ Loop:
 }
 
 func getPanel(m map[string]string) string {
-	return "|Move:  "+m["move"]+"     Turn: "+m["turn"]+
-		"\n|Check: "+m["check"]+" Castle: "+m["castling"]+
-		"\n|Mate:  "+m["checkmate"]+" Score: "+m["score"]+"\n"
+	return "|Move:  " + m["move"] + "     Turn: " + m["turn"] +
+		"\n|Check: " + m["check"] + " Castle: " + m["castling"] +
+		"\n|Mate:  " + m["checkmate"] + " Score: " + m["score"] + "\n"
 }
-
 
 func think(long bool) {
 	var t int // time.Duration is no int
