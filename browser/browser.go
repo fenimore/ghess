@@ -6,9 +6,12 @@ import (
 	"net/http"
 )
 
-func boardHandler(g *Board, w http.ResponseWriter, r *http.Request) {
+func boardHandler(w http.ResponseWriter, r *http.Request) {
 	game := ghess.NewBoard()
-	fmt.Fprintf(w, g.String())
+	fmt.Fprintf(w, game.String())
+	move := r.URL.Path[1:]
+	game.ParseMove(move)
+	fmt.Fprintf(w, game.String())
 }
 
 func main() {
