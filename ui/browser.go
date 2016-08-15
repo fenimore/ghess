@@ -8,8 +8,17 @@ import (
 	"net/http"
 )
 
-func boardHandler(w http.ResponseWriter, r *http.Request) {
+type ChessHandler struct {
+	db *sql.DB
+}
+
+// boardHandler for playing game
+// Takes url param pgn move
+func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
+	r *http.Request) {
 	game := ghess.NewBoard()
+	fen := ReadGame(h.db, 1)
+	game.LoadFen(fen)
 	fmt.Fprintln(w, game.String())
 	move := r.URL.Path[1:]
 	e := game.ParseMove(move)
@@ -17,6 +26,12 @@ func boardHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, e.Error())
 	}
 	fmt.Fprintln(w, game.String())
+}
+
+func (h *ChessHandler) newGameHandler(w http.ResponseWriter,
+	r *http.Request) {
+	CreateGame(h.db)
+	// Create New Game
 }
 
 func main() {
@@ -27,14 +42,16 @@ func main() {
 	// INIT and CREATE DATABASE
 	db := InitDb("./chess.db")
 	CreateTable(db)
-	CreateGame(db)
+	//CreateGame(db)
 	// TEST EDIT DATABASE
-	ReadGame(db, 1)
-	UpdateRow(db, "LKJDF", 1)
-	ReadGame(db, 1)
+	//ReadGame(db, 1)
+	//UpdateRow(db, "LKJDF", 1)
+	//ReadGame(db, 1)
+	h := ChessHandler{db: db}
 
 	// Server Part
-	http.HandleFunc("/", boardHandler)
+	http.HandleFunc("/play", h.playGameHandler)
+	http.HandleFunc("/new", h.newGameHandler)
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
 
@@ -58,8 +75,8 @@ CREATE TABLE IF NOT EXISTS games(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     white TEXT NOT NULL,                
     black TEXT NOT NULL,
-    fen TEXT NOT NULL DEFAULT 'yes',
-    pgn TEXT NOT NULL DEFAULT 'yes',
+    fen TEXT NOT NULL DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+    pgn TEXT NOT NULL DEFAULT '',
     date DATE
 );
 `
@@ -108,7 +125,7 @@ func UpdateRow(db *sql.DB, fen string, gId int) {
 // Read a game give it's id
 // Print out the player names and
 // The fen position
-func ReadGame(db *sql.DB, gId int) {
+func ReadGame(db *sql.DB, gId int) string {
 	var (
 		id    int
 		white string
@@ -128,6 +145,7 @@ func ReadGame(db *sql.DB, gId int) {
 		fmt.Println(id, white, black, fen)
 	}
 	rows.Close()
+	return fen
 }
 
 // Read Games
