@@ -39,6 +39,7 @@ func (h *ChessHandler) newGameHandler(w http.ResponseWriter,
 func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	//print board
+	fmt.Fprintln(w, getPanel(h.g.Stats())+h.g.String())
 }
 
 func main() {
@@ -55,4 +56,10 @@ func main() {
 	http.HandleFunc("/new/", h.newGameHandler)
 	fmt.Printf("Listening on %s\n", PORT)
 	http.ListenAndServe(PORT, nil)
+}
+
+func getPanel(m map[string]string) string {
+	return "|Move:  " + m["move"] + "     Turn: " + m["turn"] +
+		"\n|Check: " + m["check"] + " Castle: " + m["castling"] +
+		"\n|Mate:  " + m["checkmate"] + " Score: " + m["score"] + "\n"
 }
