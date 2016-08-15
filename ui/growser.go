@@ -30,6 +30,9 @@ type ChessBoard struct {
 // Takes url param pgn move
 func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 	r *http.Request) {
+	// If no board, redirect to board
+	//http.Redirect(w, r, "/new/", http.StatusFound)
+
 	move := r.URL.Path[len("/play/"):]
 	e := h.g.ParseMove(move)
 	if e != nil {
@@ -48,7 +51,10 @@ func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	// Must it be a pointer?
 	b := ChessBoard{Board: h.g.String(), Fen: h.g.Position(), Pgn: h.g.PgnString()}
-	t, _ := template.ParseFiles("board.html")
+	t, err := template.ParseFiles("templates/board.html")
+	if err != nil {
+		fmt.Printf("Error %s Templates", err)
+	}
 	t.Execute(w, b)
 	//fmt.Fprintln(w, getPanel(h.g.Stats())+h.g.String())
 }
