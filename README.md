@@ -105,6 +105,17 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
   * Save game history to board (not automatic)?
   * Save as two coordinates, with piece specifier
 
+# User Interface
+
+## clichess
+- A commandline chess program for debugging and watching random games.
+
+## browser-sql
+- A server api for playing a game and saving it to a sqlite database.
+
+## browser
+- A server api.
+
 ### Bugs
 
 - Surely, something?
