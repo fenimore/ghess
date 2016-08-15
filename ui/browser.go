@@ -27,7 +27,10 @@ func main() {
 	db := InitDb("./chess.db")
 	CreateTable(db)
 	CreateGame(db)
-	ReadGames(db)
+	//ReadGames(db)
+	ReadGame(db, 1)
+	ReadGame(db, 2)
+	ReadGame(db, 10)
 	http.HandleFunc("/", boardHandler)
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
@@ -51,9 +54,9 @@ func CreateTable(db *sql.DB) {
 CREATE TABLE IF NOT EXISTS games(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     white TEXT NOT NULL,                
-    black TEXT,
-    fen TEXT,
-    pgn TEXT,
+    black TEXT NOT NULL,
+    fen TEXT NOT NULL DEFAULT '',
+    pgn TEXT NOT NULL DEFAULT '',
     date DATE
 );
 `
@@ -80,7 +83,35 @@ func CreateGame(db *sql.DB) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("New game: %s\n", string(id))
+	fmt.Printf("New game: %i\n", id)
+}
+
+// Update FEN position
+
+func UpdateFenRow(db *sql.DB) {
+	//do something
+}
+
+func ReadGame(db *sql.DB, gId int) {
+	var (
+		id    int
+		white string
+		black string
+		fen   string
+	)
+	rows, err := db.Query("select id, white, black, fen from games where id = ?", gId)
+	if err != nil {
+		fmt.Printf("Error %s in Query", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err := rows.Scan(&id, &white, &black, &fen)
+		if err != nil {
+			fmt.Printf("Error %s in Rows", err)
+		}
+		fmt.Println(id, white, black)
+	}
+	rows.Close()
 }
 
 // Read Game
@@ -88,11 +119,11 @@ func ReadGames(db *sql.DB) {
 	stmt := "SELECT * FROM games"
 	rows, err := db.Query(stmt)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Print("Error %s in Reading Games", err)
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var id int
+		var id int64
 		var white string
 		var black string
 		var fen string
@@ -105,6 +136,6 @@ func ReadGames(db *sql.DB) {
 		fmt.Println(id)
 		fmt.Println(white, black)
 	}
+	// Redundant but pas mal
+	rows.Close()
 }
-
-// Update/ Fen
