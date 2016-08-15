@@ -15,7 +15,7 @@ import (
 )
 
 type ChessHandler struct {
-	g *Board
+	g ghess.Board
 }
 
 // boardHandler for playing game
@@ -46,11 +46,13 @@ func main() {
 	// Which is forcement takes into a reader and writer
 	// and then it will print whatever is written to the
 	// writer
+	PORT := "0.0.0.0:8080"
 	h := new(ChessHandler)
 
 	// Server Part
 	http.HandleFunc("/play/", h.playGameHandler)
 	http.HandleFunc("/board/", h.showGameHandler)
 	http.HandleFunc("/new/", h.newGameHandler)
-	http.ListenAndServe("0.0.0.0:8080", nil)
+	fmt.Printf("Listening on %s\n", PORT)
+	http.ListenAndServe(PORT, nil)
 }
