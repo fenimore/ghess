@@ -24,13 +24,16 @@ func main() {
 	// Which is forcement takes into a reader and writer
 	// and then it will print whatever is written to the
 	// writer
+	// INIT and CREATE DATABASE
 	db := InitDb("./chess.db")
 	CreateTable(db)
 	CreateGame(db)
-	//ReadGames(db)
+	// TEST EDIT DATABASE
 	ReadGame(db, 1)
-	ReadGame(db, 2)
-	ReadGame(db, 10)
+	UpdateRow(db, "LKJDF", 1)
+	ReadGame(db, 1)
+
+	// Server Part
 	http.HandleFunc("/", boardHandler)
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
@@ -55,8 +58,8 @@ CREATE TABLE IF NOT EXISTS games(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     white TEXT NOT NULL,                
     black TEXT NOT NULL,
-    fen TEXT NOT NULL DEFAULT '',
-    pgn TEXT NOT NULL DEFAULT '',
+    fen TEXT NOT NULL DEFAULT 'yes',
+    pgn TEXT NOT NULL DEFAULT 'yes',
     date DATE
 );
 `
@@ -86,12 +89,25 @@ func CreateGame(db *sql.DB) {
 	fmt.Printf("New game: %i\n", id)
 }
 
-// Update FEN position
+// Update FEN position of id with fen string
+// Change for PGN
+func UpdateRow(db *sql.DB, fen string, gId int) {
+	stmt, err := db.Prepare("UPDATE GAMES SET fen=? where id=?")
+	if err != nil {
+		fmt.Printf("Error %s in Update", err)
+	}
+	// Unlike Query, Exec can
+	// Throw away it's result
+	_, err = stmt.Exec(fen, gId)
+	if err != nil {
+		fmt.Printf("Error %s in Result", err)
+	}
 
-func UpdateFenRow(db *sql.DB) {
-	//do something
 }
 
+// Read a game give it's id
+// Print out the player names and
+// The fen position
 func ReadGame(db *sql.DB, gId int) {
 	var (
 		id    int
@@ -109,12 +125,12 @@ func ReadGame(db *sql.DB, gId int) {
 		if err != nil {
 			fmt.Printf("Error %s in Rows", err)
 		}
-		fmt.Println(id, white, black)
+		fmt.Println(id, white, black, fen)
 	}
 	rows.Close()
 }
 
-// Read Game
+// Read Games
 func ReadGames(db *sql.DB) {
 	stmt := "SELECT * FROM games"
 	rows, err := db.Query(stmt)
