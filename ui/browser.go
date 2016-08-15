@@ -22,6 +22,8 @@ func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 	fmt.Fprintln(w, game.String())
 	move := r.URL.Path[1:]
 	e := game.ParseMove(move)
+	fen = game.Position()
+	UpdateRow(h.db, fen, 1)
 	if e != nil {
 		fmt.Fprintln(w, e.Error())
 	}
@@ -50,7 +52,7 @@ func main() {
 	h := ChessHandler{db: db}
 
 	// Server Part
-	http.HandleFunc("/play", h.playGameHandler)
+	http.HandleFunc("/", h.playGameHandler)
 	http.HandleFunc("/new", h.newGameHandler)
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
