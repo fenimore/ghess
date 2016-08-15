@@ -1,0 +1,10 @@
+<h1>Ghess</h1>
+{{ .Board }}<br><br>
+{{ .Fen }}<br>
+{{ .Pgn }}
+
+<form action="/play/" method="POST">
+  <div>
+    <input type="submit" value="Make Move">
+  </div>  
+</form>

@@ -11,11 +11,19 @@ package main
 import (
 	"fmt"
 	"github.com/polypmer/ghess"
+	"html/template"
 	"net/http"
 )
 
 type ChessHandler struct {
 	g ghess.Board
+}
+
+type ChessBoard struct {
+	Board string
+	Fen   string
+	Pgn   string
+	Move  string
 }
 
 // boardHandler for playing game
@@ -38,8 +46,11 @@ func (h *ChessHandler) newGameHandler(w http.ResponseWriter,
 
 func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 	r *http.Request) {
-	//print board
-	fmt.Fprintln(w, getPanel(h.g.Stats())+h.g.String())
+	// Must it be a pointer?
+	b := ChessBoard{Board: h.g.String(), Fen: h.g.Position(), Pgn: h.g.PgnString()}
+	t, _ := template.ParseFiles("board.html")
+	t.Execute(w, b)
+	//fmt.Fprintln(w, getPanel(h.g.Stats())+h.g.String())
 }
 
 func main() {
