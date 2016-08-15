@@ -49,7 +49,7 @@ func InitDb(path string) *sql.DB {
 func CreateTable(db *sql.DB) {
 	sql_table := `
 CREATE TABLE IF NOT EXISTS games(
-    id INT PRIMARY KEY NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     white TEXT NOT NULL,                
     black TEXT,
     fen TEXT,
