@@ -27,7 +27,7 @@ func main() {
 	db := InitDb("./chess.db")
 	CreateTable(db)
 	CreateGame(db)
-
+	ReadGames(db)
 	http.HandleFunc("/", boardHandler)
 	http.ListenAndServe("0.0.0.0:8080", nil)
 }
@@ -49,11 +49,11 @@ func InitDb(path string) *sql.DB {
 func CreateTable(db *sql.DB) {
 	sql_table := `
 CREATE TABLE IF NOT EXISTS games(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    white TEXT,                
+    id INT PRIMARY KEY NOT NULL,
+    white TEXT NOT NULL,                
     black TEXT,
-    fen TEXT NULL,
-    pgn TEXT NULL,
+    fen TEXT,
+    pgn TEXT,
     date DATE
 );
 `
@@ -64,6 +64,8 @@ CREATE TABLE IF NOT EXISTS games(
 }
 
 // Create game
+// TODO: get date from time pkg
+// TODO: pass in players
 func CreateGame(db *sql.DB) {
 	stmt, err := db.Prepare("INSERT INTO games(white, black," +
 		"date)values(?,?,?)")
@@ -79,6 +81,30 @@ func CreateGame(db *sql.DB) {
 		fmt.Println(err)
 	}
 	fmt.Printf("New game: %s\n", string(id))
+}
+
+// Read Game
+func ReadGames(db *sql.DB) {
+	stmt := "SELECT * FROM games"
+	rows, err := db.Query(stmt)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var id int
+		var white string
+		var black string
+		var fen string
+		var pgn string
+		var date string
+		err = rows.Scan(&id, &white, &black, &fen, &pgn, &date)
+		if err != nil {
+			fmt.Printf("Error %s in Scanning rows", err)
+		}
+		fmt.Println(id)
+		fmt.Println(white, black)
+	}
 }
 
 // Update/ Fen
