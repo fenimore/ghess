@@ -29,8 +29,13 @@ type ChessBoard struct {
 func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	// If no board, redirect to board
-	//
-	move := r.URL.Path[len("/play/"):]
+	move := ""
+	if r.Method == "POST" {
+		r.ParseForm()
+		move = r.Form.Get("move")
+	} else if r.Method == "GET" {
+		move = r.URL.Path[len("/play/"):]
+	}
 	e := h.g.ParseMove(move)
 	if e != nil {
 		fmt.Fprintln(w, e.Error())
@@ -58,7 +63,6 @@ func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 		fmt.Printf("Error %s Templates", err)
 	}
 	t.Execute(w, b)
-	//fmt.Fprintln(w, getPanel(h.g.Stats())+h.g.String())
 }
 
 func main() {
@@ -68,11 +72,13 @@ func main() {
 	// writer
 	PORT := "0.0.0.0:8080"
 	h := new(ChessHandler)
-
-	// Server Part
+	// Server Routes
+	// TODO: Add index
 	http.HandleFunc("/play/", h.playGameHandler)
 	http.HandleFunc("/board/", h.showGameHandler)
 	http.HandleFunc("/new/", h.newGameHandler)
+	// Handle Static Files
+	// TODO: Combine into one function?
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
