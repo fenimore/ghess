@@ -79,12 +79,21 @@ func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 
 func (h *ChessHandler) indexHandler(w http.ResponseWriter,
 	r *http.Request) {
-	fmt.Fprintln(w, "<a href=/new>New Game</a>")
+	fmt.Fprintln(w, "<a href=/new >New Game</a>")
 }
 
 // handler to cater AJAX requests
 func handlerGetTime(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, time.Now().Format("Mon, 02 Jan 2006 15:04:05 MST"))
+}
+
+func (h *ChessHandler) makeMoveHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.NotFound(w, r)
+		return
+	}
+	field := r.FormValue("move")
+	fmt.Fprint(w, field)
 }
 
 func main() {
@@ -100,6 +109,7 @@ func main() {
 	http.HandleFunc("/board/", h.showGameHandler)
 	http.HandleFunc("/new/", h.newGameHandler)
 	http.HandleFunc("/gettime/", handlerGetTime)
+	http.HandleFunc("/makemove/", h.makeMoveHandler)
 	// Handle Static Files
 	// TODO: Combine into one function?
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))

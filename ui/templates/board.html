@@ -17,37 +17,46 @@
     <h1>Ghess</h1>
     
     <div id="board" style="width: 400px"></div>
-    <form action="/play/" method="POST">
+    <form id="mover" action="/play/" method="POST">
       <div>
-	<input type="text" name="move" autofocus>
+	<input type="text" id="move" name="move" autofocus>
 	<input type="submit" value="Make Move">
-      </div>  
+      </div>
+     
     </form>
+    <button type="button" id="test"  onclick="delayedPost()">Post</button>          
     <div>{{ .Feedback }}</div>
     <div id="output"></div>
     <button class="btn" type="button" onclick="orientation()" >Flip Board</button>
     <script>
       var pos = '{{ .Fen }}';
       var config = {
-        //draggable: true,
         position: pos,
       };
       var board = ChessBoard('board', config);
 
       function orientation(){
-        board.flip()
+        board.flip();
       }
 
-      $(document).ready(function () {
-        $("#output").append("Waiting for system time..");
-         setInterval("delayedPost()", 1000);
-       });
-       function delayedPost() {
-         $.post("http://localhost:8080/gettime", "", function(data, status) {
+      function makeMove() {
+        $.post("http://localhost:8080/makemove", $('#mover').serialize(), function(data, status) {
            $("#output").empty();
            $("#output").append(data);
-         });
-       }      
+        });
+      }
+      $("#test").click(function(){        
+        $.post("http://localhost:8080/makemove", {move: "movddde"}, function(data) {
+          alert(data);
+        });
+      });
+
+               function delayedPost() {
+                 $.post("http://localhost:8080/makemove", {move: "mooove"}, function(data, status) {
+                 $("#output").empty();
+                 $("#output").append(data);
+                 });
+               }      
   </script>    
   </body>  
 </html>
