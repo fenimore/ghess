@@ -13,11 +13,15 @@ import (
 	"time"
 )
 
+// ChessHandler for persistant game
+// in handler functions
 type ChessHandler struct {
 	g    ghess.Board
 	init bool
 }
 
+// Chessboard struct is for
+// sending chessboard.js info
 type ChessBoard struct {
 	Board    string
 	Fen      string
@@ -55,6 +59,8 @@ func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 	t.Execute(w, b)
 }
 
+// newGameHandler creates a new Board object
+// and links to /board/ route
 func (h *ChessHandler) newGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	h.g = ghess.NewBoard()
@@ -62,13 +68,13 @@ func (h *ChessHandler) newGameHandler(w http.ResponseWriter,
 	fmt.Fprintln(w, "<a href=/board>New Game Created</a>")
 }
 
+// /board/ route, displays board and new move form.
 func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	if h.init != true {
 		// TODO: FAILURE
 		http.Redirect(w, r, "/new/", http.StatusSeeOther)
 	}
-	// Must it be a pointer?
 	b := ChessBoard{Board: h.g.String(), Fen: h.g.Position(), Pgn: h.g.PgnString()}
 	t, err := template.ParseFiles("templates/board.html")
 	if err != nil {
@@ -77,28 +83,28 @@ func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 	t.Execute(w, b)
 }
 
+// Index page, link to new game
 func (h *ChessHandler) indexHandler(w http.ResponseWriter,
 	r *http.Request) {
 	fmt.Fprintln(w, "<a href=/new >New Game</a>")
 }
 
-// handler to cater AJAX requests
-func handlerGetTime(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, time.Now().Format("Mon, 02 Jan 2006 15:04:05 MST"))
-}
-
+// AJAX Handler for Updating board
+// This does not update all open connections
+// TODO: Websockets!?
 func (h *ChessHandler) makeMoveHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.NotFound(w, r)
 		return
 	}
 	// Get Form Value
-	fmt.Println(r.FormValue("move"))
 	field := r.FormValue("move")
 	// make Move
 	h.g.ParseMove(field)
 	pos := h.g.Position()
+	// Write to Client
 	w.Write([]byte(pos))
+	// TODO: write to all open connections
 }
 
 func main() {
@@ -109,18 +115,19 @@ func main() {
 	PORT := "0.0.0.0:8080"
 	h := new(ChessHandler)
 	// Server Routes
-	http.HandleFunc("/", h.indexHandler)
-	http.HandleFunc("/play/", h.playGameHandler)
-	http.HandleFunc("/board/", h.showGameHandler)
-	http.HandleFunc("/new/", h.newGameHandler)
-	http.HandleFunc("/gettime/", handlerGetTime)
-	http.HandleFunc("/makemove", h.makeMoveHandler)
+	http.HandleFunc("/", h.indexHandler)            // link to new game
+	http.HandleFunc("/play/", h.playGameHandler)    // deprecated
+	http.HandleFunc("/board/", h.showGameHandler)   // view
+	http.HandleFunc("/new/", h.newGameHandler)      // new board
+	http.HandleFunc("/makemove", h.makeMoveHandler) //ajax
 	// Handle Static Files
 	// TODO: Combine into one function?
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
 	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
 	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
+	// Why can't I just link them all in the same Handle()?
 	//http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	//Listen and Server on PORT 8080
 	fmt.Printf("Listening on %s\n", PORT)
 	http.ListenAndServe(PORT, nil)
 }

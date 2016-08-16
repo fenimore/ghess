@@ -9,8 +9,6 @@
        src="https://code.jquery.com/jquery-1.12.4.min.js"
        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
        crossorigin="anonymous"></script>    
-    
-
   </head>
   <body>
     
@@ -24,10 +22,8 @@
 	<input type="submit" value="Make Move" >
       </div>
     </form>
-    <button type="button" id="test">Button</button>          
     <div>{{ .Feedback }}</div>
-    <div id="output"></div>
-    <button class="btn" type="button" onclick="orientation()" >Flip Board</button>
+    <button type="button" onclick="orientation()" >Flip Board</button>
     <script>
       var pos = '{{ .Fen }}';
       var config = {
@@ -38,8 +34,8 @@
       function orientation(){
         board.flip();
       }
-     // AJAX
 
+     // AJAX
      (function() {
 	 window.onload = function() {
 	     var form = document.querySelector("form")
