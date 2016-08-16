@@ -92,8 +92,13 @@ func (h *ChessHandler) makeMoveHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+	//r.ParseForm()
+	//fmt.Println("form", r.Form.Get("move"))
+	fmt.Println(r.FormValue("move"))
 	field := r.FormValue("move")
-	fmt.Fprint(w, field)
+	//field := "WHat"
+	//fmt.Fprint(w, field)
+	w.Write([]byte(field))
 }
 
 func main() {
@@ -109,7 +114,7 @@ func main() {
 	http.HandleFunc("/board/", h.showGameHandler)
 	http.HandleFunc("/new/", h.newGameHandler)
 	http.HandleFunc("/gettime/", handlerGetTime)
-	http.HandleFunc("/makemove/", h.makeMoveHandler)
+	http.HandleFunc("/makemove", h.makeMoveHandler)
 	// Handle Static Files
 	// TODO: Combine into one function?
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
