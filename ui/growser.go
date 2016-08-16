@@ -92,13 +92,13 @@ func (h *ChessHandler) makeMoveHandler(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	//r.ParseForm()
-	//fmt.Println("form", r.Form.Get("move"))
+	// Get Form Value
 	fmt.Println(r.FormValue("move"))
 	field := r.FormValue("move")
-	//field := "WHat"
-	//fmt.Fprint(w, field)
-	w.Write([]byte(field))
+	// make Move
+	h.g.ParseMove(field)
+	pos := h.g.Position()
+	w.Write([]byte(pos))
 }
 
 func main() {

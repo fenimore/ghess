@@ -48,7 +48,8 @@
 		 var x = new XMLHttpRequest()
 		 x.onreadystatechange = function() {
 		     if(x.readyState == 4) {
-			 console.log(x.response)
+			 //console.log(x.response)
+			 board.position(x.response)
 		     }
 		 }
 		 x.open("POST", "/makemove")
