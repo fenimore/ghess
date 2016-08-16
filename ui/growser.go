@@ -52,14 +52,13 @@ func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 		fmt.Printf("Error %s Templates", err)
 	}
 	t.Execute(w, b)
-	//fmt.Fprintln(w, h.g.String())
 }
 
 func (h *ChessHandler) newGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	h.g = ghess.NewBoard()
 	h.init = true
-	fmt.Fprintln(w, h.g.String())
+	fmt.Fprintln(w, "<a href=/board>New Game Created</a>")
 }
 
 func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
@@ -77,6 +76,11 @@ func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 	t.Execute(w, b)
 }
 
+func (h *ChessHandler) indexHandler(w http.ResponseWriter,
+	r *http.Request) {
+	fmt.Fprintln(w, "<a href=/new>New Game</a>")
+}
+
 func main() {
 	// So HandlFunc takes a custom Handler
 	// Which is forcement takes into a reader and writer
@@ -85,7 +89,7 @@ func main() {
 	PORT := "0.0.0.0:8080"
 	h := new(ChessHandler)
 	// Server Routes
-	// TODO: Add index
+	http.HandleFunc("/", h.indexHandler)
 	http.HandleFunc("/play/", h.playGameHandler)
 	http.HandleFunc("/board/", h.showGameHandler)
 	http.HandleFunc("/new/", h.newGameHandler)
