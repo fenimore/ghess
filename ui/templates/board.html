@@ -2,14 +2,14 @@
   <head>
 
     <link href="/css/style.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/chessboard-0.3.0.css">
-  <script src="/js/chessboard-0.3.0.js"></script>  
+    <link rel="stylesheet" href="/css/chessboard-0.3.0.min.css">
+  <script src="/js/chessboard-0.3.0.min.js"></script>  
 
   </head>
   <body>
     
     <h1>Ghess</h1>
-    <div id="board" style="width: 400px"></div>
+    <div id="board1" style="width: 400px"></div>
     {{ .Board }}<br><br>
     {{ .Fen }}<br>
     {{ .Pgn }}
@@ -20,7 +20,7 @@
       </div>  
     </form>
   <script>
-    var board = ChessBoard('board', 'start');
+    var board1 = ChessBoard('board1', 'start');
   </script>    
   </body>  
 </html>
