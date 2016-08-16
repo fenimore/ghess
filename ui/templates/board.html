@@ -24,6 +24,8 @@
       </div>  
     </form>
     <div>{{ .Feedback }}</div>
+    <div id="output"></div>
+    <button class="btn" type="button" onclick="orientation()" >Flip Board</button>
     <script>
       var pos = '{{ .Fen }}';
       var config = {
@@ -31,7 +33,21 @@
         position: pos,
       };
       var board = ChessBoard('board', config);
-      
+
+      function orientation(){
+        board.flip()
+      }
+
+      $(document).ready(function () {
+        $("#output").append("Waiting for system time..");
+         setInterval("delayedPost()", 1000);
+       });
+       function delayedPost() {
+         $.post("http://localhost:8080/gettime", "", function(data, status) {
+           $("#output").empty();
+           $("#output").append(data);
+         });
+       }      
   </script>    
   </body>  
 </html>

@@ -10,6 +10,7 @@ import (
 	"github.com/polypmer/ghess"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 type ChessHandler struct {
@@ -81,6 +82,11 @@ func (h *ChessHandler) indexHandler(w http.ResponseWriter,
 	fmt.Fprintln(w, "<a href=/new>New Game</a>")
 }
 
+// handler to cater AJAX requests
+func handlerGetTime(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, time.Now().Format("Mon, 02 Jan 2006 15:04:05 MST"))
+}
+
 func main() {
 	// So HandlFunc takes a custom Handler
 	// Which is forcement takes into a reader and writer
@@ -93,6 +99,7 @@ func main() {
 	http.HandleFunc("/play/", h.playGameHandler)
 	http.HandleFunc("/board/", h.showGameHandler)
 	http.HandleFunc("/new/", h.newGameHandler)
+	http.HandleFunc("/gettime/", handlerGetTime)
 	// Handle Static Files
 	// TODO: Combine into one function?
 	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
