@@ -71,6 +71,8 @@ func main() {
 	http.HandleFunc("/play/", h.playGameHandler)
 	http.HandleFunc("/board/", h.showGameHandler)
 	http.HandleFunc("/new/", h.newGameHandler)
+	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
+	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
 	fmt.Printf("Listening on %s\n", PORT)
 	http.ListenAndServe(PORT, nil)
 }
