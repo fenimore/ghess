@@ -16,18 +16,20 @@
     
     <h1>Ghess</h1>
     <div id="board" style="width: 400px"></div>
-    {{ .Board }}<br><br>
-    {{ .Fen }}<br>
-    {{ .Pgn }}
-    
     <form action="/play/" method="POST">
       <div>
+	<input type="text" name="move">
 	<input type="submit" value="Make Move">
       </div>  
     </form>
     <script>
       var pos = '{{ .Fen }}';
-      var board = ChessBoard('board', pos);
+      var config = {
+        //draggable: true,
+        position: pos,
+      };
+      var board = ChessBoard('board', config);
+      
   </script>    
   </body>  
 </html>
