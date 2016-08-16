@@ -18,10 +18,12 @@ type ChessHandler struct {
 }
 
 type ChessBoard struct {
-	Board string
-	Fen   string
-	Pgn   string
-	Move  string
+	Board    string
+	Fen      string
+	Pgn      string
+	Move     string
+	wToMove  bool
+	Feedback string
 }
 
 // boardHandler for playing game
@@ -30,6 +32,7 @@ func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	// If no board, redirect to board
 	move := ""
+	feedback := ""
 	if r.Method == "POST" {
 		r.ParseForm()
 		move = r.Form.Get("move")
@@ -38,9 +41,18 @@ func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 	}
 	e := h.g.ParseMove(move)
 	if e != nil {
-		fmt.Fprintln(w, e.Error())
+		feedback = e.Error()
 	}
-	fmt.Fprintln(w, h.g.String())
+	// Display with GUI chessboard.js
+	// TODO: Get White and Black
+	// And rotate board accordingly
+	b := ChessBoard{Board: h.g.String(), Fen: h.g.Position(), Pgn: h.g.PgnString(), Feedback: feedback}
+	t, err := template.ParseFiles("templates/board.html")
+	if err != nil {
+		fmt.Printf("Error %s Templates", err)
+	}
+	t.Execute(w, b)
+	//fmt.Fprintln(w, h.g.String())
 }
 
 func (h *ChessHandler) newGameHandler(w http.ResponseWriter,

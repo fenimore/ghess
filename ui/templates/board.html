@@ -15,6 +15,7 @@
   <body>
     
     <h1>Ghess</h1>
+    
     <div id="board" style="width: 400px"></div>
     <form action="/play/" method="POST">
       <div>
@@ -22,6 +23,7 @@
 	<input type="submit" value="Make Move">
       </div>  
     </form>
+    <div>{{ .Feedback }}</div>
     <script>
       var pos = '{{ .Fen }}';
       var config = {
