@@ -1,10 +1,7 @@
 /*
 TODO:
-Create templates:
-Index with ids,
-get set player data
-templates with forms
-add javascript chessboard
+Plenty
+Add database?
 */
 package main
 
@@ -16,7 +13,8 @@ import (
 )
 
 type ChessHandler struct {
-	g ghess.Board
+	g    ghess.Board
+	init bool
 }
 
 type ChessBoard struct {
@@ -31,8 +29,7 @@ type ChessBoard struct {
 func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	// If no board, redirect to board
-	//http.Redirect(w, r, "/new/", http.StatusFound)
-
+	//
 	move := r.URL.Path[len("/play/"):]
 	e := h.g.ParseMove(move)
 	if e != nil {
@@ -44,11 +41,16 @@ func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 func (h *ChessHandler) newGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	h.g = ghess.NewBoard()
+	h.init = true
 	fmt.Fprintln(w, h.g.String())
 }
 
 func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 	r *http.Request) {
+	if h.init != true {
+		// TODO: FAILURE
+		http.Redirect(w, r, "/new/", http.StatusSeeOther)
+	}
 	// Must it be a pointer?
 	b := ChessBoard{Board: h.g.String(), Fen: h.g.Position(), Pgn: h.g.PgnString()}
 	t, err := template.ParseFiles("templates/board.html")
