@@ -3,13 +3,19 @@
 
     <link href="/css/style.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/chessboard-0.3.0.min.css">
-  <script src="/js/chessboard-0.3.0.min.js"></script>  
+    <script src="/js/chessboard-0.3.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+    <script
+       src="https://code.jquery.com/jquery-1.12.4.min.js"
+       integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+       crossorigin="anonymous"></script>    
+    
 
   </head>
   <body>
     
     <h1>Ghess</h1>
-    <div id="board1" style="width: 400px"></div>
+    <div id="board" style="width: 400px"></div>
     {{ .Board }}<br><br>
     {{ .Fen }}<br>
     {{ .Pgn }}
@@ -19,8 +25,9 @@
 	<input type="submit" value="Make Move">
       </div>  
     </form>
-  <script>
-    var board1 = ChessBoard('board1', 'start');
+    <script>
+      var pos = '{{ .Fen }}';
+      var board = ChessBoard('board', pos);
   </script>    
   </body>  
 </html>
