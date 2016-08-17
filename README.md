@@ -114,19 +114,12 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 - A server api for playing a game and saving it to a sqlite database.
 
 ## browser
-- A server api.
+- A server api using gorilla/websocket for live network chess playing!
+- Dependency: Gorilla-websocket (BSD) and Chessboard.js (MIT)
 
 ### Bugs
 
 - Surely, something?
-
-### Notes
-
-    rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-    rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2
-	8/5p2/8/p5P1/k7/8/1K6/8 w - - 0 1
-	6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5
-
 
 ### License
 
