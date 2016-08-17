@@ -15,15 +15,16 @@
     <h1>Ghess</h1>
     
     <div id="board" style="width: 400px"></div>
-    <div id="output" ></div>
+
     <form id="form" >
       <div>
 	<input type="text" id="move" name="move" autofocus>
-	<input type="submit" value="Make Move" >
+	<input type="submit" value="Make Move" > <button type="button" onclick="orientation()" >Flip Board</button>
       </div>
     </form>
+    <div id="output" ></div>
     <div>{{ .Feedback }}</div>
-    <button type="button" onclick="orientation()" >Flip Board</button>
+
     <script>
       var pos = '{{ .Fen }}';
       var config = {
@@ -91,11 +92,13 @@
              };
              conn.onmessage = function (evt) {
 		 var messages = evt.data.split('\n');
+		 board.position(messages[0])
+		 var item = document.createElement("div");
+                 item.innerText = messages[1];
+                 appendLog(item);
 		 for (var i = 0; i < messages.length; i++) {
-		     board.position(messages[i])		     
-                     var item = document.createElement("div");
-                     item.innerText = messages[i];
-                     appendLog(item);
+		     
+
 		 }
              };
 	 } else {

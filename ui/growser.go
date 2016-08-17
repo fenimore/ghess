@@ -285,11 +285,11 @@ func (c *Client) writePump(g ghess.Board) {
 			//message = []byte(string(message) + "woops")
 			err = g.ParseMove(string(message))
 			if err != nil {
-				fmt.Printf("Error writePump: %s", err)
-				w.Write([]byte(err.Error()))
+				fmt.Printf("Error writePump: %s\n", err)
+				w.Write([]byte("Error\n" + err.Error()))
 			} else {
 				fen := g.Position()
-				w.Write([]byte(fen))
+				w.Write([]byte(fen + "\n" + string(message)))
 			}
 
 			// Add queued chat messages to the current websocket message.
