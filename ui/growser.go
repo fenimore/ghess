@@ -262,7 +262,7 @@ func (c *Client) write(mt int, payload []byte) error {
 }
 
 // writePump pumps messages from the hub to the websocket connection.
-func (c *Client) writePump(g *ghess.Board) {
+func (c *Client) writePump(g ghess.Board) {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -319,6 +319,6 @@ func (h *ChessHandler) serveWs(hub *Hub, w http.ResponseWriter, r *http.Request)
 	}
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
 	client.hub.register <- client
-	go client.writePump(&h.g)
+	go client.writePump(h.g)
 	client.readPump()
 }
