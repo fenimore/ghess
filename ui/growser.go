@@ -140,7 +140,7 @@ func main() {
 	http.HandleFunc("/new/", h.newGameHandler)      // new board
 	http.HandleFunc("/makemove", h.makeMoveHandler) //ajax
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(hub, w, r)
+		h.serveWs(hub, w, r)
 	}) // websockets
 	// Handle Static Files
 	// TODO: Combine into one function?
@@ -262,7 +262,7 @@ func (c *Client) write(mt int, payload []byte) error {
 }
 
 // writePump pumps messages from the hub to the websocket connection.
-func (c *Client) writePump() {
+func (c *Client) writePump(g *ghess.Board) {
 	ticker := time.NewTicker(pingPeriod)
 	defer func() {
 		ticker.Stop()
@@ -282,7 +282,15 @@ func (c *Client) writePump() {
 			if err != nil {
 				return
 			}
-			w.Write(message)
+			//message = []byte(string(message) + "woops")
+			err = g.ParseMove(string(message))
+			if err != nil {
+				fmt.Printf("Error writePump: %s", err)
+				w.Write([]byte(err.Error()))
+			} else {
+				fen := g.Position()
+				w.Write([]byte(fen))
+			}
 
 			// Add queued chat messages to the current websocket message.
 			n := len(c.send)
@@ -303,7 +311,7 @@ func (c *Client) writePump() {
 }
 
 // serveWs handles websocket requests from the peer.
-func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func (h *ChessHandler) serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -311,6 +319,6 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	}
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
 	client.hub.register <- client
-	go client.writePump()
+	go client.writePump(&h.g)
 	client.readPump()
 }

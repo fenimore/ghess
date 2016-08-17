@@ -36,6 +36,7 @@
       }
 
      // AJAX
+     // OBSOLETE
      (function() {
 	 window.onload = function() {
 	     var form = document.querySelector("form")
@@ -53,6 +54,7 @@
 	     })
 	 }
      })()
+     
      // Websockets
      window.onload = function () {
 	 var conn;
@@ -62,6 +64,7 @@
 	 function appendLog(item) {
              var doScroll = log.scrollTop === log.scrollHeight - log.clientHeight;
              log.appendChild(item);
+	     
              if (doScroll) {
 		 log.scrollTop = log.scrollHeight - log.clientHeight;
              }
@@ -89,6 +92,7 @@
              conn.onmessage = function (evt) {
 		 var messages = evt.data.split('\n');
 		 for (var i = 0; i < messages.length; i++) {
+		     board.position(messages[i])		     
                      var item = document.createElement("div");
                      item.innerText = messages[i];
                      appendLog(item);
