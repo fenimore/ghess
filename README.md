@@ -79,6 +79,8 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 ## TODO
 
 1. more tests
+2. Old Location New Location Parse Move Method
+   - This is impotant for using chessboardjs gui...
 2. Benchmarks for Search and Validation?
    * is it taking a while, or is it just me?
 

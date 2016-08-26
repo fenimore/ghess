@@ -148,16 +148,6 @@ func (b *Board) String() string {
 	return printBoard
 }
 
-// standardWrapper() does pas grande chose mnt.
-// TODO: use two coordinates, include piece value?
-func (b *Board) standardWrapper(orig, dest string) error {
-	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
-	if e != nil {
-		return e
-	}
-	return nil
-}
-
 // Move() is the basic validation.
 // The origin and destination square are tested
 // in a dereferenced b.board to keep from moving
@@ -813,6 +803,18 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	return nil
 }
 
+// ParseStand() does pas grande chose mnt.
+// TODO: include piece value? Or use different method
+// Pgn map takes standar notation and returns coordinate.
+// This method is useful for chessboardjs gui
+func (b *Board) ParseStand(orig, dest string) error {
+	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
+	if e != nil {
+		return e
+	}
+	return nil
+}
+
 // ParseMove() infers origin and destination
 // coordinates from a pgn notation move. Check
 // and Check Mate notations will be added automatically.
@@ -981,7 +983,7 @@ func (b *Board) ParseMove(move string) error {
 				disambig := possibility%10 == column
 				if b.board[possibility] == target && disambig {
 					orig = possibility
-					break 
+					break
 				}
 			} else if row[0] != 0 { // Disambiguate
 				for _, r := range row {
@@ -989,7 +991,7 @@ func (b *Board) ParseMove(move string) error {
 						b.board[possibility] == byte(r)
 					if disambig {
 						orig = possibility
-						break 
+						break
 					}
 				}
 			} else {
@@ -1586,7 +1588,7 @@ func (b *Board) MoveBest() {
 		} else {
 			continue
 		}
-		
+
 	}
 	b.Move(origs[i], dests[i])
 }
@@ -1599,7 +1601,7 @@ func (b *Board) EvaluateMoves(origs, dests []int) []int {
 		d := dests[i]
 		p := byte(unicode.ToUpper(rune(o)))
 		s := b.Evaluate(p, d)
-		bests = append(bests, s) 		
+		bests = append(bests, s)
 	}
 	return bests
 }
@@ -1633,11 +1635,10 @@ func (b *Board) Evaluate(piece byte, dest int) int {
 	// Should I be effecting the move?
 	// eg. possible.UpdateBoard()????
 
-	
 	// If is Capture
 	if b.board[dest] != '.' {
 		score += 100
 	}
-	
+
 	return score
 }
