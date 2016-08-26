@@ -79,8 +79,6 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 ## TODO
 
 1. more tests
-2. Old Location New Location Parse Move Method
-   - This is impotant for using chessboardjs gui...
 2. Benchmarks for Search and Validation?
    * is it taking a while, or is it just me?
 
@@ -115,9 +113,12 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 ## browser-sql
 - A server api for playing a game and saving it to a sqlite database.
 
-## browser
+## growser
 - A server api using gorilla/websocket for live network chess playing!
 - Dependency: Gorilla-websocket (BSD) and Chessboard.js (MIT)
+- TODO: Make move with ParseStand() and use chessboardjs's source and newLocation var
+  - See http://chessboardjs.com/examples#4003
+  - js onDragMove gets tracked...
 
 ### Bugs
 

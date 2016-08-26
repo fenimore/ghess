@@ -26,16 +26,27 @@
     <div>{{ .Feedback }}</div>
 
     <script>
-      var pos = '{{ .Fen }}';
-      var config = {
-        position: pos,
-      };
-      var board = ChessBoard('board', config);
-
-      function orientation(){
-        board.flip();
-      }
-
+     // check out example for onDragMove() for ParseStand()
+     // http://chessboardjs.com/examples#4003
+     var parseStand = function(newLocation, oldLocation, source,
+                               piece, position, orientation) {
+	 console.log("Destination: " + newLocation);
+	 //console.log("Old location: " + oldLocation);// Not origin
+	 console.log("Origin: " + source);
+	 console.log("--------------------");
+     };
+     
+     var pos = '{{ .Fen }}';
+     var config = {
+         position: pos,
+	 onDragMove: parseStand,
+     };
+     var board = ChessBoard('board', config);
+     
+     function orientation(){
+         board.flip();
+     }
+     
      // AJAX
      // OBSOLETE
      (function() {
@@ -77,8 +88,8 @@
              }
              if (!msg.value) {
 		 return false;
-             }
-             conn.send(msg.value);
+             }                     // TODO:
+             conn.send(msg.value); // Have this send the Origin and Destination
              msg.value = "";
              return false;
 	 };
