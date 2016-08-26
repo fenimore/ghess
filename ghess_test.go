@@ -2,15 +2,14 @@ package ghess
 
 import (
 	"fmt"
-	"testing"
 	"strconv"
+	"testing"
 	//"github.com/polypmer/ghess"
 )
 
 func TestNewBoard(t *testing.T) {
 
 }
-
 
 func ExampleStartPosition() {
 	game := NewBoard()
@@ -32,7 +31,7 @@ func ExampleLoadPgnAndCheck() {
 		fmt.Println(err)
 	}
 	info := game.Stats()
-	ch,_:= strconv.ParseBool(info["check"])
+	ch, _ := strconv.ParseBool(info["check"])
 	if ch {
 		fmt.Println("****Check!****")
 	}
@@ -40,7 +39,42 @@ func ExampleLoadPgnAndCheck() {
 	// Output:
 	// ****Check!****
 	// 42
-	
+
+}
+
+func ExampleMoveStandard() {
+	game := NewBoard()
+	o := "e2"
+	d := "e4"
+	var err error
+	err = game.ParseStand(o, d)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(game.Position())
+	err = game.ParseStand(o, d)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.ParseStand("a1", "h8")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.ParseStand("g8", "g6")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.ParseStand("g8", "f6")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(game.Position())
+	// Output:
+	// rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1
+	// Empty square
+	// Not your turn
+	// Illegal Knight Move
+	// rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2
 }
 
 func ExampleCannotCastleThroughCheck() {
@@ -96,7 +130,6 @@ func ExampleLoadFen() {
 		fmt.Println("Success")
 	}
 	fmt.Println(game.check)
-	
 
 	//Output:
 	// Success
@@ -114,16 +147,16 @@ func ExampleEmpassantAndDisambigPawn() {
 	fmt.Println(string(game.board[37]), string(game.board[47]))
 	game.ParseMove("b4")
 	fmt.Println(game.empassant)
-	fmt.Println(string(game.board[37]), string(game.board[47]))	
+	fmt.Println(string(game.board[37]), string(game.board[47]))
 	game.ParseMove("cxb3")
 	fmt.Println(game.empassant)
-	fmt.Println(string(game.board[37]), string(game.board[47]))	
+	fmt.Println(string(game.board[37]), string(game.board[47]))
 	game.ParseMove("cxb3")
 	fmt.Println("C column:")
-	fmt.Println(string(game.board[26]))// c pawn should be empty
+	fmt.Println(string(game.board[26])) // c pawn should be empty
 
 	// Output:
-	// Empassant:	
+	// Empassant:
 	// 0
 	// . .
 	// 47
@@ -132,7 +165,7 @@ func ExampleEmpassantAndDisambigPawn() {
 	// p .
 	// C column:
 	// .
-	
+
 }
 
 func ExamplePgnDisambigRook() {
@@ -166,7 +199,7 @@ func ExamplePgnDisambigRookAttack() {
 	}
 	err = game.ParseMove("R1xf2")
 	fmt.Println(string(game.board[13]))
-	
+
 	// Output:
 	// .
 	// .
@@ -205,7 +238,6 @@ func ExampleCheckMate() {
 	game.ParseMove("Qc4")
 	fmt.Println(game.checkmate)
 
-
 	// Output:
 	// false
 	// true
@@ -215,12 +247,12 @@ func ExampleSearchForValid() {
 	game := NewBoard()
 	o, d := game.SearchForValid()
 	fmt.Println(o)
-	fmt.Println(d)	
+	fmt.Println(d)
 	fen := "6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42"
 	_ = game.LoadFen(fen)
-	o, d = game.SearchForValid()	
+	o, d = game.SearchForValid()
 	fmt.Println(o)
-	fmt.Println(d)	
+	fmt.Println(d)
 
 	// Output:
 	// [12 12 17 17 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28]
