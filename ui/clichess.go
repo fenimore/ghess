@@ -207,7 +207,11 @@ Loop:
 		if e != nil {
 			fmt.Printf("|   [Error: %v]\n", e)
 		}
-		fmt.Print(game.String())
+		if turn == "White" {
+			fmt.Print(game.StringBlack())
+		} else {
+			fmt.Print(game.String())
+		}
 		ch, _ := strconv.ParseBool(info["check"])
 		checkmate, _ := strconv.ParseBool(info["checkmate"])
 		if checkmate {
