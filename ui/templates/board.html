@@ -40,7 +40,7 @@
      var pos = '{{ .Fen }}';
      var config = {
          position: pos,
-	 onDragMove: parseStand,
+	 //onDragMove: parseStand,
      };
      var board = ChessBoard('board', config);
      
@@ -56,9 +56,9 @@
 	 var conn;
 	 var move; // json to be
 	 var moveExample = {
-	     type: "move" // as opposed to message
-	     origin: "e2"  // or Source in chessboardjs
-	     destination: "e4"
+	     type: "move", // as opposed to message
+	     origin: "e2", // or Source in chessboardjs
+	     destination: "e4",
 	     // Player?
 	     // Time?, or // Date.now()
 	 };
@@ -93,8 +93,8 @@
 
 	 if (window["WebSocket"]) { // Check if websocket is supported?
 	     // Create a websocket connection with proper route
-             conn = new WebSocket("ws://localhost:8080/ws");
-sz	     // Define websocket closing function
+             conn = new WebSocket("ws://0.0.0.0:8080/ws");
+	     // Define websocket closing function
              conn.onclose = function (evt) { // or, event
 		 var item = document.createElement("div");
 		 item.innerHTML = "<b>Connection closed.</b>";
