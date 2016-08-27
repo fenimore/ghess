@@ -28,19 +28,22 @@
     <script>
      // check out example for onDragMove() for ParseStand()
      // http://chessboardjs.com/examples#4003
-     var parseStand = function(newLocation, oldLocation, source,
-                               piece, position, orientation) {
-	 console.log("Destination: " + newLocation);
-	 //console.log("Old location: " + oldLocation);// Not origin
+     var parseStand = function(source, target, piece, newPos, oldPos, orientation) {
+	 //ewLocation, oldLocation, source,
+           //                    piece, position, orientation) {
 	 console.log("Origin: " + source);
+	 console.log("Destination: " + target);
+	 //console.log("Old location: " + oldLocation);// Not origin
+
 	 console.log("--------------------");
 	 // conn.send(move) // TODO
      };
      
      var pos = '{{ .Fen }}';
      var config = {
+	 draggable: true,
          position: pos,
-	 //onDragMove: parseStand,
+	 onDrop: parseStand,
      };
      var board = ChessBoard('board', config);
      
