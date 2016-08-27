@@ -34,6 +34,7 @@
 	 //console.log("Old location: " + oldLocation);// Not origin
 	 console.log("Origin: " + source);
 	 console.log("--------------------");
+	 // conn.send(move) // TODO
      };
      
      var pos = '{{ .Fen }}';
@@ -47,32 +48,13 @@
          board.flip();
      }
      
-     // AJAX
-     // OBSOLETE
-     (function() {
-	 window.onload = function() {
-	     var form = document.querySelector("form")
-	     form.addEventListener("submit", function(e) {
-		 e.preventDefault()
-		 var x = new XMLHttpRequest()
-		 x.onreadystatechange = function() {
-		     if(x.readyState == 4) {
-			 //console.log(x.response)
-			 board.position(x.response)
-		     }
-		 }
-		 x.open("POST", "/makemove")
-		 x.send(new FormData(form))
-	     })
-	 }
-     })()
-     
      // Websockets
      window.onload = function () {
 	 var conn;
+	 var move; // example: "e2 e4"
 	 var msg = document.getElementById("move");
 	 var log = document.getElementById("output");
-	 
+
 	 function appendLog(item) {
              var doScroll = log.scrollTop === log.scrollHeight - log.clientHeight;
              log.appendChild(item);
@@ -88,13 +70,16 @@
              }
              if (!msg.value) {
 		 return false;
-             }                     // TODO:
+             }              
+	     // Put this into something like
+	     // onDragMove() = function() { conn.send(orig+" "+dest)}
              conn.send(msg.value); // Have this send the Origin and Destination
              msg.value = "";
              return false;
 	 };
 
 	 if (window["WebSocket"]) {
+	     // That is, change to proper port and route
              conn = new WebSocket("ws://localhost:8080/ws");
              conn.onclose = function (evt) {
 		 var item = document.createElement("div");
