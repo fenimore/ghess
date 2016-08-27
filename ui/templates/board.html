@@ -48,10 +48,21 @@
          board.flip();
      }
      
-     // Websockets
+     // Websockets all things MDN
+     // https://developer.mozilla.org
+     // /en-US/docs/Web/API/WebSockets_API
+     // /Writing_WebSocket_client_applications
      window.onload = function () {
 	 var conn;
-	 var move; // example: "e2 e4"
+	 var move; // json to be
+	 var moveExample = {
+	     type: "move" // as opposed to message
+	     origin: "e2"  // or Source in chessboardjs
+	     destination: "e4"
+	     // Player?
+	     // Time?, or // Date.now()
+	 };
+	 // Example: conn.send(JSON.stringify(moveExample));
 	 var msg = document.getElementById("move");
 	 var log = document.getElementById("output");
 
@@ -73,29 +84,39 @@
              }              
 	     // Put this into something like
 	     // onDragMove() = function() { conn.send(orig+" "+dest)}
+	     // TODO Try sending this in JSON format
+	     // Create another send for the Chat capability
              conn.send(msg.value); // Have this send the Origin and Destination
              msg.value = "";
              return false;
 	 };
 
-	 if (window["WebSocket"]) {
-	     // That is, change to proper port and route
+	 if (window["WebSocket"]) { // Check if websocket is supported?
+	     // Create a websocket connection with proper route
              conn = new WebSocket("ws://localhost:8080/ws");
-             conn.onclose = function (evt) {
+	     // Define websocket closing function
+             conn.onclose = function (evt) { // or, event
 		 var item = document.createElement("div");
 		 item.innerHTML = "<b>Connection closed.</b>";
 		 appendLog(item);
              };
+	     // conn.onopen = function(event){} is not defined
+	     // Define websocket Listening
+	     // This is incoming/receiving data
+	     // This out to be a board position and error message
+	     // Serialized in JSON
              conn.onmessage = function (evt) {
 		 var messages = evt.data.split('\n');
 		 board.position(messages[0])
 		 var item = document.createElement("div");
                  item.innerText = messages[1];
                  appendLog(item);
-		 for (var i = 0; i < messages.length; i++) {
-		     
-
-		 }
+		 // var message = JSON.parse(evt.data);
+		 // switch(message.type) {
+		 //     case "position": setPos();break;
+		 //     case "error": displayErr();break;
+		 // }
+		 // Scroll to bottom of 'chatbox' or error messages
              };
 	 } else {
              var item = document.createElement("div");
