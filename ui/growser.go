@@ -239,9 +239,13 @@ func (c *Client) readPump() {
 		c.hub.unregister <- c
 		c.conn.Close()
 	}()
-	c.conn.SetReadLimit(maxMessageSize)
-	c.conn.SetReadDeadline(time.Now().Add(pongWait))
+	// Hint: just cause
+	c.conn.SetReadLimit(maxMessageSize)              // Why?
+	c.conn.SetReadDeadline(time.Now().Add(pongWait)) // why?
 	c.conn.SetPongHandler(func(string) error { c.conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+	// readPump, unlike write, is not a goroutine
+	// And each client runs an infinite loop,
+	// Until the connection closes, or there is an error
 	for {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
@@ -291,7 +295,6 @@ func (c *Client) writePump(g ghess.Board) {
 				fen := g.Position()
 				w.Write([]byte(fen + "\n" + string(message)))
 			}
-
 			// Add queued chat messages to the current websocket message.
 			n := len(c.send)
 			for i := 0; i < n; i++ {
@@ -320,5 +323,7 @@ func (h *ChessHandler) serveWs(hub *Hub, w http.ResponseWriter, r *http.Request)
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
 	client.hub.register <- client
 	go client.writePump(h.g)
+	// So everytime this handler is called
+	// the client reads the pump
 	client.readPump()
 }
