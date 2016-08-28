@@ -26,31 +26,7 @@
     <div>{{ .Feedback }}</div>
 
     <script>
-     // check out example for onDragMove() for ParseStand()
-     // http://chessboardjs.com/examples#4003
-     var parseStand = function(source, target, piece, newPos, oldPos, orientation) {
-	 //ewLocation, oldLocation, source,
-           //                    piece, position, orientation) {
-	 console.log("Origin: " + source);
-	 console.log("Destination: " + target);
-	 //console.log("Old location: " + oldLocation);// Not origin
 
-	 console.log("--------------------");
-	 // conn.send(move) // TODO
-     };
-     
-     var pos = '{{ .Fen }}';
-     var config = {
-	 draggable: true,
-         position: pos,
-	 onDrop: parseStand,
-     };
-     var board = ChessBoard('board', config);
-     
-     function orientation(){
-         board.flip();
-     }
-     
      // Websockets all things MDN
      // https://developer.mozilla.org
      // /en-US/docs/Web/API/WebSockets_API
@@ -126,7 +102,30 @@
              item.innerHTML = "<b>Your browser does not support WebSockets.</b>";
              appendLog(item);
 	 }
+	 // check out example for onDragMove() for ParseStand()
+	 // http://chessboardjs.com/examples#4003
+	 var parseStand = function(source, target, piece, newPos, oldPos, orientation) {
+	     console.log("Origin: " + source);
+	     console.log("Destination: " + target);
+	     console.log("--------------------");
+	     conn.send(source) // TODO
+	 };
+	 
+	 var pos = '{{ .Fen }}';
+	 var config = {
+	     draggable: true,
+             position: pos,
+	     onDrop: parseStand,
+	 };
+	 var board = ChessBoard('board', config);
+	 
+	 function orientation(){
+             board.flip();
+	 }
      };     
+
+     
+     
   </script>    
   </body>  
 </html>
