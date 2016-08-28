@@ -7,13 +7,14 @@ package main
 
 import (
 	"bytes"
-	//"encoding/json"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/polypmer/ghess"
 	"html/template"
 	"log"
 	"net/http"
+	"reflect"
 	"time"
 )
 
@@ -171,6 +172,12 @@ Websocket structs and functions?!?
 // hub maintains the set of active clients and broadcasts messages to the
 // clients.
 
+type Move struct {
+	Type        string `json:"type"`
+	Origin      string `json:"origin"`
+	Destination string `json:"destination"`
+}
+
 func newHub() *Hub {
 	return &Hub{
 		broadcast:  make(chan []byte),
@@ -293,7 +300,13 @@ func (c *Client) writePump(g ghess.Board) {
 			}
 
 			// read json from message
-			fmt.Println(string(message))
+			mv := Move{}
+			json.Unmarshal([]byte(message), &mv)
+			fmt.Println(mv.Origin)
+			fmt.Println(mv.Destination)
+			fmt.Println(reflect.TypeOf(message))
+			fmt.Println(reflect.TypeOf(mv))
+			//fmt.Println(string(message))
 
 			// TODO  if message type is move,
 			// make more, otherwise

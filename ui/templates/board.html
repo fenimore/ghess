@@ -116,7 +116,7 @@
 		 // Player?
 		 // Time?, or // Date.now()
 	     };	     
-	     conn.send(standMove) // TODO
+	     conn.send(JSON.stringify(standMove)) // TODO
 	 };
 	 
 	 var pos = '{{ .Fen }}';
