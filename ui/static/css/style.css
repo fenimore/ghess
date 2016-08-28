@@ -6,13 +6,13 @@ body {
     line-height: 1.5;
     color: #566b78;
     font-family: 'Inconsolata', monospace;
-    padding: 4em 1em;
+    padding: 2em 1em;
     margin: 0 auto;
     max-width: 50em;
 }
 
 .content {
-    padding: 4em 1em;
+    padding: 2em 1em;
     margin: 0 auto;
     max-width: 50em;
 }
@@ -92,4 +92,11 @@ code, pre {
 .btn:hover span:after {
   opacity: 1;
   right: 0;
+}
+
+
+#feedback {
+    border-left: 6px solid #2196F3;
+    background-color: #ddffff;
+    padding: 0.01em 16px;
 }
