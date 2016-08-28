@@ -54,8 +54,12 @@ type Hub struct {
 func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	// If no board, redirect to board
+	// How to check if struct is empty?
+	// Can't compare structs with []byte field?
+	// Yuck, TODO
 	move := ""
 	feedback := ""
+	// POST will be for chats?
 	if r.Method == "POST" {
 		r.ParseForm()
 		move = r.Form.Get("move")
