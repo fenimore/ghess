@@ -108,7 +108,14 @@
 	     console.log("Origin: " + source);
 	     console.log("Destination: " + target);
 	     console.log("--------------------");
-	     conn.send(source) // TODO
+	     var standMove = {
+		 type: "move", // as opposed to message
+		 origin: source, // or Source in chessboardjs
+		 destination: target,
+		 // Player?
+		 // Time?, or // Date.now()
+	     };	     
+	     conn.send(standMove) // TODO
 	 };
 	 
 	 var pos = '{{ .Fen }}';

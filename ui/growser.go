@@ -7,6 +7,7 @@ package main
 
 import (
 	"bytes"
+	//"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"github.com/polypmer/ghess"
@@ -286,7 +287,13 @@ func (c *Client) writePump(g ghess.Board) {
 			if err != nil {
 				return
 			}
-			//message = []byte(string(message) + "woops")
+
+			// read json from message
+			fmt.Println(string(message))
+
+			// TODO  if message type is move,
+			// make more, otherwise
+			// Write chat message?
 			err = g.ParseMove(string(message))
 			if err != nil {
 				fmt.Printf("Error writePump: %s\n", err)
