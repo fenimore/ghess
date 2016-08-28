@@ -35,6 +35,7 @@ type ChessBoard struct {
 	Feedback string
 }
 
+// Hub struct for websockets
 type Hub struct {
 	// Registered clients.
 	clients map[*Client]bool
@@ -49,23 +50,18 @@ type Hub struct {
 	unregister chan *Client
 }
 
-// boardHandler for playing game
-// Takes url param pgn move
-func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
+// Index page, link to new game
+func (h *ChessHandler) indexHandler(w http.ResponseWriter,
 	r *http.Request) {
-	// If no board, redirect to board
-	// How to check if struct is empty?
-	// Can't compare structs with []byte field?
-
-	// Display with GUI chessboard.js
-	// TODO: Get White and Black
-	// And rotate board accordingly
-	b := ChessBoard{Board: h.g.String(), Fen: h.g.Position(), Pgn: h.g.PgnString()}
-	t, err := template.ParseFiles("templates/board.html")
-	if err != nil {
-		fmt.Printf("Error %s Templates", err)
-	}
-	t.Execute(w, b)
+	html := `
+<html>
+<link href="/css/style.css" rel="stylesheet">
+<h1>Ghess Index</h1>
+<a href=/new >New Game</a><br>
+<a href=/board >View Current Game</a><br>
+</html>
+`
+	fmt.Fprintln(w, html)
 }
 
 // newGameHandler creates a new Board object
@@ -74,7 +70,15 @@ func (h *ChessHandler) newGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	h.g = ghess.NewBoard()
 	h.init = true
-	fmt.Fprintln(w, "<a href=/board>New Game Created</a>")
+	html := `
+<html>
+<link href="/css/style.css" rel="stylesheet">
+<h1>New Game Created</h1>
+<a href=/board >View New Game</a><br>
+<a href=/ >Return To Index</a><br>
+</html>
+`
+	fmt.Fprintln(w, html)
 }
 
 // /board/ route, displays board and new move form.
@@ -92,53 +96,32 @@ func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 	t.Execute(w, b)
 }
 
-// Index page, link to new game
-func (h *ChessHandler) indexHandler(w http.ResponseWriter,
-	r *http.Request) {
-	fmt.Fprintln(w, "<a href=/new >New Game</a>")
-}
-
-// AJAX Handler for Updating board
-// This does not update all open connections
-// TODO: Websockets!?
-func (h *ChessHandler) makeMoveHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "POST" {
-		http.NotFound(w, r)
-		return
-	}
-	// Get Form Value
-	field := r.FormValue("move")
-	// make Move
-	h.g.ParseMove(field)
-	pos := h.g.Position()
-	// Write to Client
-	w.Write([]byte(pos))
-	// TODO: write to all open connections
-}
-
 func main() {
 	// So HandlFunc takes a custom Handler
 	// Which is forcement takes into a reader and writer
 	// and then it will print whatever is written to the
 	// writer
+	// 0.0.0.0 won't work accross internal ntwk //10.232.44.100
 	PORT := "0.0.0.0:8080"
 	h := new(ChessHandler)
+	h.g = ghess.NewBoard()
 	hub := newHub()
 	go hub.run()
 	// Server Routes
-	http.HandleFunc("/", h.indexHandler)            // link to new game
-	http.HandleFunc("/play/", h.playGameHandler)    // deprecated
-	http.HandleFunc("/board/", h.showGameHandler)   // view
-	http.HandleFunc("/new/", h.newGameHandler)      // new board
-	http.HandleFunc("/makemove", h.makeMoveHandler) //ajax
+	http.HandleFunc("/", h.indexHandler)          // link to new game
+	http.HandleFunc("/board/", h.showGameHandler) // view
+	http.HandleFunc("/new/", h.newGameHandler)    // new board
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		h.serveWs(hub, w, r)
 	}) // websockets
 	// Handle Static Files
 	// TODO: Combine into one function?
-	http.Handle("/css/", http.StripPrefix("/css/", http.FileServer(http.Dir("static/css"))))
-	http.Handle("/js/", http.StripPrefix("/js/", http.FileServer(http.Dir("static/js"))))
-	http.Handle("/img/", http.StripPrefix("/img/", http.FileServer(http.Dir("static/img"))))
+	http.Handle("/css/", http.StripPrefix("/css/",
+		http.FileServer(http.Dir("static/css"))))
+	http.Handle("/js/", http.StripPrefix("/js/",
+		http.FileServer(http.Dir("static/js"))))
+	http.Handle("/img/", http.StripPrefix("/img/",
+		http.FileServer(http.Dir("static/img"))))
 	// Why can't I just link them all in the same Handle()?
 	//http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	//Listen and Server on PORT 8080
@@ -322,7 +305,6 @@ func (c *Client) writePump(g ghess.Board) {
 						Position: fen,
 					}
 				}
-
 				j, _ := json.Marshal(mv)
 				w.Write([]byte(j))
 			} else if msg.Type == "message" {
@@ -339,7 +321,8 @@ func (c *Client) writePump(g ghess.Board) {
 				return
 			}
 		case <-ticker.C:
-			if err := c.write(websocket.PingMessage, []byte{}); err != nil {
+			if err := c.write(websocket.PingMessage,
+				[]byte{}); err != nil {
 				return
 			}
 		}
