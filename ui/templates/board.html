@@ -24,7 +24,7 @@
       </div>
     </form>
     <div id="output" ></div>
-    <div>{{ .Feedback }}</div>
+    <div id="feedback"></div>
 
     <script>
 
@@ -45,6 +45,8 @@
 	 // Example: conn.send(JSON.stringify(moveExample));
 	 var msg = document.getElementById("move");
 	 var log = document.getElementById("output");
+
+
 
 	 function appendLog(item) {
              var doScroll = log.scrollTop === log.scrollHeight - log.clientHeight;
@@ -86,16 +88,17 @@
 	     // This out to be a board position and error message
 	     // Serialized in JSON
              conn.onmessage = function (evt) {
-		 var messages = evt.data.split('\n');
-		 board.position(messages[0])
-		 var item = document.createElement("div");
-                 item.innerText = messages[1];
-                 appendLog(item);
-		 // var message = JSON.parse(evt.data);
-		 // switch(message.type) {
-		 //     case "position": setPos();break;
-		 //     case "error": displayErr();break;
-		 // }
+		 var message = JSON.parse(evt.data);
+		 var errors = document.getElementById("feedback"); 
+		 switch(message.Type) {
+		     case "move":
+			 board.position(message.Position);
+			 console.log(message.Error);
+			 errors.innerText = message.Error;
+			 break;
+		     case "message":
+			 break;
+		 }
 		 // Scroll to bottom of 'chatbox' or error messages
              };
 	 } else {

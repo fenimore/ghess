@@ -319,37 +319,31 @@ func (c *Client) writePump(g ghess.Board) {
 			json.Unmarshal([]byte(message), &msg)
 
 			if msg.Type == "move" {
-				fmt.Println(msg.Origin)
-				fmt.Println(msg.Destination)
-				err = g.ParseStand(msg.Origin, msg.Destination)
+				mv := &outGo{}
+				err = g.ParseStand(msg.Origin,
+					msg.Destination)
+				fen := g.Position()
 				if err != nil {
 					fmt.Println(err)
+					mv = &outGo{
+						Type:     "move",
+						Position: fen,
+						Error:    err.Error(),
+					}
+				} else {
+					mv = &outGo{
+						Type:     "move",
+						Position: fen,
+					}
 				}
-				fen := g.Position()
-				w.Write([]byte(fen + "\n error"))
+
+				j, _ := json.Marshal(mv)
+				w.Write([]byte(string(j))) // unnecessary?
 			} else if msg.Type == "message" {
 				fmt.Println(msg.Message)
 			}
-			// TODO ParseStand() and send Error and Position
 
-			// TODO  if message type is move,
-			// make more, otherwise
-			// Write chat message?
-			err = g.ParseMove(string(message))
-			if err != nil {
-				fmt.Printf("Error writePump: %s\n", err)
-				w.Write([]byte("Error\n" + err.Error()))
-			} else {
-				fen := g.Position()
-				w.Write([]byte(fen + "\n" + string(message)))
-			}
-			// Add queued chat messages to the current websocket message.
-			n := len(c.send)
-			for i := 0; i < n; i++ {
-				w.Write(newline)
-				w.Write(<-c.send)
-			}
-
+			// Close the writer
 			if err := w.Close(); err != nil {
 				return
 			}
