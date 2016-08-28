@@ -56,24 +56,11 @@ func (h *ChessHandler) playGameHandler(w http.ResponseWriter,
 	// If no board, redirect to board
 	// How to check if struct is empty?
 	// Can't compare structs with []byte field?
-	// Yuck, TODO
-	move := ""
-	feedback := ""
-	// POST will be for chats?
-	if r.Method == "POST" {
-		r.ParseForm()
-		move = r.Form.Get("move")
-	} else if r.Method == "GET" {
-		move = r.URL.Path[len("/play/"):]
-	}
-	e := h.g.ParseMove(move)
-	if e != nil {
-		feedback = e.Error()
-	}
+
 	// Display with GUI chessboard.js
 	// TODO: Get White and Black
 	// And rotate board accordingly
-	b := ChessBoard{Board: h.g.String(), Fen: h.g.Position(), Pgn: h.g.PgnString(), Feedback: feedback}
+	b := ChessBoard{Board: h.g.String(), Fen: h.g.Position(), Pgn: h.g.PgnString()}
 	t, err := template.ParseFiles("templates/board.html")
 	if err != nil {
 		fmt.Printf("Error %s Templates", err)
