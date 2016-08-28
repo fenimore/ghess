@@ -71,7 +71,7 @@ func main() {
 	// 0.0.0.0 won't work accross internal ntwk //10.232.44.100
 	PORT := "0.0.0.0:8080"
 	h := new(ChessHandler)
-	h.g = ghess.NewBoard()
+	h.g = ghess.NewBoard() // This means only playin' one game attime
 	hub := newHub()
 	go hub.run()
 	// Server Routes

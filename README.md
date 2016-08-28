@@ -118,7 +118,9 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 - A server api using gorilla/websocket for live network chess playing!
 - Dependency: Gorilla-websocket (BSD) and Chessboard.js (MIT)
 - TODO: Add watch random :)
-
+- TODO: context and game index...
+- TODO: everything user
+- Bugish? Castling is only when King steps on Rook, not like normals..
 
 
 ### Bugs

@@ -87,7 +87,7 @@
 	 if (window["WebSocket"]) { // Check if websocket is supported?
 	     // Create a websocket connection with proper route
 	     // 0.0.0.0 won't work accross internal ntwork 10.232.44.100
-             conn = new WebSocket("ws://0.0.0.0:8080/ws");
+             conn = new WebSocket("ws://" + window.location.host + "/ws");
 	     // Define websocket closing function
              conn.onclose = function (evt) { // or, event
 		 var item = document.createElement("div");
