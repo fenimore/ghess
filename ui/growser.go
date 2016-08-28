@@ -204,6 +204,11 @@ var upgrader = websocket.Upgrader{
 }
 
 // Client is an middleman between the websocket connection and the hub.
+// Each Client should have a username
+// Attached to whatever is read, and used in chat.
+// Also, it should have a 'IsPlaying' bool to allow spectators.
+// AND MAYBE it should have a black or white... Yikes this gets
+// Complicated.
 type Client struct {
 	hub *Hub
 
