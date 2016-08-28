@@ -81,6 +81,7 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 1. more tests
 2. Benchmarks for Search and Validation?
    * is it taking a while, or is it just me?
+3. Convert ParseStand to PGN move for history
 
 ### Basic rules
 

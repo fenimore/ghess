@@ -14,7 +14,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"reflect"
 	"time"
 )
 
@@ -172,10 +171,26 @@ Websocket structs and functions?!?
 // hub maintains the set of active clients and broadcasts messages to the
 // clients.
 
-type Move struct {
+// This is the json passed from
+// the javascript websockets front end
+// It's type dictates what kind of broadcast
+// I'll be doing
+type inCome struct {
 	Type        string `json:"type"`
 	Origin      string `json:"origin"`
 	Destination string `json:"destination"`
+	Message     string `json:"message"`
+}
+
+// outGo struct sends data back to
+// chessboardjs with error position
+// and message depending on kind of
+// broadcast.
+type outGo struct {
+	Type     string
+	Position string
+	Message  string
+	Error    string
 }
 
 func newHub() *Hub {
@@ -300,13 +315,22 @@ func (c *Client) writePump(g ghess.Board) {
 			}
 
 			// read json from message
-			mv := Move{}
-			json.Unmarshal([]byte(message), &mv)
-			fmt.Println(mv.Origin)
-			fmt.Println(mv.Destination)
-			fmt.Println(reflect.TypeOf(message))
-			fmt.Println(reflect.TypeOf(mv))
-			//fmt.Println(string(message))
+			msg := inCome{}
+			json.Unmarshal([]byte(message), &msg)
+
+			if msg.Type == "move" {
+				fmt.Println(msg.Origin)
+				fmt.Println(msg.Destination)
+				err = g.ParseStand(msg.Origin, msg.Destination)
+				if err != nil {
+					fmt.Println(err)
+				}
+				fen := g.Position()
+				w.Write([]byte(fen + "\n error"))
+			} else if msg.Type == "message" {
+				fmt.Println(msg.Message)
+			}
+			// TODO ParseStand() and send Error and Position
 
 			// TODO  if message type is move,
 			// make more, otherwise
