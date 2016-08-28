@@ -39,20 +39,12 @@ func (h *ChessHandler) indexHandler(w http.ResponseWriter,
 }
 
 // newGameHandler creates a new Board object
-// and links to /board/ route
+// And redirects to a board instance /board
 func (h *ChessHandler) newGameHandler(w http.ResponseWriter,
 	r *http.Request) {
 	h.g = ghess.NewBoard()
 	h.init = true
-	html := `
-<html>
-<link href="/css/style.css" rel="stylesheet">
-<h1>New Game Created</h1>
-<a href=/board >View New Game</a><br>
-<a href=/ >Return To Index</a><br>
-</html>
-`
-	fmt.Fprintln(w, html)
+	http.Redirect(w, r, "/board", http.StatusSeeOther)
 }
 
 // /board/ route, displays board and new move form.
@@ -68,7 +60,7 @@ func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 		fmt.Printf("Error %s Templates", err)
 	}
 	// Must execute take a second param?
-	t.Execute(w, h.g)
+	t.Execute(w, h.g.Position())
 }
 
 func main() {
