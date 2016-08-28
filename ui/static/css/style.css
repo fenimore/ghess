@@ -8,7 +8,7 @@ body {
     font-family: 'Inconsolata', monospace;
     padding: 2em 1em;
     margin: 0 auto;
-    max-width: 50em;
+    max-width: 60em;
 }
 
 .content {
@@ -96,7 +96,15 @@ code, pre {
 
 
 #feedback {
-    border-left: 6px solid #2196F3;
-    background-color: #ddffff;
-    padding: 0.01em 16px;
+    border-left: 6px solid #577A3A;
+    background-color: #BCED91;
+    padding: 0.5em 16px;
+    visibility: hidden;
+    width: 370px;
+}
+
+#output {
+    height: 315px;
+    width: 400px;
+    overflow: auto;
 }

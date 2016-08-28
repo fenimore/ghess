@@ -117,9 +117,9 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 ## growser
 - A server api using gorilla/websocket for live network chess playing!
 - Dependency: Gorilla-websocket (BSD) and Chessboard.js (MIT)
-- TODO: Make move with ParseStand() and use chessboardjs's source and newLocation var
-  - See http://chessboardjs.com/examples#4003
-  - js onDragMove gets tracked...
+- TODO: Add watch random :)
+
+
 
 ### Bugs
 

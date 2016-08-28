@@ -277,7 +277,8 @@ func (c *Client) writePump(g ghess.Board) {
 			msg := inCome{}
 			json.Unmarshal([]byte(message), &msg)
 
-			if msg.Type == "move" {
+			switch msg.Type {
+			case "move":
 				mv := &outGo{}
 				err = g.ParseStand(msg.Origin,
 					msg.Destination)
@@ -296,7 +297,15 @@ func (c *Client) writePump(g ghess.Board) {
 				}
 				j, _ := json.Marshal(mv)
 				w.Write([]byte(j))
-			} else if msg.Type == "message" {
+			case "message":
+				chat := &outGo{
+					Type:    "message",
+					Message: msg.Message,
+				}
+				j, _ := json.Marshal(chat)
+				w.Write([]byte(j))
+			case "connection":
+				// Should this be put elsehwere?
 				chat := &outGo{
 					Type:    "message",
 					Message: msg.Message,
