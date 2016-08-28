@@ -305,9 +305,9 @@ func (c *Client) writePump(g ghess.Board) {
 				j, _ := json.Marshal(chat)
 				w.Write([]byte(j))
 			case "connection":
-				// Should this be put elsehwere?
+				// Should this be put elsewhere?
 				chat := &outGo{
-					Type:    "message",
+					Type:    "connection",
 					Message: msg.Message,
 				}
 				j, _ := json.Marshal(chat)

@@ -90,12 +90,9 @@
              conn = new WebSocket("ws://0.0.0.0:8080/ws");
 	     // Define websocket closing function
              conn.onclose = function (evt) { // or, event
-		 // LOL send this after it closes? RIIIGHT
-		 var sendMessage = {
-		     type: "connection", // as opposed to message
-		     message: "Connection closed.",
-		 };	     
-		 conn.send(JSON.stringify(sendMessage));		 
+		 var item = document.createElement("div");
+		 item.innerHTML = "<b>Connection closed.</b>";
+		 appendLog(item);		 
              };
 	     // On new connection
 	     conn.onopen = function(evt) {
