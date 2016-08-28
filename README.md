@@ -123,7 +123,7 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
 ### Bugs
 
-- Surely, something?
+- King can't move to squares before a pawn... how do I describe this...
 
 ### License
 

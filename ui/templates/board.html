@@ -14,7 +14,7 @@
     
       <h1>Ghess</h1>
       <a href="/new" >New Game</a>|<a href="/" >Index</a>
-    
+      <div id="feedback" style="width:400px"></div>
     <div id="board" style="width: 400px"></div>
 
     <form id="form" >
@@ -24,7 +24,7 @@
       </div>
     </form>
     <div id="output" ></div>
-    <div id="feedback"></div>
+
 
     <script>
 
@@ -127,7 +127,7 @@
 	     conn.send(JSON.stringify(standMove)) // TODO
 	 };
 	 
-	 var pos = '{{ .Fen }}';
+	 var pos = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 	 var config = {
 	     draggable: true,
              position: pos,

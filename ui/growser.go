@@ -24,32 +24,6 @@ type ChessHandler struct {
 	init bool
 }
 
-// Chessboard struct is for
-// sending chessboard.js info
-type ChessBoard struct {
-	Board    string
-	Fen      string
-	Pgn      string
-	Move     string
-	wToMove  bool
-	Feedback string
-}
-
-// Hub struct for websockets
-type Hub struct {
-	// Registered clients.
-	clients map[*Client]bool
-
-	// Inbound messages from the clients.
-	broadcast chan []byte
-
-	// Register requests from the clients.
-	register chan *Client
-
-	// Unregister requests from clients.
-	unregister chan *Client
-}
-
 // Index page, link to new game
 func (h *ChessHandler) indexHandler(w http.ResponseWriter,
 	r *http.Request) {
@@ -88,12 +62,13 @@ func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 		// TODO: FAILURE
 		http.Redirect(w, r, "/new/", http.StatusSeeOther)
 	}
-	b := ChessBoard{Board: h.g.String(), Fen: h.g.Position(), Pgn: h.g.PgnString()}
+
 	t, err := template.ParseFiles("templates/board.html")
 	if err != nil {
 		fmt.Printf("Error %s Templates", err)
 	}
-	t.Execute(w, b)
+	// Must execute take a second param?
+	t.Execute(w, h.g)
 }
 
 func main() {
@@ -124,22 +99,40 @@ func main() {
 		http.FileServer(http.Dir("static/img"))))
 	// Why can't I just link them all in the same Handle()?
 	//http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	//Listen and Server on PORT 8080
 	fmt.Printf("Listening on %s\n", PORT)
 	http.ListenAndServe(PORT, nil)
-}
-
-func getPanel(m map[string]string) string {
-	return "|Move:  " + m["move"] + "     Turn: " + m["turn"] +
-		"\n|Check: " + m["check"] + " Castle: " + m["castling"] +
-		"\n|Mate:  " + m["checkmate"] + " Score: " + m["score"] + "\n"
 }
 
 /*
 Websocket structs and functions?!?
 */
+
 // hub maintains the set of active clients and broadcasts messages to the
 // clients.
+// Hub struct for websockets
+type Hub struct {
+	// Registered clients.
+	clients map[*Client]bool
+
+	// Inbound messages from the clients.
+	broadcast chan []byte
+
+	// Register requests from the clients.
+	register chan *Client
+
+	// Unregister requests from clients.
+	unregister chan *Client
+}
+
+// newHub returns a pointer to a new Hub
+func newHub() *Hub {
+	return &Hub{
+		broadcast:  make(chan []byte),
+		register:   make(chan *Client),
+		unregister: make(chan *Client),
+		clients:    make(map[*Client]bool),
+	}
+}
 
 // This is the json passed from
 // the javascript websockets front end
@@ -161,15 +154,6 @@ type outGo struct {
 	Position string
 	Message  string
 	Error    string
-}
-
-func newHub() *Hub {
-	return &Hub{
-		broadcast:  make(chan []byte),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		clients:    make(map[*Client]bool),
-	}
 }
 
 func (h *Hub) run() {
