@@ -311,7 +311,6 @@ func (c *Client) writePump(g ghess.Board) {
 					msg.Destination)
 				fen := g.Position()
 				if err != nil {
-					fmt.Println(err)
 					mv = &outGo{
 						Type:     "move",
 						Position: fen,
@@ -325,9 +324,14 @@ func (c *Client) writePump(g ghess.Board) {
 				}
 
 				j, _ := json.Marshal(mv)
-				w.Write([]byte(string(j))) // unnecessary?
+				w.Write([]byte(j))
 			} else if msg.Type == "message" {
-				fmt.Println(msg.Message)
+				chat := &outGo{
+					Type:    "message",
+					Message: msg.Message,
+				}
+				j, _ := json.Marshal(chat)
+				w.Write([]byte(j))
 			}
 
 			// Close the writer

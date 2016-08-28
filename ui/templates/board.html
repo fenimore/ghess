@@ -20,7 +20,7 @@
     <form id="form" >
       <div>
 	<input type="text" id="message" name="message" autofocus>
-	<input type="submit" value="Send Message" > <button type="button" onclick="orientation()" >Flip Board</button>
+	<input type="submit" value="Send Message" > <button type="button" onclick="orientation()" id="flip">Flip Board</button>
       </div>
     </form>
     <div id="output" ></div>
@@ -43,11 +43,9 @@
 	     // Time?, or // Date.now()
 	 };
 	 // Example: conn.send(JSON.stringify(moveExample));
-	 var msg = document.getElementById("move");
 	 var log = document.getElementById("output");
-
-
-
+	 var msg = document.getElementById("message");
+	 
 	 function appendLog(item) {
              var doScroll = log.scrollTop === log.scrollHeight - log.clientHeight;
              log.appendChild(item);
@@ -68,7 +66,12 @@
 	     // onDragMove() = function() { conn.send(orig+" "+dest)}
 	     // TODO Try sending this in JSON format
 	     // Create another send for the Chat capability
-             conn.send(msg.value); // Have this send the Origin and Destination
+
+	     var sendMessage = {
+		 type: "message", // as opposed to message
+		 message: msg.value,
+	     };	     
+             conn.send(JSON.stringify(sendMessage));
              msg.value = "";
              return false;
 	 };
@@ -89,7 +92,8 @@
 	     // Serialized in JSON
              conn.onmessage = function (evt) {
 		 var message = JSON.parse(evt.data);
-		 var errors = document.getElementById("feedback"); 
+		 var errors = document.getElementById("feedback");
+		 var chat = document.createElement("div");
 		 switch(message.Type) {
 		     case "move":
 			 board.position(message.Position);
@@ -97,6 +101,8 @@
 			 errors.innerText = message.Error;
 			 break;
 		     case "message":
+			 chat.innerText = message.Message;
+			 appendLog(chat);
 			 break;
 		 }
 		 // Scroll to bottom of 'chatbox' or error messages
@@ -108,17 +114,15 @@
 	 }
 	 // check out example for onDragMove() for ParseStand()
 	 // http://chessboardjs.com/examples#4003
-	 var parseStand = function(source, target, piece, newPos, oldPos, orientation) {
-	     console.log("Origin: " + source);
-	     console.log("Destination: " + target);
-	     console.log("--------------------");
+	 // This onDrop function has other param which I don't use
+	 var parseStand = function(source, target) {
 	     var standMove = {
 		 type: "move", // as opposed to message
 		 origin: source, // or Source in chessboardjs
 		 destination: target,
 		 // Player?
 		 // Time?, or // Date.now()
-	     };	     
+	     };
 	     conn.send(JSON.stringify(standMove)) // TODO
 	 };
 	 
@@ -129,10 +133,10 @@
 	     onDrop: parseStand,
 	 };
 	 var board = ChessBoard('board', config);
-	 
-	 function orientation(){
+
+	 document.getElementById("flip").addEventListener("click", function(){
              board.flip();
-	 }
+	 });
      };     
 
      
