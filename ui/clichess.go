@@ -177,7 +177,7 @@ Loop:
 					game.MoveRandom(origs, dests)
 					info = game.Stats()
 					fmt.Println("Move ", info["move"])
-					fmt.Print(game.String())
+					fmt.Print(game.StringWhite())
 					think(true)
 					gameOver, _ := strconv.ParseBool(info["checkmate"])
 					check, _ := strconv.ParseBool(info["check"])
