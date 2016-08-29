@@ -33,6 +33,8 @@ func (h *ChessHandler) indexHandler(w http.ResponseWriter,
 <h1>Ghess Index</h1>
 <a href=/new >New Game</a><br>
 <a href=/board >View Current Game</a><br>
+<br><br><br>
+<a href="https://github.com/polypmer/go-chess">Source Code</a>
 </html>
 `
 	fmt.Fprintln(w, html)
@@ -69,7 +71,7 @@ func main() {
 	// and then it will print whatever is written to the
 	// writer
 	// 0.0.0.0 won't work accross internal ntwk //10.232.44.100
-	PORT := "0.0.0.0:8080"
+	PORT := ":8080"
 	h := new(ChessHandler)
 	h.g = ghess.NewBoard() // This means only playin' one game attime
 	hub := newHub()
