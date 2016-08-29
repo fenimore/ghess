@@ -456,6 +456,7 @@ func (b *Board) isPlayerInCheck() bool {
 	isWhite := b.toMove == "w"
 	for idx, val := range b.board {
 		if val == 'K' && b.isUpper(idx) && isWhite {
+			//fmt.Println(b.board[idx])
 			return b.isInCheck(idx)
 		}
 		if val == 'k' && !b.isUpper(idx) && !isWhite {
@@ -493,7 +494,7 @@ func (b *Board) isInCheck(target int) bool {
 		case p == "P":
 			e := b.validPawn(val, target, k)
 			if e == nil {
-				//fmt.Println("Pawn check")
+				fmt.Println("Pawn check")
 				return true
 			}
 		case p == "N":
@@ -572,6 +573,9 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 			return err
 		}
 	case remainder == 20:
+		if b.board[dest] != '.' {
+			return err
+		}
 		if orig > 28 && b.toMove == "w" { // Only from 2nd rank
 			return err
 		} else if orig < 70 && b.toMove == "b" {

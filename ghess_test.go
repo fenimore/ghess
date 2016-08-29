@@ -89,6 +89,15 @@ func ExampleCannotCastleThroughCheck() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fen := `r1b1kbnr/p1qp1ppp/npp5/4p3/4P1K1/5P2/PPPP2PP/RNBQ1BNR w kq - 1 6`
+	err = game.LoadFen(fen)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.ParseMove("Kg5")
+	if err != nil {
+		fmt.Println(err)
+	}
 	// Output:
 	// Cannot Castle through check
 }
