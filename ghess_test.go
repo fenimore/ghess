@@ -110,6 +110,15 @@ func ExampleMoveIntoCheck() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fen = `	rnbqk1nr/ppp2ppp/5b2/3pp3/8/1K1P4/PPP1PPPP/RNBQ1BNR w kq - 4 5`
+	err = game.LoadFen(fen)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.ParseMove("Kb4")
+	if err != nil {
+		fmt.Println(err)
+	}
 	// Output:
 	// Cannot move into Check
 }

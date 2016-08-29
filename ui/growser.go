@@ -14,6 +14,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -252,6 +253,7 @@ func (c *Client) writePump(g ghess.Board) {
 		ticker.Stop()
 		c.conn.Close()
 	}()
+	var feedback string // For sending info to client
 	for {
 		select {
 		case message, ok := <-c.send:
@@ -277,6 +279,15 @@ func (c *Client) writePump(g ghess.Board) {
 				err = g.ParseStand(msg.Origin,
 					msg.Destination)
 				fen := g.Position()
+				info := g.Stats()
+				check, _ := strconv.ParseBool(info["check"])
+				checkmate, _ := strconv.ParseBool(
+					info["checkmate"])
+				if check {
+					feedback = "Check!"
+				} else if checkmate {
+					feedback = "Checkmate!"
+				}
 				if err != nil {
 					mv = &outGo{
 						Type:     "move",
@@ -287,8 +298,10 @@ func (c *Client) writePump(g ghess.Board) {
 					mv = &outGo{
 						Type:     "move",
 						Position: fen,
+						Error:    feedback,
 					}
 				}
+				feedback = ""
 				j, _ := json.Marshal(mv)
 				w.Write([]byte(j))
 			case "message":

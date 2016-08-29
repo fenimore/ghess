@@ -109,7 +109,6 @@
 		 switch(message.Type) {
 		     case "move":
 			 board.position(message.Position);
-			 console.log(message.Error);
 			 errors.innerText = message.Error;
 			 if(message.Error == "") {
 			     errors.style.visibility="hidden";

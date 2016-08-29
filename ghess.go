@@ -50,8 +50,9 @@ func NewBoard() Board {
 	b = []byte(`           RNBKQBNR  PPPPPPPP  ........  ........  ........  ........  pppppppp  rnbkqbnr                                `)
 
 	// Printed Board Notations
-	b[91], b[92], b[93], b[94], b[95], b[96], b[97], b[98] = 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
-	b[19], b[29], b[39], b[49], b[59], b[69], b[79], b[89] = '1', '2', '3', '4', '5', '6', '7', '8'
+	// THIS WAS STUPID
+	//b[91], b[92], b[93], b[94], b[95], b[96], b[97], b[98] = 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'
+	//b[19], b[29], b[39], b[49], b[59], b[69], b[79], b[89] = '1', '2', '3', '4', '5', '6', '7', '8'
 
 	// Map of PGN notation
 	m := make(map[string]int)
@@ -494,7 +495,7 @@ func (b *Board) isInCheck(target int) bool {
 		case p == "P":
 			e := b.validPawn(val, target, k)
 			if e == nil {
-				fmt.Println("Pawn check")
+				//fmt.Println("Pawn check")
 				return true
 			}
 		case p == "N":
@@ -506,7 +507,6 @@ func (b *Board) isInCheck(target int) bool {
 		case p == "B":
 			e := b.validBishop(val, target)
 			if e == nil {
-				//fmt.Println("Bishop check")
 				return true
 			}
 		case p == "R":
