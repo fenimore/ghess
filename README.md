@@ -1,5 +1,6 @@
-# go-chess || Ghess
-A Golang chess engine, fumbling along... 
+# go-chess || ghess
+
+A Golang chess engine and user interface(s), fumbling along... 
 
     |Move:  3     Turn: b
     |Check: false Castle: KQkq
@@ -17,46 +18,62 @@ A Golang chess engine, fumbling along...
 
 
 # Instructions
-`ghess.go` is a go package responsible for representing a chess board, parsing PGN input, and validating moves. In the `ui/` directory, `clichess.go` is a simple interface for testing.
+`ghess.go` is a Go package responsible for representing a chess board, parsing PGN input, and validating moves. In the `ui/` directory, `clichess.go` is a simple interface for debugging and `growser.go` is a browser client powered by *websockets*. The `ghess.go` package is broken into `parse.go`, `validation.go`, and `evaluation.go`.
 
-After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
+- After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
     go run ui/clichess.go
 
-# Features
-- Most rules are implemented:
-  * No queen promotion
-  * No queen PGN parse disambiguation
-- PGN import export parse
-- FEN import export parse
-- Cli interface
+- To see a `math/rand` vs `math/rand` game, enter into the **clichess** client:
+
+    > /random-game
+
+- To play a real time game over the internal network, run `growser.go` within the `/ui` directory, and connect to port 8080.
+
+- To use the package in a project, start a new game by calling `ghess.NewBoard()`, which returns an instance of the `ghess.Board` `struct`, ready to `Board.ParseMove()` and return *FEN* positions, `Board.Position()`.
+
+# Basic Features and Functionality
+- *Most* rules are implemented:
+  * Pawns *only* promote to Queen.
+  * There is no PGN disambiguation for Queens.
+- PGN import-export via `Board.LoadPgn()` and `Board.PgnString()`
+- FEN import-export via `Board.LoadFen()` and `Board.Position()`
+- Command Line interface.
 - Random game!
 
-## Search and Evaluate
+# Search and Evaluate Features
 
-- looks for all possible and valid moves
+- Looks for all possible and valid moves via `Board.SearchForValid()`, which returns two `[]int` slices with the coordinates of possible origins and possible targets. The `Board` field `pieceMap` is a `map[int]string`; the aforementioned `int`s are keys for the standard notation coordinates.
+- Evaluation has **not** been implemented, see the `evaluation.go` file for it's emerging api. There is, however, a `Board.MoveRandom()` method which passes in two `[]int` slices and `math/rand` chooses a move.
 
+----
 
-<hr>
+## `Board` struct fields:
+- [Game variables]
+  * board []byte [the piece positions]
+  * castle []byte [Remaining possibilities]
+  * score string
+  * toMove string [either "w" or "b"]
+  * empassant int [coordinate value]
+  * checkmate bool
+  * check bool
+- [Board display]
+  * pgnMap map[string]int
+  * pieceMap map[int]string
+  * pieces map[string]string [unicode fonts]
+  * rows map[int][8]int [for white/black coloring]
+- moves [move tally]
+- fen string[Position string]
+- pgn string [move history]
+- headers string [for PGN]
+- pgnPattern *regexp.Regexp
+- fenPattern *regexp.Regexp
 
-## Board struct
-- A board object
-- Game variables
-  * castle possibilities
-  * score
-  * to move
-  * check
-  * empassant
-- Board display
-  * pgnMap
-  * pieceMap
-  * pieces
-- move count
-- fen string
-- pgn string
-- pgn Headers
+As long as it remains on my `TODO` list to change, these fields are unexported and for accessing this data, one can call `Board.Stats()` to return a `map[string]string` of various imminently useful fields, such as "turn", "check", and "scores" (see `ghess.go` `Stats()` for a complete list.
 
 ## Bitmap
+
+The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `Board` `board` field. This boils down to (accessible with the `/coordinates` command in `clichess.go`):
 
     Coordinates:
     8: |88||87||86||85||84||83||82||81|
@@ -69,42 +86,41 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
     1: |18||17||16||15||14||13||12||11|
        :a ::b ::c ::d ::e ::f ::g ::h :
 
-- 120 bytes
 - 11 - 18 1st rank
 - 81 - 88 8th rank
-- Does it seem backwards?
 
-<hr>
+----
 
-## TODO
+## TODO General 
 
-1. more tests
+1. More tests.
+4. Export `Board` fields.
+6. Change `Board` to `Game`, as that makes more sense...
 2. Benchmarks for Search and Validation?
-   * is it taking a while, or is it just me?
-3. Convert ParseStand to PGN move for history
+3. Convert `ParseStand()` to PGN move.
 
-### Basic rules
+### TODO Basic rules
 
 - Minor pawn promotion.
+- Queen disambiguation.
 
-### Basic Functionality
+### TODO Basic Functionality
 
-- Variables should be exported, capitalized
-- Checkmate should update PGN headers/history
-- Flip board (UI problem)
+- Checkmate should update PGN headers/history.
+- `ParseMove` should allow for resign.
 
-### Search & Evaluate
+### TODO Search & Evaluate
 
-- Look for all valid moves
-   * There is a bug for castling possibilities
-- Give all moves a score (mdr)
-   * Am I even capable of this?
-   
-### Extra features
+- There is a bug for castling possibilities in `SearchForValid()`.
+- Give all moves a score.
+
+### TODO Extra features
 
 - Move history/ Undo
   * Save game history to board (not automatic)?
   * Save as two coordinates, with piece specifier
+
+---- 
 
 # User Interface
 
@@ -116,16 +132,17 @@ After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
 ## growser
 - A server api using gorilla/websocket for live network chess playing!
-- Dependency: Gorilla-websocket (BSD) and Chessboard.js (MIT)
+- Dependency: gorilla/websocket (BSD) and Chessboard.js (MIT)
 - TODO: Add watch random :)
 - TODO: context and game index...
 - TODO: everything user
-- Bugish? Castling is only when King steps on Rook, not like normals..
+- Castling is only when King steps on Rook, not like normals..
 
+---- 
 
 ### Bugs
 
-- King can't move to squares before a pawn... how do I describe this...
+- See issues.
 
 ### License
 
