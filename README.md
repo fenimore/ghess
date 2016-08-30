@@ -18,7 +18,7 @@ A Golang chess engine and user interface(s), fumbling along...
 
 
 # Instructions
-`ghess.go` is a Go package responsible for representing a chess board, parsing PGN input, and validating moves. In the `ui/` directory, `clichess.go` is a simple interface for debugging and `growser.go` is a browser client powered by *websockets*. The `ghess.go` package is broken into `parse.go`, `validation.go`, and `evaluation.go`.
+`ghess.go` is a Go package responsible for representing a chess board, parsing PGN input, and validating moves. In the `ui/` directory, `clichess.go` is a simple interface for debugging and `growser.go` is a browser client powered by *websockets*. The `ghess.go` package is broken into `parse.go`, `validation.go`, and `evaluation.go`. See godoc for the [docs](https://godoc.org/github.com/polypmer/go-chess).
 
 - After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
