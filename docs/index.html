@@ -1,0 +1,565 @@
+use 'godoc cmd/github.com/polypmer/ghess' for documentation on the github.com/polypmer/ghess command 
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script type='text/javascript'>
+	document.ANALYSIS_DATA = ;
+	document.CALLGRAPH = ;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "github.com/polypmer/ghess"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+				<dd><a href="#pkg-subdirectories">Subdirectories</a></dd>
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				<p>
+Go Chess Engine - Ghess
+Fenimore Love 2016
+GPLv3
+TODO: Evaluation
+</p>
+
+			</div>
+		</div>
+		
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+			
+				
+				<dd><a href="#PlayGame">func PlayGame(board Board)</a></dd>
+			
+			
+				
+				<dd><a href="#Board">type Board</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NewBoard">func NewBoard() Board</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.Coordinates">func (b *Board) Coordinates()</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.Evaluate">func (b *Board) Evaluate(piece byte, dest int) int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.EvaluateMoves">func (b *Board) EvaluateMoves(origs, dests []int) []int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.LoadFen">func (b *Board) LoadFen(fen string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.LoadPgn">func (b *Board) LoadPgn(match string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.Move">func (b *Board) Move(orig, dest int) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.MoveBest">func (b *Board) MoveBest()</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.MoveRandom">func (b *Board) MoveRandom(origs, dests []int) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.ParseMove">func (b *Board) ParseMove(move string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.ParseStand">func (b *Board) ParseStand(orig, dest string) error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.PgnString">func (b *Board) PgnString() string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.Position">func (b *Board) Position() string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.SearchForValid">func (b *Board) SearchForValid() ([]int, []int)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.SetHeaders">func (b *Board) SetHeaders(w, bl string)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.Stats">func (b *Board) Stats() map[string]string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.String">func (b *Board) String() string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.StringBlack">func (b *Board) StringBlack() string</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Board.StringWhite">func (b *Board) StringWhite() string</a></dd>
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h4>Package files</h4>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="/src/github.com/polypmer/ghess/evaluation.go">evaluation.go</a>
+			
+				<a href="/src/github.com/polypmer/ghess/ghess.go">ghess.go</a>
+			
+				<a href="/src/github.com/polypmer/ghess/parse.go">parse.go</a>
+			
+				<a href="/src/github.com/polypmer/ghess/validation.go">validation.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		<div id="pkg-callgraph" class="toggle" style="display: none">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Internal Call Graph section">Internal call graph ▹</h2>
+		</div> <!-- .expanded -->
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Internal Call Graph section">Internal call graph ▾</h2>
+			<p>
+			  In the call graph viewer below, each node
+			  is a function belonging to this package
+			  and its children are the functions it
+			  calls&mdash;perhaps dynamically.
+			</p>
+			<p>
+			  The root nodes are the entry points of the
+			  package: functions that may be called from
+			  outside the package.
+			  There may be non-exported or anonymous
+			  functions among them if they are called
+			  dynamically from another package.
+			</p>
+			<p>
+			  Click a node to visit that function's source code.
+			  From there you can visit its callers by
+			  clicking its declaring <code>func</code>
+			  token.
+			</p>
+			<p>
+			  Functions may be omitted if they were
+			  determined to be unreachable in the
+			  particular programs or tests that were
+			  analyzed.
+			</p>
+			<!-- Zero means show all package entry points. -->
+			<ul style="margin-left: 0.5in" id="callgraph-0" class="treeview"></ul>
+		</div>
+		</div> <!-- #pkg-callgraph -->
+
+		
+		
+		
+			
+			
+			<h2 id="PlayGame">func <a href="/src/target/ghess.go?s=11341:11367#L321">PlayGame</a>
+				<a class="permalink" href="#PlayGame">&#xb6;</a>
+			</h2>
+			<pre>func PlayGame(board <a href="#Board">Board</a>)</pre>
+			<p>
+PlayGame() takes user input and commands.
+See ui/clichess.go for more robust client.
+</p>
+
+			
+			
+
+		
+		
+			
+			
+			<h2 id="Board">type <a href="/src/target/ghess.go?s=253:1070#L10">Board</a>
+				<a class="permalink" href="#Board">&#xb6;</a>
+			</h2>
+			<pre>type Board struct {
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+			<p>
+Board is a chessboard type
+TODO: Make Upper Case? M-c for upper case
+</p>
+
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="NewBoard">func <a href="/src/target/ghess.go?s=1119:1140#L34">NewBoard</a>
+					<a class="permalink" href="#NewBoard">&#xb6;</a>
+				</h3>
+				<pre>func NewBoard() <a href="#Board">Board</a></pre>
+				<p>
+Create a new Board in the starting position
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="Board.Coordinates">func (*Board) <a href="/src/target/ghess.go?s=12556:12585#L383">Coordinates</a>
+					<a class="permalink" href="#Board.Coordinates">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) Coordinates()</pre>
+				<p>
+Coordinates prints the int values used
+for Board.Move()
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.Evaluate">func (*Board) <a href="/src/target/evaluation.go?s=1056:1106#L42">Evaluate</a>
+					<a class="permalink" href="#Board.Evaluate">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) Evaluate(piece <a href="/pkg/builtin/#byte">byte</a>, dest <a href="/pkg/builtin/#int">int</a>) <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+Evaluate() scores a move based on the piece
+and its destination.
+TODO: Must I acknowledge castling?
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.EvaluateMoves">func (*Board) <a href="/src/target/evaluation.go?s=695:750#L27">EvaluateMoves</a>
+					<a class="permalink" href="#Board.EvaluateMoves">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) EvaluateMoves(origs, dests []<a href="/pkg/builtin/#int">int</a>) []<a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+EvaluateMoves() scores all valid moves.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.LoadFen">func (*Board) <a href="/src/target/parse.go?s=8927:8968#L378">LoadFen</a>
+					<a class="permalink" href="#Board.LoadFen">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) LoadFen(fen <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+LoadFen() parses FEN string and update Board.board.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.LoadPgn">func (*Board) <a href="/src/target/parse.go?s=8637:8680#L365">LoadPgn</a>
+					<a class="permalink" href="#Board.LoadPgn">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) LoadPgn(match <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+LoadPgn() reads a pgn match.
+TODO: ignore header strings eg [White].
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.Move">func (*Board) <a href="/src/target/validation.go?s=320:362#L5">Move</a>
+					<a class="permalink" href="#Board.Move">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) Move(orig, dest <a href="/pkg/builtin/#int">int</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+Move() is the basic validation.
+The origin and destination square are tested
+in a dereferenced b.board to keep from moving
+into check. The individual pieces are validated
+in seperate methods. Finally this method updates
+the board, updateBoard().
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.MoveBest">func (*Board) <a href="/src/target/evaluation.go?s=343:369#L9">MoveBest</a>
+					<a class="permalink" href="#Board.MoveBest">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) MoveBest()</pre>
+				
+				
+				
+				
+			
+				
+				<h3 id="Board.MoveRandom">func (*Board) <a href="/src/target/evaluation.go?s=156:208#L1">MoveRandom</a>
+					<a class="permalink" href="#Board.MoveRandom">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) MoveRandom(origs, dests []<a href="/pkg/builtin/#int">int</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+MoveRandom, pick move from lists of valid moves.
+Return an error, such as checkmate or draw.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.ParseMove">func (*Board) <a href="/src/target/parse.go?s=587:631#L16">ParseMove</a>
+					<a class="permalink" href="#Board.ParseMove">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) ParseMove(move <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+ParseMove() infers origin and destination
+coordinates from a pgn notation move. Check
+and Check Mate notations will be added automatically.
+TODO: disambiguiation
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.ParseStand">func (*Board) <a href="/src/target/parse.go?s=270:321#L4">ParseStand</a>
+					<a class="permalink" href="#Board.ParseStand">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) ParseStand(orig, dest <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+ParseStand() does pas grande chose mnt.
+TODO: include piece value? Or use different method
+Pgn map takes standar notation and returns coordinate.
+This method is useful for chessboardjs gui
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.PgnString">func (*Board) <a href="/src/target/ghess.go?s=9103:9137#L232">PgnString</a>
+					<a class="permalink" href="#Board.PgnString">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) PgnString() <a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+PgnString() returns headers and pgn history.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.Position">func (*Board) <a href="/src/target/ghess.go?s=9336:9369#L240">Position</a>
+					<a class="permalink" href="#Board.Position">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) Position() <a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+Position returns string FEN position.
+It also sets the Board.fen attribute
+to the most currect position. (b.fen
+remains empty unil b.Position() is called)
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.SearchForValid">func (*Board) <a href="/src/target/validation.go?s=15288:15335#L661">SearchForValid</a>
+					<a class="permalink" href="#Board.SearchForValid">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) SearchForValid() ([]<a href="/pkg/builtin/#int">int</a>, []<a href="/pkg/builtin/#int">int</a>)</pre>
+				<p>
+SearchForValid returns lists of int coordinates
+for valid origins and destinations of the current
+player.
+TODO: castling is a mess
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.SetHeaders">func (*Board) <a href="/src/target/ghess.go?s=10731:10771#L300">SetHeaders</a>
+					<a class="permalink" href="#Board.SetHeaders">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) SetHeaders(w, bl <a href="/pkg/builtin/#string">string</a>)</pre>
+				<p>
+SetHeaders() sets pgnHeaders for a pgn export.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.Stats">func (*Board) <a href="/src/target/ghess.go?s=10300:10341#L284">Stats</a>
+					<a class="permalink" href="#Board.Stats">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) Stats() map[<a href="/pkg/builtin/#string">string</a>]<a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+Stats() returns program data of current game
+in map[string]string.
+Todo, replace with exported struct attirbutes.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.String">func (*Board) <a href="/src/target/ghess.go?s=4587:4618#L99">String</a>
+					<a class="permalink" href="#Board.String">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) String() <a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+String() returns a string printable board.
+The board will rotate according to whose turn
+it is.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.StringBlack">func (*Board) <a href="/src/target/ghess.go?s=7802:7838#L197">StringBlack</a>
+					<a class="permalink" href="#Board.StringBlack">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) StringBlack() <a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+StringBlack() rotates for Black perspective.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="Board.StringWhite">func (*Board) <a href="/src/target/ghess.go?s=6501:6537#L162">StringWhite</a>
+					<a class="permalink" href="#Board.StringWhite">&#xb6;</a>
+				</h3>
+				<pre>func (b *<a href="#Board">Board</a>) StringWhite() <a href="/pkg/builtin/#string">string</a></pre>
+				<p>
+StringWhite returns a string printable board
+from white&#39;s perspective.
+</p>
+
+				
+				
+				
+			
+		
+	
+
+	
+
+
+
+
+
+	
+	
+		<h2 id="pkg-subdirectories">Subdirectories</h2>
+	
+	
+
+
+	<div class="pkg-dir">
+		<table>
+			<tr>
+				<th class="pkg-name">Name</th>
+				<th class="pkg-synopsis">Synopsis</th>
+			</tr>
+
+			
+			<tr>
+				<td colspan="2"><a href="..">..</a></td>
+			</tr>
+			
+
+			
+				
+					<tr>
+						<td class="pkg-name" style="padding-left: 0px;">
+							<a href="docs/">docs</a>
+						</td>
+						<td class="pkg-synopsis">
+							
+						</td>
+					</tr>
+				
+			
+				
+					<tr>
+						<td class="pkg-name" style="padding-left: 0px;">
+							<a href="ui/">ui</a>
+						</td>
+						<td class="pkg-synopsis">
+							
+						</td>
+					</tr>
+				
+			
+		</table>
+	</div>
+
+
+	
+

@@ -1,7 +1,9 @@
+use 'godoc cmd/github.com/polypmer/ghess' for documentation on the github.com/polypmer/ghess command 
+
 PACKAGE DOCUMENTATION
 
 package ghess
-    import "."
+    import "github.com/polypmer/ghess"
 
     Go Chess Engine - Ghess Fenimore Love 2016 GPLv3 TODO: Evaluation
 
@@ -24,6 +26,13 @@ func NewBoard() Board
 func (b *Board) Coordinates()
     Coordinates prints the int values used for Board.Move()
 
+func (b *Board) Evaluate(piece byte, dest int) int
+    Evaluate() scores a move based on the piece and its destination. TODO:
+    Must I acknowledge castling?
+
+func (b *Board) EvaluateMoves(origs, dests []int) []int
+    EvaluateMoves() scores all valid moves.
+
 func (b *Board) LoadFen(fen string) error
     LoadFen() parses FEN string and update Board.board.
 
@@ -36,6 +45,8 @@ func (b *Board) Move(orig, dest int) error
     individual pieces are validated in seperate methods. Finally this method
     updates the board, updateBoard().
 
+func (b *Board) MoveBest()
+
 func (b *Board) MoveRandom(origs, dests []int) error
     MoveRandom, pick move from lists of valid moves. Return an error, such
     as checkmate or draw.
@@ -44,6 +55,11 @@ func (b *Board) ParseMove(move string) error
     ParseMove() infers origin and destination coordinates from a pgn
     notation move. Check and Check Mate notations will be added
     automatically. TODO: disambiguiation
+
+func (b *Board) ParseStand(orig, dest string) error
+    ParseStand() does pas grande chose mnt. TODO: include piece value? Or
+    use different method Pgn map takes standar notation and returns
+    coordinate. This method is useful for chessboardjs gui
 
 func (b *Board) PgnString() string
     PgnString() returns headers and pgn history.
@@ -65,10 +81,17 @@ func (b *Board) Stats() map[string]string
     replace with exported struct attirbutes.
 
 func (b *Board) String() string
-    String() returns a string printable board. TODO: rotate board for black
-    position.
+    String() returns a string printable board. The board will rotate
+    according to whose turn it is.
+
+func (b *Board) StringBlack() string
+    StringBlack() rotates for Black perspective.
+
+func (b *Board) StringWhite() string
+    StringWhite returns a string printable board from white's perspective.
 
 SUBDIRECTORIES
 
+	docs
 	ui
 
