@@ -22,13 +22,13 @@ A Golang chess engine and user interface(s), fumbling along...
 
 - After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
 
-    go run ui/clichess.go
+    `go run ui/clichess.go`
 
 - To see a `math/rand` vs `math/rand` game, enter into the **clichess** client:
 
-    > /random-game
+    `> /random-game`
 
-- To play a real time game over the internal network, run `growser.go` within the `/ui` directory, and connect to port 8080.
+- To play a real-time game over the internal network, run `growser.go` within the `/ui` directory, and connect to port 8080.
 
 - To use the package in a project, start a new game by calling `ghess.NewBoard()`, which returns an instance of the `ghess.Board` `struct`, ready to `Board.ParseMove()` and return *FEN* positions, `Board.Position()`.
 
@@ -96,7 +96,7 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 1. More tests.
 4. Export `Board` fields.
 6. Change `Board` to `Game`, as that makes more sense...
-2. Benchmarks for Search and Validation?
+2. Benchmarks for Search and Validation.
 3. Convert `ParseStand()` to PGN move.
 
 ### TODO Basic rules
@@ -122,21 +122,22 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 
 ---- 
 
-# User Interface
+# User Interfaces
 
-## clichess
+## Clichess
 - A commandline chess program for debugging and watching random games.
+- Type `> /help` to list options.
+
+## Growser
+- A server api using `gorilla/websocket` for live network chess playing!
+- Dependency: gorilla/websocket (BSD) and Chessboard.js (MIT)
+  * TODO: Add watch random :)
+  * TODO: context and game index...
+  * TODO: everything user
+- Castling is only when King steps on Rook, not like normals.
 
 ## browser-sql
 - A server api for playing a game and saving it to a sqlite database.
-
-## growser
-- A server api using gorilla/websocket for live network chess playing!
-- Dependency: gorilla/websocket (BSD) and Chessboard.js (MIT)
-- TODO: Add watch random :)
-- TODO: context and game index...
-- TODO: everything user
-- Castling is only when King steps on Rook, not like normals..
 
 ---- 
 
