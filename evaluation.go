@@ -1,8 +1,8 @@
 package ghess
 
 import (
-    "unicode"
-    "math/rand"
+	"math/rand"
+	"unicode"
 )
 
 // MoveRandom, pick move from lists of valid moves.

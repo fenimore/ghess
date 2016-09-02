@@ -369,7 +369,6 @@ func (b *Board) ParseMove(move string) error {
 	}
 }
 
-
 // LoadPgn() reads a pgn match.
 // TODO: ignore header strings eg [White].
 func (b *Board) LoadPgn(match string) error {
