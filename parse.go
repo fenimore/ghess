@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// ParseStand() does pas grande chose mnt.
+// ParseStand does pas grande chose mnt.
 // TODO: include piece value? Or use different method
 // Pgn map takes standar notation and returns coordinate.
 // This method is useful for chessboardjs gui
@@ -19,7 +19,7 @@ func (b *Board) ParseStand(orig, dest string) error {
 	return nil
 }
 
-// ParseMove() infers origin and destination
+// ParseMove infers origin and destination
 // coordinates from a pgn notation move. Check
 // and Check Mate notations will be added automatically.
 // TODO: disambiguiation
@@ -369,7 +369,7 @@ func (b *Board) ParseMove(move string) error {
 	}
 }
 
-// LoadPgn() reads a pgn match.
+// LoadPgn reads a pgn match.
 // TODO: ignore header strings eg [White].
 func (b *Board) LoadPgn(match string) error {
 	// Does this already ignore?
@@ -383,7 +383,7 @@ func (b *Board) LoadPgn(match string) error {
 	return nil
 }
 
-// LoadFen() parses FEN string and update Board.board.
+// LoadFen parses FEN string and update Board.board.
 func (b *Board) LoadFen(fen string) error {
 	// Treat fen input
 	fen = strings.TrimRight(fen, "\r\n")

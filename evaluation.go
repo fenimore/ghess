@@ -5,7 +5,7 @@ import (
 	"unicode"
 )
 
-// MoveRandom, pick move from lists of valid moves.
+// MoveRandom picks move from lists of valid moves.
 // Return an error, such as checkmate or draw.
 func (b *Board) MoveRandom(origs, dests []int) error {
 	randomMove := rand.Intn(len(origs))
@@ -33,7 +33,7 @@ func (b *Board) MoveBest() {
 	b.Move(origs[i], dests[i])
 }
 
-// EvaluateMoves() scores all valid moves.
+// EvaluateMoves scores all valid moves.
 func (b *Board) EvaluateMoves(origs, dests []int) []int {
 	var bests []int
 	for i, _ := range origs {
@@ -46,7 +46,7 @@ func (b *Board) EvaluateMoves(origs, dests []int) []int {
 	return bests
 }
 
-// Evaluate() scores a move based on the piece
+// Evaluate scores a move based on the piece
 // and its destination.
 // TODO: Must I acknowledge castling?
 func (b *Board) Evaluate(piece byte, dest int) int {

@@ -6,7 +6,7 @@ import (
 	"regexp"
 )
 
-// Move() is the basic validation.
+// Move is the basic validation.
 // The origin and destination square are tested
 // in a dereferenced b.board to keep from moving
 // into check. The individual pieces are validated
@@ -176,7 +176,7 @@ func (b *Board) Move(orig, dest int) error {
 	return nil
 }
 
-// updateBaord() changes the byte values of board.
+// updateBaord changes the byte values of board.
 // It is useless without validation from Move().
 // This method checks, and sets, Check for Board.board.
 func (b *Board) updateBoard(orig, dest int,
@@ -282,7 +282,7 @@ func (b *Board) updateBoard(orig, dest int,
 	}
 }
 
-// isPlayerInCheck(), current player is in Check.
+// isPlayerInCheck, current player is in Check.
 // TODO: Change to upper case?
 func (b *Board) isPlayerInCheck() bool {
 	isWhite := b.toMove == "w"
@@ -298,8 +298,8 @@ func (b *Board) isPlayerInCheck() bool {
 	return false
 }
 
-// isInCheck() checks if target King is in Check.
-// Automaticlaly checks for turn by the target King.
+// isInCheck checks if target King is in Check.
+// Automaticaly checks for turn by the target King.
 func (b *Board) isInCheck(target int) bool {
 	isWhite := b.isUpper(target)
 	k := b.board[target]
@@ -488,7 +488,7 @@ func (b *Board) validBishop(orig int, dest int) error {
 	return nil
 }
 
-// Validate rook move.
+// validRook validate rook move.
 func (b *Board) validRook(orig int, dest int) error {
 	// Check if pieces are in the way
 	err := errors.New("Illegal Rook Move")
@@ -530,7 +530,7 @@ func (b *Board) validRook(orig int, dest int) error {
 	return nil
 }
 
-// Validate queen move.
+// validQueen validates queen move.
 func (b *Board) validQueen(orig int, dest int) error {
 	err := errors.New("Illegal Queen Move")
 	remainder := dest - orig
@@ -603,7 +603,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 	return nil
 }
 
-// Validate king move.
+// validKing alidates king move.
 // Check for castle.
 func (b *Board) validKing(orig int, dest int, castle bool) error {
 	validCastle := dest != 88 && dest != 81 && dest != 11 && dest != 18

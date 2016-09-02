@@ -15,7 +15,7 @@ import (
 	"unicode"
 )
 
-// Board is a chessboard type
+// Board is a chessboard type.
 // TODO: Make Upper Case? M-c for upper case
 type Board struct {
 	board []byte // piece position
@@ -40,7 +40,7 @@ type Board struct {
 	fenPattern *regexp.Regexp // For validating FEN input
 }
 
-// Create a new Board in the starting position
+// NewBoard returns pointer to new Board in the starting position.
 func NewBoard() Board {
 	b := make([]byte, 120)
 	// starting position
@@ -203,7 +203,7 @@ func (b *Board) StringWhite() string {
 	return printBoard
 }
 
-// StringBlack() rotates for Black perspective.
+// StringBlack rotates for Black perspective.
 func (b *Board) StringBlack() string {
 	var nums [8]byte // somehow print these?
 	nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], nums[6], nums[7] = '1', '2', '3', '4', '5', '6', '7', '8'
@@ -238,7 +238,7 @@ func (b *Board) StringBlack() string {
 	return printBoard
 }
 
-// PgnString() returns headers and pgn history.
+// PgnString returns headers and pgn history.
 func (b *Board) PgnString() string {
 	return b.headers + b.pgn
 }
@@ -288,7 +288,7 @@ func (b *Board) Position() string {
 	return b.fen
 }
 
-// Stats() returns program data of current game
+// Stats returns program data of current game
 // in map[string]string.
 // Todo, replace with exported struct attirbutes.
 func (b *Board) Stats() map[string]string {
@@ -326,7 +326,7 @@ func main() {
 	PlayGame(board)
 }
 
-// PlayGame() takes user input and commands.
+// PlayGame takes user input and commands.
 // See ui/clichess.go for more robust client.
 func PlayGame(board Board) {
 	var turn string
