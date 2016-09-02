@@ -1,3 +1,5 @@
+[![GitHub issues](https://img.shields.io/github/issues/polypmer/go-chess.svg)](https://github.com/polypmer/go-chess/issues) [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg?style=flat-square)](https://godoc.org/github.com/polypmer/go-chess) [![Go Report Card](https://goreportcard.com/badge/github.com/polypmer/go-chess)](https://goreportcard.com/report/github.com/polypmer/go-chess)
+
 # go-chess || ghess
 
 A Golang chess engine and user interface(s), fumbling along... 
