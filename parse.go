@@ -364,9 +364,8 @@ func (b *Board) ParseMove(move string) error {
 			}
 		}
 		return err
-	} else {
-		return errors.New("No such move")
 	}
+	return errors.New("No such move")
 }
 
 // LoadPgn reads a pgn match.

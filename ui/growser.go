@@ -102,7 +102,7 @@ func main() {
 Websocket structs and functions?!?
 */
 
-// hub maintains the set of active clients and broadcasts messages to the
+// Hub maintains the set of active clients and broadcasts messages to the
 // clients.
 // Hub struct for websockets
 type Hub struct {
@@ -151,6 +151,9 @@ type outGo struct {
 	Error    string
 }
 
+// run starts a Hub select switch for
+// accepting and disconnecting clients
+// and passing on incoming messages.
 func (h *Hub) run() {
 	for {
 		select {

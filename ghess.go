@@ -1,6 +1,8 @@
-// Go Chess Engine - Ghess
+// Package ghess is a Go Chess Engine.
+//
 // Fenimore Love 2016
 // GPLv3
+//
 // TODO: Evaluation
 package ghess
 
@@ -306,7 +308,7 @@ func (b *Board) Stats() map[string]string {
 	return m
 }
 
-// SetHeaders() sets pgnHeaders for a pgn export.
+// SetHeaders sets pgnHeaders for a pgn export.
 func (b *Board) SetHeaders(w, bl string) {
 	w = strings.TrimRight(w, "\r\n")
 	bl = strings.TrimRight(bl, "\r\n")
@@ -418,7 +420,7 @@ func (b Board) isUpper(x int) bool {
 	compare := byte(unicode.ToUpper(rune(b.board[x])))
 	if b.board[x] == compare {
 		return true
-	} else {
-		return false
 	}
+
+	return false
 }

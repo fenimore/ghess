@@ -14,6 +14,8 @@ func main() {
 	PlayGame(game)
 }
 
+// PlayGame is the command line user interface.
+// It is used mostly for debugging.
 func PlayGame(game ghess.Board) { // TODO Rotate Board
 	var info map[string]string
 	var turn string

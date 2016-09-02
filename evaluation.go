@@ -16,6 +16,8 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 	return nil
 }
 
+// MoveBest finds the best move of all valid moves.
+// This method is not operational.
 func (b *Board) MoveBest() {
 	origs, dests := b.SearchForValid()
 	bests := b.EvaluateMoves(origs, dests)
@@ -36,7 +38,7 @@ func (b *Board) MoveBest() {
 // EvaluateMoves scores all valid moves.
 func (b *Board) EvaluateMoves(origs, dests []int) []int {
 	var bests []int
-	for i, _ := range origs {
+	for i := range origs {
 		o := b.board[origs[i]]
 		d := dests[i]
 		p := byte(unicode.ToUpper(rune(o)))
