@@ -130,6 +130,9 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 - A commandline chess program for debugging and watching random games.
 - Type `> /help` to list options.
 
+![alt text](http://polypmer.github.io/img/clichess.png "clichess screenshot")
+
+
 ## Growser
 - A server api using `gorilla/websocket` for live network chess playing!
 - Dependency: gorilla/websocket (BSD) and Chessboard.js (MIT)
@@ -140,6 +143,7 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 
 ## browser-sql
 - A server api for playing a game and saving it to a sqlite database.
+
 
 ---- 
 
