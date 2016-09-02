@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-// ChessHandler for persistant game
+// ChessHandler for persistent game
 // in handler functions
 type ChessHandler struct {
 	g    ghess.Board
@@ -71,7 +71,7 @@ func main() {
 	// Which is forcement takes into a reader and writer
 	// and then it will print whatever is written to the
 	// writer
-	// 0.0.0.0 won't work accross internal ntwk //10.232.44.100
+	// 0.0.0.0 won't work across internal ntwk //10.232.44.100
 	PORT := ":8080"
 	h := new(ChessHandler)
 	h.g = ghess.NewBoard() // This means only playin' one game attime
@@ -344,7 +344,7 @@ func (h *ChessHandler) serveWs(hub *Hub, w http.ResponseWriter, r *http.Request)
 	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
 	client.hub.register <- client
 	go client.writePump(h.g)
-	// So everytime this handler is called
+	// So every time this handler is called
 	// the client reads the pump
 	client.readPump()
 }

@@ -10,7 +10,7 @@ import (
 // The origin and destination square are tested
 // in a dereferenced b.board to keep from moving
 // into check. The individual pieces are validated
-// in seperate methods. Finally this method updates
+// in separate methods. Finally this method updates
 // the board, updateBoard().
 func (b *Board) Move(orig, dest int) error {
 	if b.checkmate {
@@ -598,7 +598,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 	} else {
 		return errors.New("Illegal Queen Move")
 	}
-	// check if anything is inbetween
+	// check if anything is in between
 
 	return nil
 }
