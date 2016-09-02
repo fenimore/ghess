@@ -216,6 +216,9 @@ func ExamplePgnDisambigRookAttack() {
 		fmt.Println(err)
 	}
 	err = game.ParseMove("R1xf2")
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(string(game.board[13]))
 
 	// Output:
@@ -241,6 +244,9 @@ func ExamplePgnDisambigKnight() {
 		fmt.Println(err)
 	}
 	err = game.ParseMove("N7b5")
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(string(game.board[83]))
 
 	// Output:
