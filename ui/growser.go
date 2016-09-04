@@ -33,6 +33,7 @@ func (h *ChessHandler) indexHandler(w http.ResponseWriter,
 <link href="/css/style.css" rel="stylesheet">
 <h1>Ghess Index</h1>
 <a href=/new >New Game</a><br>
+<a href=/cxt/1>Text Context?</a>
 <a href=/board >View Current Game</a><br>
 <br><br><br>
 <a href="https://github.com/polypmer/go-chess">Source Code</a>
@@ -62,8 +63,14 @@ func (h *ChessHandler) showGameHandler(w http.ResponseWriter,
 	if err != nil {
 		fmt.Printf("Error %s Templates", err)
 	}
-	// Must execute take a second param?
+
 	t.Execute(w, h.g.Position())
+}
+
+func (h *ChessHandler) testContext(w http.ResponseWriter,
+	r *http.Request) {
+	newCxt := r.URL.Path[1:]
+	fmt.Println(newCxt)
 }
 
 func main() {
@@ -84,6 +91,7 @@ func main() {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		h.serveWs(hub, w, r)
 	}) // websockets
+	http.HandleFunc("/cxt/", h.testContext)
 	// Handle Static Files
 	// TODO: Combine into one function?
 	http.Handle("/css/", http.StripPrefix("/css/",
