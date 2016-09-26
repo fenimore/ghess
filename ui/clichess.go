@@ -209,7 +209,7 @@ Loop:
 		if e != nil {
 			fmt.Printf("|   [Error: %v]\n", e)
 		}
-		fmt.Print(game.String())
+		fmt.Print(game.StringWhite())
 		ch, _ := strconv.ParseBool(info["check"])
 		checkmate, _ := strconv.ParseBool(info["checkmate"])
 		if checkmate {

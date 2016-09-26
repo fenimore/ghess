@@ -93,6 +93,28 @@ func ExampleCannotCastleThroughCheck() {
 	// Cannot Castle through check
 }
 
+func ExampleCheckWithPawn() {
+	game := NewBoard()
+	hist := "1. e4 e5 2. Ke2 Qf6 3. Kd3 Nh6 4. Kc4"
+	var err error
+	err = game.LoadPgn(hist)
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.ParseMove("b5")
+	if err != nil {
+		fmt.Println(err)
+	}
+	info := game.Stats()
+	ch, _ := strconv.ParseBool(info["check"])
+	if ch {
+		fmt.Println("****Check!****")
+	}
+
+	// Output:
+	// ****Check!****
+}
+
 func ExampleMoveIntoCheck() {
 	game := NewBoard()
 	hist := `1. e4 e5 2. Qf3 Qg5 3. Qxf7 Ke7`
