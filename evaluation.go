@@ -194,11 +194,11 @@ func (b *Board) Evaluate(orig, dest int) int {
 	case 'R':
 		// If seventh Rank
 		if isWhite {
-			if dest < 79 || dest > 70 {
+			if dest < 79 && dest > 70 {
 				score += 50
 			}
 		} else {
-			if dest < 29 || dest > 20 {
+			if dest < 29 && dest > 20 {
 				score += 50
 			}
 		}
