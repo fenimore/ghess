@@ -326,6 +326,7 @@ func (b *Board) isInCheck(target int) bool {
 		case p == "P":
 			e := b.validPawn(val, target, k)
 			if e == nil {
+				// TODO: There is bug here.
 				//fmt.Println("Pawn check")
 				return true
 			}
