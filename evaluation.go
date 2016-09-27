@@ -69,11 +69,10 @@ func (b *Board) Evaluate(orig, dest int) int {
 	var score int
 	var trade int
 	isWhite := b.toMove == "w"
-	piece := byte(unicode.ToUpper(rune(orig)))
+	piece := byte(unicode.ToUpper(rune(b.board[orig])))
 	target := byte(unicode.ToUpper(rune(b.board[dest])))
 	// If is Capture
 	isCapture := target != '.'
-
 	// Default Scores of pieces:
 	switch piece {
 	case 'P':
@@ -145,32 +144,33 @@ func (b *Board) Evaluate(orig, dest int) int {
 	case 'P':
 		// Check if protecting a piece
 		// or attacking
+		var pot1, pot2 int
 		if isWhite {
-			pot1 := dest + 9
-			pot2 := dest + 11
+			pot1 = dest + 9
+			pot2 = dest + 11
 		} else {
-			pot1 := dest - 9
-			pot2 := dest - 11
+			pot1 = dest - 9
+			pot2 = dest - 11
 
 		}
 		if pot1 != '.' {
-			if (isUpper(pot1) &&
-				isWhite) || (!isUpper(pot1) && !isWhite) {
+			if (b.isUpper(pot1) &&
+				isWhite) || (!b.isUpper(pot1) && !isWhite) {
 				// protecting
 				score += 20
-			} else if (isUpper(pot1) &&
-				!isWhite) || (!isUpper(pot1) && isWhite) {
+			} else if (b.isUpper(pot1) &&
+				!isWhite) || (!b.isUpper(pot1) && isWhite) {
 				// attacking
 				score += 15
 			}
 		}
 		if pot2 != '.' {
-			if (isUpper(pot2) &&
-				isWhite) || (!isUpper(pot2) && !isWhite) {
+			if (b.isUpper(pot2) &&
+				isWhite) || (!b.isUpper(pot2) && !isWhite) {
 				// protecting
 				score += 20
-			} else if (isUpper(pot2) &&
-				!isWhite) || (!isUpper(pot2) && isWhite) {
+			} else if (b.isUpper(pot2) &&
+				!isWhite) || (!b.isUpper(pot2) && isWhite) {
 				// attacking
 				score += 15
 			}

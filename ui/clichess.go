@@ -152,6 +152,39 @@ Loop:
 				fmt.Println("Scores: ", bests)
 			case input == "/best":
 				game.MoveBest()
+				fmt.Println(game.String())
+			case input == "/ai":
+				reader := bufio.NewReader(os.Stdin)
+				exit := false
+				go func() {
+					_, err := reader.ReadString('\n')
+					if err != nil {
+						fmt.Println(err)
+					}
+					// Todo turn into chan
+					exit = true
+				}()
+				fmt.Println("\nPress Return to stop")
+				time.Sleep(2000 * time.Millisecond)
+			LoopBest:
+				for {
+					if exit == true {
+						break LoopBest
+					}
+					game.MoveBest()
+					info = game.Stats()
+					fmt.Println("Move ", info["move"])
+					fmt.Print(game.StringWhite())
+					think(true)
+					gameOver, _ := strconv.ParseBool(info["checkmate"])
+					check, _ := strconv.ParseBool(info["check"])
+					if check {
+						fmt.Println("****Check****")
+					}
+					if gameOver {
+						break LoopBest
+					}
+				}
 			case input == "/rand":
 				origs, dests := game.SearchForValid()
 				e := game.MoveRandom(origs, dests)
@@ -166,6 +199,7 @@ Loop:
 					if err != nil {
 						fmt.Println(err)
 					}
+					// Todo turn into chan
 					exit = true
 				}()
 				fmt.Println("\nPress Return to stop")
