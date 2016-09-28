@@ -254,3 +254,10 @@ func (b *Board) Evaluate(orig, dest int) int {
 
 	return score
 }
+
+func (b *Board) Minimax(origs, dests, []int) int {
+	// Yikes A recurse Method which returns a score?
+	// No. It returns the move, the index of bests,
+	// which minimizes maximum loss
+	return 0
+}
