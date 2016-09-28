@@ -4,6 +4,7 @@
 package ghess
 
 import (
+	"fmt"
 	"math/rand"
 	"unicode"
 )
@@ -33,15 +34,26 @@ func (b *Board) MoveBest() {
 	bests := b.EvaluateMoves(origs, dests)
 	// get best of bests and return the index
 	var best int
+	bests := make([]int, 0)
 	var i int
 	for idx, val := range bests {
 		if val > best {
 			best = val
-			i = idx // save index
+			bests = bests[:0]
+			bests = append(bests, i)
+		} else if val == best {
+			bests = append(bests, i)
 		} else {
 			continue
 		}
 
+	}
+	fmt.Println(best)
+	fmt.Println(bests)
+	if len(bests) > 1 {
+		i = rand.Intn(len(bests))
+	} else {
+		i = bests[0]
 	}
 	b.Move(origs[i], dests[i])
 }
@@ -127,6 +139,8 @@ func (b *Board) Evaluate(orig, dest int) int {
 		switch {
 		case piece == 'N':
 			score -= 10
+		case piece == 'P' && (dest > 40 && dest < 60):
+			score -= 5
 		}
 	}
 	if isCenter {
@@ -168,11 +182,11 @@ func (b *Board) Evaluate(orig, dest int) int {
 			if (b.isUpper(pot2) &&
 				isWhite) || (!b.isUpper(pot2) && !isWhite) {
 				// protecting
-				score += 20
+				score += 10
 			} else if (b.isUpper(pot2) &&
 				!isWhite) || (!b.isUpper(pot2) && isWhite) {
 				// attacking
-				score += 15
+				score += 5
 			}
 		}
 	case 'N':
@@ -181,15 +195,32 @@ func (b *Board) Evaluate(orig, dest int) int {
 			if dest > 50 {
 				score += 30
 			}
+			if dest == 33 || dest == 36 {
+				score += 40
+			}
+			if dest == 17 || dest == 12 {
+				// Don't move back lol
+				score -= 10
+			}
 		} else {
 			if dest < 50 {
 				score += 30
+			}
+			if dest == 66 || dest == 63 {
+				score += 40
+			}
+			if dest == 87 || dest == 82 {
+				// Don't move back lol
+				score -= 10
 			}
 		}
 	case 'B':
 		// Check if on long access Bishop
 		if dest%11 == 0 {
 			score += 30
+		}
+		if dest == 43 || dest == 46 || dest == 53 || dest == 56 {
+			score += 40
 		}
 	case 'R':
 		// If seventh Rank
