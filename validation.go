@@ -327,6 +327,7 @@ func (b *Board) isInCheck(target int) bool {
 			e := b.validPawn(val, target, k)
 			if e == nil {
 				// TODO: There is bug here.
+				// This has to do with Turn variable.
 				//fmt.Println("Pawn check")
 				return true
 			}
@@ -388,12 +389,13 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 	var remainder int
 	var empOffset int
 	var empTarget byte
+	isWhite := b.isUpper(orig)
 	// Whose turn
-	if b.toMove == "w" {
+	if isWhite {
 		remainder = dest - orig
 		empOffset = -10 // where the empassant piece should be
 		empTarget = 'p'
-	} else if b.toMove == "b" {
+	} else {
 		remainder = orig - dest
 		empOffset = 10
 		empTarget = 'P'
