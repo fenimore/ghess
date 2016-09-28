@@ -149,7 +149,8 @@ Loop:
 					len(origs))
 				bests := game.EvaluateMoves(origs,
 					dests)
-				fmt.Println("Scores: \n", bests)
+				fmt.Println("Score:")
+				fmt.Println(bests)
 			case input == "/best":
 				game.MoveBest()
 				fmt.Println(game.String())

@@ -4,7 +4,6 @@
 package ghess
 
 import (
-	"fmt"
 	"math/rand"
 	"unicode"
 )
@@ -34,26 +33,28 @@ func (b *Board) MoveBest() {
 	bests := b.EvaluateMoves(origs, dests)
 	// get best of bests and return the index
 	var best int
-	bests := make([]int, 0)
+	indexes := make([]int, 0)
 	var i int
 	for idx, val := range bests {
 		if val > best {
 			best = val
-			bests = bests[:0]
-			bests = append(bests, i)
+			indexes = bests[:0]
+			indexes = append(indexes, idx)
 		} else if val == best {
-			bests = append(bests, i)
+			indexes = append(indexes, idx)
 		} else {
 			continue
 		}
 
 	}
-	fmt.Println(best)
-	fmt.Println(bests)
-	if len(bests) > 1 {
-		i = rand.Intn(len(bests))
+	//fmt.Println(best) // Lol this shit is crazy
+	if len(indexes) > 1 {
+		i = rand.Intn(len(indexes))
+		//for _, x := range indexes {
+		//	fmt.Println(origs[x])
+		//}
 	} else {
-		i = bests[0]
+		i = indexes[0]
 	}
 	b.Move(origs[i], dests[i])
 }
@@ -129,6 +130,7 @@ func (b *Board) Evaluate(orig, dest int) int {
 	// if it is valued less. Right?
 	if isCapture {
 		score += -trade
+		score += 20
 	}
 
 	// isCenter and isBorder checks the destinations
@@ -196,7 +198,7 @@ func (b *Board) Evaluate(orig, dest int) int {
 				score += 30
 			}
 			if dest == 33 || dest == 36 {
-				score += 40
+				score += 30
 			}
 			if dest == 17 || dest == 12 {
 				// Don't move back lol
@@ -207,7 +209,7 @@ func (b *Board) Evaluate(orig, dest int) int {
 				score += 30
 			}
 			if dest == 66 || dest == 63 {
-				score += 40
+				score += 30
 			}
 			if dest == 87 || dest == 82 {
 				// Don't move back lol
