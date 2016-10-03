@@ -59,6 +59,48 @@ func (b *Board) MoveBest() {
 	b.Move(origs[i], dests[i])
 }
 
+func (b *Board) FindBest() (int, int) {
+	origs, dests := b.SearchForValid()
+	bests := b.EvaluateMoves(origs, dests)
+	// get best of bests and return the index
+	var best int
+	indexes := make([]int, 0)
+	var i int
+	for idx, val := range bests {
+		if val > best {
+			best = val
+			indexes = bests[:0]
+			indexes = append(indexes, idx)
+		} else if val == best {
+			indexes = append(indexes, idx)
+		} else {
+			continue
+		}
+
+	}
+	//fmt.Println(best) // Lol this shit is crazy
+	if len(indexes) > 1 {
+		i = rand.Intn(len(indexes))
+		//for _, x := range indexes {
+		//	fmt.Println(origs[x])
+		//}
+	} else {
+		i = indexes[0]
+	}
+	return origs[i], dests[i]
+}
+
+// SumEval returns the sum of evaluations of one side.
+func (b *Board) SumEval() int {
+	origs, dests := b.SearchForValid()
+	evaluations := b.EvaluateMoves(origs, dests)
+	var sum int
+	for _, eval := range evaluations {
+		sum += eval
+	}
+	return sum
+}
+
 // EvaluateMoves scores all valid moves.
 // Example of Possible moves:
 // [21 21 21 21 43]
@@ -255,9 +297,10 @@ func (b *Board) Evaluate(orig, dest int) int {
 	return score
 }
 
-func (b *Board) Minimax(origs, dests []int) int {
+func (b *Board) Minimax() int {
 	// Yikes A recurse Method which returns a score?
 	// No. It returns the move, the index of bests,
 	// which minimizes maximum loss
+	score := b.SumEval()
 	return 0
 }
