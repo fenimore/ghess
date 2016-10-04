@@ -59,6 +59,7 @@ func (b *Board) MoveBest() {
 	b.Move(origs[i], dests[i])
 }
 
+// FindBest returns the best move from evaluation.
 func (b *Board) FindBest() (int, int) {
 	origs, dests := b.SearchForValid()
 	bests := b.EvaluateMoves(origs, dests)
@@ -122,48 +123,14 @@ func (b *Board) EvaluateMoves(origs, dests []int) []int {
 // TODO: Must I acknowledge castling?
 func (b *Board) Evaluate(orig, dest int) int {
 	var score int
-	var trade int
+	//var trade int
 	isWhite := b.toMove == "w"
 	piece := byte(unicode.ToUpper(rune(b.board[orig])))
 	target := byte(unicode.ToUpper(rune(b.board[dest])))
 	// If is Capture
 	isCapture := target != '.'
-	// Default Scores of pieces:
-	switch piece {
-	case 'P':
-		trade = 10
-	case 'N':
-		trade = 30
-	case 'B':
-		trade = 30
-	case 'R':
-		trade = 50
-	case 'Q':
-		trade = 90
-	case 'K':
-		trade = 100
-	}
-
-	if !isCapture {
-		trade = -1
-	}
-
-	// Default Scores of pieces:
-	switch target {
-	case 'P':
-		trade -= 10
-	case 'N':
-		trade -= 30
-	case 'B':
-		trade -= 30
-	case 'R':
-		trade -= 50
-	case 'Q':
-		trade -= 90
-	// Doesn't make sense to take king?
-	case '.':
-		// Redundant, But who cares?
-		trade = -1 // No trade
+	if b.PawnThreat(dest) && piece != 'P' {
+		score -= 70
 	}
 
 	// trade, Well, it's not necessarily a trade
@@ -171,7 +138,17 @@ func (b *Board) Evaluate(orig, dest int) int {
 	// more or less than the target. It is a good thing
 	// if it is valued less. Right?
 	if isCapture {
-		score += -trade
+		if target != 'P' {
+			score += 40
+		} else if target == 'P' && piece == 'P' && !b.PawnThreat(dest) {
+			score += 25
+		} else if !b.PawnThreat(dest) {
+			score += 25
+		}
+	}
+	if isCapture && target != 'P' {
+		score += 20
+	} else if isCapture && target == 'P' && piece == 'P' {
 		score += 20
 	}
 
@@ -301,6 +278,31 @@ func (b *Board) Minimax() int {
 	// Yikes A recurse Method which returns a score?
 	// No. It returns the move, the index of bests,
 	// which minimizes maximum loss
-	score := b.SumEval()
+	//score := b.SumEval()
 	return 0
+}
+
+func (b *Board) PawnThreat(dest int) bool {
+	isWhite := b.toMove == "w"
+
+	var pot1, pot2 int
+	var pawn byte
+	if isWhite {
+		pot1 = dest + 9
+		pot2 = dest + 11
+		pawn = 'p'
+	} else {
+		pot1 = dest - 9
+		pot2 = dest - 11
+		pawn = 'P'
+	}
+
+	switch pawn {
+	case b.board[pot1]:
+		return true
+	case b.board[pot2]:
+		return true
+	default:
+		return false
+	}
 }
