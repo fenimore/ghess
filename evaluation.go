@@ -112,16 +112,16 @@ func (b *Board) EvaluateMoves(origs, dests []int) []int {
 		o := origs[i]
 		d := dests[i]
 		//p := byte(unicode.ToUpper(rune(o)))
-		s := b.Evaluate(o, d)
+		s := b.EvaluateMove(o, d)
 		bests = append(bests, s)
 	}
 	return bests
 }
 
-// Evaluate scores a move based on the piece
+// EvaluateMove scores a move based on the piece
 // and its destination.
 // TODO: Must I acknowledge castling?
-func (b *Board) Evaluate(orig, dest int) int {
+func (b *Board) EvaluateMove(orig, dest int) int {
 	var score int
 	//var trade int
 	isWhite := b.toMove == "w"
