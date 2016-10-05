@@ -205,8 +205,28 @@ func (b *Board) evalBishop(pos int, isWhite bool) int {
 	}
 	return score
 }
+
+// evalRook evaluates the rook position
 func (b *Board) evalRook(pos int, isWhite bool) int {
 	var score int
+	score += 50
+	// Invert for Black
+	if b.pawThreat(pos, isWhite) {
+		score -= 50
+	}
+	// TODO:
+	// Check for Open File
+	// Check for Castle Possibility
+	if isWhite {
+		if pos < 80 && pos > 70 {
+			score += 50
+		}
+	} else {
+		score = -score
+		if pos < 29 && pos > 20 {
+			score -= 50
+		}
+	}
 
 	return score
 }
