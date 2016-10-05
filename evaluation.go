@@ -25,7 +25,7 @@ type State struct {
 }
 
 func (s State) String() string {
-	return fmt.Sprintf("Score: %d\nMove: %d, %d\n\n", s.eval, s.move[0], s.move[1])
+	return fmt.Sprintf("Score: %d\nMove: %d, %d\n\n", s.eval, s.init[0], s.init[1])
 }
 
 type States []State
@@ -89,10 +89,10 @@ func GetPossibleStates(state State) (States, error) {
 		if err != nil {
 			return states, err
 		}
-		if init[0] == 0 {
+		if state.init[0] == 0 {
 			s.init[0], s.init[1] = origs[i], dests[i]
 		} else {
-			s.init[0], s.init[1] = init[0], init[1]
+			s.init[0], s.init[1] = state.init[0], state.init[1]
 		}
 
 		states = append(states, s)
