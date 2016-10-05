@@ -15,6 +15,8 @@ what are the scoring going to be?
 TODO: See how many times each side is attacking a square.
 
 */
+// State struct holds a board position,
+// the move that got there, and the evaluation.
 type State struct {
 	board Board
 	eval  int
@@ -35,6 +37,24 @@ func CopyState(b *Board) *Board {
 	copy.board = boardCopy
 	copy.castle = castleCopy
 	return &copy
+}
+
+// TryState takes in a *Board and valid move and returns
+// a State struct.
+func TryState(b *Board, o, d int) (State, error) {
+	state := State{}
+	possible := CopyState(b)
+	err := possible.Move(o, d)
+	if err != nil {
+		return state, err
+	}
+	state.board = possible
+	state.move[0], state.move[1] = o, d
+	state.eval = possible.Evaluate()
+}
+
+func GetStates(b *Board) ([]State, error) {
+
 }
 
 // MiniMax Recursive, pass in state and move and depth.
