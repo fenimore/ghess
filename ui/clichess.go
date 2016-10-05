@@ -158,14 +158,24 @@ Loop:
 				score := game.Evaluate()
 				fmt.Println(score)
 			case input == "/minimax":
-				var wg sync.WaitGroup
-				wg.Add(1)
+				done := make(chan bool)
 				go func() {
 					state := ghess.MiniMax(0, ghess.GetState(&game))
 					fmt.Println(state)
-					wg.Done()
+					done <- true
+				}()
+				now := time.Now()
+			ThinkLoop:
+				for {
+					select {
+					case <-done:
+						fmt.Printf("This took me: %s", time.Since(now))
+						break ThinkLoop
+					default:
+						think(true)
+					}
+
 				}
-				wg.Wait()
 			case input == "/rand":
 				origs, dests := game.SearchForValid()
 				e := game.MoveRandom(origs, dests)
