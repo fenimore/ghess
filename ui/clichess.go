@@ -158,7 +158,8 @@ Loop:
 				score := game.Evaluate()
 				fmt.Println(score)
 			case input == "/minimax":
-				game.MiniMax(1)
+				state := ghess.MiniMax(0, ghess.GetState(&game))
+				fmt.Println(state)
 			case input == "/rand":
 				origs, dests := game.SearchForValid()
 				e := game.MoveRandom(origs, dests)

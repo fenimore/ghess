@@ -7,8 +7,11 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
+	"sort"
 	"unicode"
 )
+
+var TERMINAL_DEPTH int = 2
 
 /*
 MiniMax implementation ###########################################
@@ -21,14 +24,22 @@ type State struct {
 	move  [2]int
 }
 
+func (s State) String() string {
+	return fmt.Sprint(s.eval)
+}
+
 type States []State
+
+func (s States) Len() int           { return len(s) }
+func (s States) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s States) Less(i, j int) bool { return s[i].eval < s[j].eval }
 
 // CopyState takes in a Board pointer and returns
 // a copy of it's state, this is for modifying and then
 // keeping the originals state intact. One must be careful because
 // the values of Board are []byte slices, and these are themselves
 // pointers.
-func CopyState(b *Board) *Board {
+func CopyBoard(b *Board) *Board {
 	c := *b                        // dereference the pointer
 	boardCopy := make([]byte, 120) // []bytes are slices
 	castleCopy := make([]byte, 4)
@@ -39,11 +50,25 @@ func CopyState(b *Board) *Board {
 	return &c
 }
 
+// GetState turns a Board into a copy and it's state.
+// The move value is nil.
+func GetState(b *Board) State {
+	c := *b                        // dereference the pointer
+	boardCopy := make([]byte, 120) // []bytes are slices
+	castleCopy := make([]byte, 4)
+	copy(boardCopy, b.board)
+	copy(castleCopy, b.castle)
+	c.board = boardCopy
+	c.castle = castleCopy
+	s := State{board: &c, eval: c.Evaluate()}
+	return s
+}
+
 // TryState takes in a *Board and valid move and returns
 // a State struct.
 func TryState(b *Board, o, d int) (State, error) {
 	state := State{}
-	possible := CopyState(b)
+	possible := CopyBoard(b)
 	err := possible.Move(o, d)
 	if err != nil {
 		return state, err
@@ -82,25 +107,29 @@ Minimax(depth) State:
 
 // MiniMax Recursive, pass in state and move and depth.
 // Consult notes. Consult Andrea
-func (b *Board) MiniMax(depth int) {
-	if depth < 1 {
-		return
+func MiniMax(depth int, s State) State {
+	if depth == TERMINAL_DEPTH { // that is, 2 ply
+		return s
 	}
 
-	states, err := GetPossibleStates(b.board)
+	states, err := GetPossibleStates(s.board)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	for _, st := range states {
-		fmt.Println(st.eval, st.move, string(st.board.board[st.move[1]]))
+	//for _, st := range states {
+	//fmt.Println(st.eval, st.move, string(st.board.board[st.move[1]]))
+	//}
+	//var bestState State
+	var nextStates States
+	for _, state := range states {
+		//bestState = MiniMax(depth++, state)
+		nextStates, _ = GetPossibleStates(state.board)
+		//bestState = MiniMax(depth++, state)
 	}
-	for _, st := range states {
-		newStates, _ := GetPossibleStates(st.board)
-		for _, n := range newStates {
-			fmt.Println(n.eval, n.move, string(n.board.board[n.move[1]]))
-		}
-	}
+	//even := (depth%2) == 0
+	sort.Sort(States(nextStates))
+	return nextStates[len(nextStates)-1]
 }
 
 /*
