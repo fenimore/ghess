@@ -62,6 +62,7 @@ Commands:
     random-game  - play random game
     rand         - make a random move
     valid        - show valid moves
+    eval         - score position
 
 `
 	reader := bufio.NewReader(os.Stdin)

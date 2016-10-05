@@ -2,7 +2,10 @@
 
 # go-chess || ghess
 
-A Golang chess engine and user interface(s), fumbling along... 
+A Golang chess engine and user interfaces
+* Command line interface
+* Websocket interface
+* Basic artificial intelligence
 
     |Move:  3     Turn: b
     |Check: false Castle: KQkq
@@ -34,6 +37,10 @@ A Golang chess engine and user interface(s), fumbling along...
 
 - To use the package in a project, start a new game by calling `ghess.NewBoard()`, which returns an instance of the `ghess.Board` `struct`, ready to `Board.ParseMove()` and return *FEN* positions, `Board.Position()`.
 
+- To evaluate a board position, with positive numbers as a White advantage and negative as Black advantage:
+
+    `> /eval`
+
 # Basic Features and Functionality
 - *Most* rules are implemented:
   * Pawns *only* promote to Queen.
@@ -46,7 +53,8 @@ A Golang chess engine and user interface(s), fumbling along...
 # Search and Evaluate Features
 
 - Looks for all possible and valid moves via `Board.SearchForValid()`, which returns two `[]int` slices with the coordinates of possible origins and possible targets. The `Board` field `pieceMap` is a `map[int]string`; the aforementioned `int`s are keys for the standard notation coordinates.
-- Evaluation has **not** been implemented, see the `evaluation.go` file for it's emerging api. There is, however, a `Board.MoveRandom()` method which passes in two `[]int` slices and `math/rand` chooses a move.
+- Evaluation returns a score with a positive value for white advantage and negative value for black advantage. See the `evaluation.go` file for it's emerging api. There is also a `Board.MoveRandom()` method which passes in two `[]int` slices and `math/rand` chooses a move.
+- A MiniMax algorithm is in the works.
 
 ----
 
