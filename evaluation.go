@@ -34,22 +34,6 @@ func (s States) Len() int           { return len(s) }
 func (s States) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s States) Less(i, j int) bool { return s[i].eval < s[j].eval }
 
-// CopyState takes in a Board pointer and returns
-// a copy of it's state, this is for modifying and then
-// keeping the originals state intact. One must be careful because
-// the values of Board are []byte slices, and these are themselves
-// pointers.
-func CopyBoard(b *Board) *Board {
-	c := *b                        // dereference the pointer
-	boardCopy := make([]byte, 120) // []bytes are slices
-	castleCopy := make([]byte, 4)
-	copy(boardCopy, b.board)
-	copy(castleCopy, b.castle)
-	c.board = boardCopy
-	c.castle = castleCopy
-	return &c
-}
-
 // GetState turns a Board into a copy and it's state.
 // The move value is nil.
 func GetState(b *Board) State {

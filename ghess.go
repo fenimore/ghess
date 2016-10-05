@@ -14,7 +14,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode"
 )
 
 // Board is a chessboard type.
@@ -416,11 +415,21 @@ func (b *Board) Coordinates() {
 // If Uppercase, it is either white player
 // [TODO] or it is empty square.
 func (b Board) isUpper(x int) bool {
-	//compare = []byte(bytes.ToLower(b))[0]
-	compare := byte(unicode.ToUpper(rune(b.board[x])))
-	if b.board[x] == compare {
-		return true
-	}
+	return b.board[x] < []byte{0x5a}[0]
+}
 
-	return false
+// CopyState takes in a Board pointer and returns
+// a copy of it's state, this is for modifying and then
+// keeping the originals state intact. One must be careful because
+// the values of Board are []byte slices, and these are themselves
+// pointers.
+func CopyBoard(b *Board) *Board {
+	c := *b                        // dereference the pointer
+	boardCopy := make([]byte, 120) // []bytes are slices
+	castleCopy := make([]byte, 4)
+	copy(boardCopy, b.board)
+	copy(castleCopy, b.castle)
+	c.board = boardCopy
+	c.castle = castleCopy
+	return &c
 }

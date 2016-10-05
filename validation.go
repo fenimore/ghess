@@ -3,7 +3,6 @@ package ghess
 import (
 	"bytes"
 	"errors"
-	"regexp"
 )
 
 // Move is the basic validation.
@@ -307,14 +306,11 @@ func (b *Board) isInCheck(target int) bool {
 	// store all the orig of the opponents pieces
 	attackers := make([]int, 0, 16)
 
-	for idx, val := range b.board {
-		matchWhite, _ := regexp.MatchString(`[PNBRQK]`,
-			string(val))
-		matchBlack, _ := regexp.MatchString(`[pnbrqk]`,
-			string(val))
-		if isWhite && matchBlack {
+	for idx, _ := range b.board {
+		whitePiece := b.isUpper(idx)
+		if isWhite && !whitePiece {
 			attackers = append(attackers, idx)
-		} else if !isWhite && matchWhite { // black
+		} else if !isWhite && whitePiece { // black
 			attackers = append(attackers, idx)
 		}
 	}
@@ -763,6 +759,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	//fmt.Println("Valid move count: ", validMoveCount)
 	var realOrigs, realDests []int
 	for idx, _ := range origs {
+		// IMPORTANT
 		if b.board[origs[idx]] == 'k' || b.board[origs[idx]] == 'K' {
 			king = dests[idx]
 		}
@@ -773,6 +770,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		copy(cCopy, b.castle)
 		possible.board = bCopy
 		possible.castle = cCopy
+
 		err := possible.Move(origs[idx], dests[idx])
 		isCheck := possible.isInCheck(king)
 		if err == nil && !isCheck {

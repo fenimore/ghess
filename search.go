@@ -8,13 +8,25 @@ func (b *Board) SearchValid() ([]int, []int) {
 	movers := make([]int, 0, 16)
 	targets := make([]int, 0, 63) // There will only ever be 63 open squares
 	origs := make([]int, 0, 16)
-	dests := make([]int, 0, 16)
+	dests := make([]int, 0, 63)
+	validO := make([]int, 0, 16)
+	validD := make([]int, 0, 63)
+	isWhite := b.toMove == "w"
+	var king int
 
 	// Find and sort pieces:
 	for idx, val := range b.board {
 		// Only look for 64 squares
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
 			continue
+		}
+
+		if val == 'K' || val == 'k' {
+			if isWhite && val == 'K' {
+				king = idx
+			} else if !isWhite && val == 'k' {
+				king = idx
+			}
 		}
 
 		// This is why Castle search return in valid doesn't work
@@ -53,10 +65,21 @@ func (b *Board) SearchValid() ([]int, []int) {
 		}
 	}
 
-	return origs, dests
+	// Check if it moves into Check
+	for i := 0; i < len(origs); i++ {
+		// Check if King is the piece moved
+		if b.board[origs[i]] == 'k' || b.board[origs[i]] == 'K' {
+			king = dests[i]
+		}
+
+		possible := CopyBoard(b)
+		err := possible.Move(origs[i], dests[i])
+		isCheck := possible.isInCheck(king)
+		if err == nil && !isCheck {
+			validO = append(validO, origs[i])
+			validD = append(validD, dests[i])
+		}
+	}
+
+	return validO, validD
 }
-
-// Run it in goroutine
-//func (b *Board) CheckTargets(orig int, targets []int) {
-
-//}
