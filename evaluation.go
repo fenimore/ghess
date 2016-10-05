@@ -15,6 +15,28 @@ what are the scoring going to be?
 TODO: See how many times each side is attacking a square.
 
 */
+type State struct {
+	board Board
+	eval  int
+	move  [2]int
+}
+
+// CopyState takes in a Board pointer and returns
+// a copy of it's state, this is for modifying and then
+// keeping the originals state intact. One must be careful because
+// the values of Board are []byte slices, and these are themselves
+// pointers.
+func CopyState(b *Board) *Board {
+	copy := *b                     // dereference the pointer
+	boardCopy := make([]byte, 120) // []bytes are slices
+	castleCopy := make([]byte, 4)
+	copy(boardCopy, b.board)
+	copy(castleCopy, b.castle)
+	copy.board = boardCopy
+	copy.castle = castleCopy
+	return &copy
+}
+
 // MiniMax Recursive, pass in state and move and depth.
 // Consult notes. Consult Andrea
 func (b *Board) Minimax() int {
