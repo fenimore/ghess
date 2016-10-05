@@ -201,6 +201,15 @@ func (b *Board) evalPawn(pos int, isWhite bool) int {
 	if pos == 44 || pos == 45 || pos == 54 || pos == 55 {
 		score += 20
 	}
+	if b.pawnProtect(pos, isWhite) {
+		if !b.pawnThreat(pos, isWhite) {
+			score += 11
+		}
+	} else if b.pawnThreat(pos, isWhite) {
+		score -= 11
+	}
+
+	// Invert for black
 	// Position values
 	if isWhite {
 		switch {
@@ -210,7 +219,7 @@ func (b *Board) evalPawn(pos int, isWhite bool) int {
 			score += 50 // seventh rank
 		case pos == 46 || pos == 43 || pos == 35 || pos == 34:
 			// support pawns
-			score += 5
+			score += 6
 		}
 	} else {
 		score = -score
@@ -220,7 +229,7 @@ func (b *Board) evalPawn(pos int, isWhite bool) int {
 		case pos < 20:
 			score -= 50 // seventh rank
 		case pos == 56 || pos == 53 || pos == 65 || pos == 64:
-			score -= 5
+			score -= 6
 		}
 	}
 
@@ -233,6 +242,9 @@ func (b *Board) evalKnight(pos int, isWhite bool) int {
 	score += 30 // just for being a knight
 	if b.pawnThreat(pos, isWhite) {
 		score -= 30 // attacked by opponent
+	}
+	if b.pawnProtect(pos, isWhite) {
+		score += 3
 	}
 	// The score is inverted for Black
 	if isWhite {
@@ -258,6 +270,9 @@ func (b *Board) evalBishop(pos int, isWhite bool) int {
 	score += 30 // just for being a knight
 	if b.pawnThreat(pos, isWhite) {
 		score -= 30 // attacked by opponent
+	}
+	if b.pawnProtect(pos, isWhite) {
+		score += 2
 	}
 	// Score inverted for Black
 	if isWhite {
