@@ -7,7 +7,6 @@ import (
 	"bytes"
 	"fmt"
 	"math/rand"
-	"sort"
 	"unicode"
 )
 
@@ -22,6 +21,7 @@ type State struct {
 	board *Board
 	eval  int
 	move  [2]int
+	init  [2]int
 }
 
 func (s State) String() string {
@@ -74,36 +74,31 @@ func TryState(b *Board, o, d int) (State, error) {
 		return state, err
 	}
 	state.board = possible
-	state.move[0], state.move[1] = o, d
+	// state.move[0], state.move[1] = o, d
 	state.eval = possible.Evaluate()
 	return state, nil
 }
 
 // GetStates returns a slice of State structs
 // Each with a score and the move that got there.
-func GetPossibleStates(b *Board) (States, error) {
+func GetPossibleStates(state State) (States, error) {
 	states := make(States, 0)
-	origs, dests := b.SearchForValid()
+	origs, dests := state.board.SearchForValid()
 	for i := 0; i < len(origs); i++ {
-		s, err := TryState(b, origs[i], dests[i])
+		s, err := TryState(state.board, origs[i], dests[i])
 		if err != nil {
 			return states, err
 		}
+		if init[0] == 0 {
+			s.init[0], s.init[1] = origs[i], dests[i]
+		} else {
+			s.init[0], s.init[1] = init[0], init[1]
+		}
+
 		states = append(states, s)
 	}
 	return states, nil
 }
-
-/*
-Sudo MiniMax:
-State {Move, Position, Score}
-
-Minimax(depth) State:
-    if depth == terminalstate:
-        return state
-    for _, s := range states:
-
-*/
 
 // MiniMax Recursive, pass in state and move and depth.
 // Consult notes. Consult Andrea
@@ -116,14 +111,11 @@ func MiniMax(depth int, s State) State {
 		return s
 	}
 
-	states, err := GetPossibleStates(s.board)
+	states, err := GetPossibleStates(s)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	//for _, st := range states {
-	//fmt.Println(st.eval, st.move, string(st.board.board[st.move[1]]))
-	//}
 	var bestState State
 	var bestStates States
 	for _, state := range states {
@@ -131,13 +123,40 @@ func MiniMax(depth int, s State) State {
 		bestStates = append(bestStates, bestState)
 	}
 	even := (depth % 2) == 0
-	sort.Sort(States(bestStates))
 	if even {
 		// If white, or the current ply is white?
-		return bestStates[len(bestStates)-1]
+		//return bestStates[len(bestStates)-1]
+		return Max(bestStates)
 	}
-	return bestStates[0]
+	return Min(bestStates)
+}
 
+// Max returns the state from States with
+// highest evaluation.
+func Max(states States) State {
+	var maxIdx int
+	var maxVal int = -1000
+	for idx, state := range states {
+		if state.eval > maxVal {
+			maxVal = state.eval
+			maxIdx = idx
+		}
+	}
+	return states[maxIdx]
+}
+
+// Min returns the state from States with
+// Lowest evaluation.
+func Min(states States) State {
+	var minIdx int
+	var minVal int = 1000
+	for idx, state := range states {
+		if state.eval < minVal {
+			minVal = state.eval
+			minIdx = idx
+		}
+	}
+	return states[minIdx]
 }
 
 /*

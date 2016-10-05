@@ -16,6 +16,60 @@ func TestNewBoard(t *testing.T) {
 
 }
 
+// This test takes a while (like almost 3 seconds).
+func TestPgnLoad(t *testing.T) {
+	hist := `
+[Event "State Ch."]
+[Site "New York, USA"]
+[Date "1910.??.??"]
+[Round "?"]
+[White "Capablanca"]
+[Black "Jaffe"]
+[Result "1-0"]
+[ECO "D46"]
+[Opening "Queen's Gambit Dec."]
+[Annotator "Reinfeld, Fred"]
+[WhiteTitle "GM"]
+[WhiteCountry "Cuba"]
+[BlackCountry "United States"]
+
+1. d4 d5 2. Nf3 Nf6 3. e3 c6 4. c4 e6 5. Nc3 Nbd7 6. Bd3 Bd6
+7. O-O O-O 8. e4 dxe4 9. Nxe4 Nxe4 10. Bxe4 Nf6 11. Bc2 h6
+12. b3 b6 13. Bb2 Bb7 14. Qd3 g6 15. Rae1 Nh5 16. Bc1 Kg7
+17. Rxe6 Nf6 18. Ne5 c5 19. Bxh6+ Kxh6 20. Nxf7+ 1-0`
+	// 6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42
+	var err error
+	game := NewBoard()
+	err = game.LoadPgn(hist)
+	if err != nil {
+		t.Error("Unable to parse pgn")
+	}
+	flaw := `
+1. d4 d5 2. Nf3 Nf6 3. e3 c6 4. c4 e6 5. Nc3 Nbd7 6. Bd3 Bd6
+7. O-O O-O 8. e4 dxe4 9. Nxe4 Nxe4 10. Bxe4 Nf6 11. Bc2 h6
+12. b3 b6 13. Bb2 Bb7 14. Qd3 g6 15. Rae1 Nh Bc1 Kg7
+17. Rxe6 Nf6 18. Ne5 c5 19. Bxh6+ Kxh6 20. Nxf7+ 1-0`
+	game = NewBoard()
+	err = game.LoadPgn(flaw)
+	if err == nil {
+		t.Error("This PGN shouldn't be parsed")
+	}
+}
+
+func TestStandard(t *testing.T) {
+	game := NewBoard()
+	o := "e2"
+	d := "e4"
+	var err error
+	err = game.ParseStand(o, d)
+	if err != nil {
+		t.Error("This move doesn't make any sense.")
+	}
+	if game.Position() != "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1" {
+		t.Error("FEN looks funny: %s", game.Position())
+	}
+}
+
 func ExampleStartPosition() {
 	game := NewBoard()
 	fmt.Print(game.Position())

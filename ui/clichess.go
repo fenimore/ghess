@@ -169,7 +169,7 @@ Loop:
 				for {
 					select {
 					case <-done:
-						fmt.Printf("This took me: %s", time.Since(now))
+						fmt.Printf("This took me: %s\n", time.Since(now))
 						break ThinkLoop
 					default:
 						think(true)
