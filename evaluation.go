@@ -4,7 +4,7 @@
 package ghess
 
 import (
-	"fmt"
+	"bytes"
 	"math/rand"
 	"unicode"
 )
@@ -101,14 +101,35 @@ func (b *Board) pawnThreat(dest int, isWhite bool) bool {
 // in does not mean WHOSE turn it is but rather who owns the piece.
 func (b *Board) Evaluate() int {
 	// For position, if piece,
+	var score int
 	for idx, val := range b.board {
 		// only look at 64 squares:
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
 			continue
+		} else if val == '.' {
+			continue
 		}
-		fmt.Println(idx, string(val))
+		isWhitePiece := b.isUpper(idx)
+		piece := []byte(bytes.ToUpper(b.board[idx : idx+1]))[0]
+		switch piece {
+		case 'P':
+			score += b.evalPawn(idx, isWhitePiece)
+		case 'N':
+			score += b.evalKnight(idx, isWhitePiece)
+		case 'B':
+			score += b.evalBishop(idx, isWhitePiece)
+		case 'R':
+			score += b.evalRook(idx, isWhitePiece)
+		case 'Q':
+			score += b.evalQueen(idx, isWhitePiece)
+		case 'K':
+			score += b.evalKing(idx, isWhitePiece)
+		default:
+			//wtf default?
+			score += 0
+		}
 	}
-	return 0
+	return score
 
 }
 
@@ -168,14 +189,14 @@ func (b *Board) evalKnight(pos int, isWhite bool) int {
 	}
 	// The score is inverted for Black
 	if isWhite {
-		if pos == 33 || 36 {
+		if pos == 33 || pos == 36 {
 			score += 20
 		} else if pos > 48 {
 			score += 30
 		}
 	} else {
 		score = -score
-		if pos == 63 || 66 {
+		if pos == 63 || pos == 66 {
 			score -= 20
 		} else if pos < 58 {
 			score -= 30

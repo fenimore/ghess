@@ -154,7 +154,8 @@ Loop:
 				fmt.Println("Score:")
 				fmt.Println(bests)
 			case input == "/eval":
-				_ = game.Evaluate()
+				score := game.Evaluate()
+				fmt.Println(score)
 			case input == "/rand":
 				origs, dests := game.SearchForValid()
 				e := game.MoveRandom(origs, dests)
