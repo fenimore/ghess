@@ -384,6 +384,7 @@ func (b *Board) basicValidation(orig, dest int, o, d byte, isCastle bool) error 
 }
 
 // validatePawn Move
+// d param is destination byte, used mainly fro empassant
 func (b *Board) validPawn(orig int, dest int, d byte) error {
 	err := errors.New("Illegal Pawn Move")
 	var remainder int
@@ -416,7 +417,7 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 			return err
 		}
 	case remainder == 9 || remainder == 11:
-		if b.board[dest] == d && d != '.' {
+		if b.board[dest] != '.' {
 			// Proper attack
 		} else if b.board[dest] == d && dest+empOffset == b.empassant {
 			// Empassant attack
@@ -705,12 +706,10 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	for _, val := range movers {
 		p := string(bytes.ToUpper(b.board[val : val+1]))
 		for _, target := range targets {
-			if val == 14 && target == 11 {
-				//fmt.Println("this should work")
-			}
-			if target%10 == 0 || (target+1)%10 == 0 || target > 88 || target < 11 {
-				continue
-			}
+			//if val == 14 && target == 11 {
+			// This is castling
+			//}
+
 			if isWhite {
 				d = []byte(bytes.ToLower(b.board[target : target+1]))[0]
 			} else {
@@ -787,13 +786,7 @@ func (b *Board) SearchForValid() ([]int, []int) {
 		possible.castle = cCopy
 		err := possible.Move(origs[idx], dests[idx])
 		isCheck := possible.isInCheck(king)
-		if err != nil || isCheck {
-			// this deletes?, nooo it doesn't..
-			// Or atleast it doesn't keep the order.
-			// TODO: fix or delete this code:
-			origs = append(origs[:idx], origs[idx:]...)
-			dests = append(dests[:idx], dests[idx:]...)
-		} else {
+		if err == nil && !isCheck {
 			realOrigs = append(realOrigs, origs[idx])
 			realDests = append(realDests, dests[idx])
 		}
