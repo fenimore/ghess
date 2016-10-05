@@ -206,12 +206,12 @@ func (b *Board) evalBishop(pos int, isWhite bool) int {
 	return score
 }
 
-// evalRook evaluates the rook position
+// evalRook evaluates the rook position.
 func (b *Board) evalRook(pos int, isWhite bool) int {
 	var score int
 	score += 50
 	// Invert for Black
-	if b.pawThreat(pos, isWhite) {
+	if b.pawnThreat(pos, isWhite) {
 		score -= 50
 	}
 	// TODO:
@@ -231,14 +231,29 @@ func (b *Board) evalRook(pos int, isWhite bool) int {
 	return score
 }
 
+// evalQueen evaluates the queen position.
 func (b *Board) evalQueen(pos int, isWhite bool) int {
 	var score int
-
+	score += 90
+	if b.pawnThreat(pos, isWhite) {
+		score -= 90
+	}
+	if !isWhite {
+		score = -score
+	}
 	return score
 }
 
+// evalKing evaluates king Position. Checks if in Check.
 func (b *Board) evalKing(pos int, isWhite bool) int {
 	var score int
+	score += 100
+	if b.isInCheck(pos) {
+		score -= 50
+	}
+	if !isWhite {
+		score = -score
+	}
 
 	return score
 }
