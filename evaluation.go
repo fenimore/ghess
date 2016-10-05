@@ -25,7 +25,7 @@ type State struct {
 }
 
 func (s State) String() string {
-	return fmt.Sprint(s.eval)
+	return fmt.Sprintf("Score: %d\nMove: %d, %d\n\n", s.eval, s.move[0], s.move[1])
 }
 
 type States []State
@@ -109,6 +109,7 @@ Minimax(depth) State:
 // Consult notes. Consult Andrea
 func MiniMax(depth int, s State) State {
 	if depth == TERMINAL_DEPTH { // that is, 2 ply
+		fmt.Println("Depth ", depth, s)
 		return s
 	}
 
@@ -120,16 +121,20 @@ func MiniMax(depth int, s State) State {
 	//for _, st := range states {
 	//fmt.Println(st.eval, st.move, string(st.board.board[st.move[1]]))
 	//}
-	//var bestState State
-	var nextStates States
+	var bestState State
+	var bestStates States
 	for _, state := range states {
-		//bestState = MiniMax(depth++, state)
-		nextStates, _ = GetPossibleStates(state.board)
-		//bestState = MiniMax(depth++, state)
+		bestState = MiniMax(depth+1, state)
+		bestStates = append(bestStates, bestState)
 	}
-	//even := (depth%2) == 0
-	sort.Sort(States(nextStates))
-	return nextStates[len(nextStates)-1]
+	even := (depth % 2) == 0
+	sort.Sort(States(bestStates))
+	if even {
+		// If white, or the current ply is white?
+		return bestStates[len(bestStates)-1]
+	}
+	return bestStates[0]
+
 }
 
 /*
