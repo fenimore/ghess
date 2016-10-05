@@ -193,11 +193,15 @@ func (b *Board) evalBishop(pos int, isWhite bool) int {
 	}
 	// Score inverted for Black
 	if isWhite {
-		if pos == 46 || pos == 43 {
+		if pos == 46 || pos == 43 || pos == 22 || pos == 27 {
 			score += 20
 		}
+		// check if checks ?
 	} else {
 		score = -score
+		if pos == 56 || pos == 53 || pos == 72 || pos == 77 {
+			score += 20
+		}
 	}
 	return score
 }
