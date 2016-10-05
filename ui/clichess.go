@@ -81,6 +81,8 @@ Loop:
 		isCmd, _ := regexp.MatchString(`/`, input)
 		if isCmd {
 			input = strings.TrimRight(input, "\r\n")
+			// REFACTOR:
+			// Have Switch (input)... simplify
 			switch {
 			case input == "/help":
 				fmt.Print("\n", manuel)
@@ -151,6 +153,8 @@ Loop:
 					dests)
 				fmt.Println("Score:")
 				fmt.Println(bests)
+			case input == "/eval":
+				_ = game.Evaluate()
 			case input == "/rand":
 				origs, dests := game.SearchForValid()
 				e := game.MoveRandom(origs, dests)

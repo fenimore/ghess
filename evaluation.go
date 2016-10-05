@@ -4,6 +4,7 @@
 package ghess
 
 import (
+	"fmt"
 	"math/rand"
 	"unicode"
 )
@@ -14,6 +15,15 @@ what are the scoring going to be?
 TODO: See how many times each side is attacking a square.
 
 */
+// MiniMax Recursive, pass in state and move and depth.
+// Consult notes. Consult Andrea
+func (b *Board) Minimax() int {
+	// Yikes A recurse Method which returns a score?
+	// No. It returns the move, the index of bests,
+	// which minimizes maximum loss
+	//score := b.SumEval()
+	return 0
+}
 
 // MoveRandom picks move from lists of valid moves.
 // Return an error, such as checkmate or draw.
@@ -59,39 +69,160 @@ func (b *Board) MoveBest() {
 	b.Move(origs[i], dests[i])
 }
 
-// FindBest returns the best move from evaluation.
-func (b *Board) FindBest() (int, int) {
-	origs, dests := b.SearchForValid()
-	bests := b.EvaluateMoves(origs, dests)
-	// get best of bests and return the index
-	var best int
-	indexes := make([]int, 0)
-	var i int
-	for idx, val := range bests {
-		if val > best {
-			best = val
-			indexes = bests[:0]
-			indexes = append(indexes, idx)
-		} else if val == best {
-			indexes = append(indexes, idx)
-		} else {
-			continue
-		}
+// pawnThreat returns true if square is attacked
+// by enemy pawn. According to turn
+func (b *Board) pawnThreat(dest int, isWhite bool) bool {
+	//isWhite := b.toMove == "w"
 
-	}
-	//fmt.Println(best) // Lol this shit is crazy
-	if len(indexes) > 1 {
-		i = rand.Intn(len(indexes))
-		//for _, x := range indexes {
-		//	fmt.Println(origs[x])
-		//}
+	var pot1, pot2 int
+	var pawn byte
+	if isWhite {
+		pot1 = dest + 9
+		pot2 = dest + 11
+		pawn = 'p'
 	} else {
-		i = indexes[0]
+		pot1 = dest - 9
+		pot2 = dest - 11
+		pawn = 'P'
 	}
-	return origs[i], dests[i]
+
+	switch pawn {
+	case b.board[pot1]:
+		return true
+	case b.board[pot2]:
+		return true
+	default:
+		return false
+	}
 }
 
+// Evaluate returns score based on position.
+// When evaluating individual pieces, the boolean to pass
+// in does not mean WHOSE turn it is but rather who owns the piece.
+func (b *Board) Evaluate() int {
+	// For position, if piece,
+	for idx, val := range b.board {
+		// only look at 64 squares:
+		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
+			continue
+		}
+		fmt.Println(idx, string(val))
+	}
+	return 0
+
+}
+
+/*
+Evaluations:
+- Inverted score for Black
+- Typically 20 for Good position
+- Piece value * 10 for piece itself
+- 10 for support position
+- minus piece value for pawnThreatened
+- 50 for Awesome position
+*/
+
+// evalPawn returns a score for pawn position. It'll be
+// negative for black and positive for white.
+// Currently check for center, support, and seventh rank pawns.
+// TODO: is attacking a piece.
+func (b *Board) evalPawn(pos int, isWhite bool) int {
+	var score int
+	score += 10 // Score for simply having a pawn
+	// if in center
+	if pos == 44 || pos == 45 || pos == 54 || pos == 55 {
+		score += 20
+	}
+	// Position values
+	if isWhite {
+		switch {
+		case pos == 31 || pos == 38:
+			score += 10
+		case pos > 70:
+			score += 50 // seventh rank
+		case pos == 46 || pos == 43 || pos == 35 || pos == 34:
+			// support pawns
+			score += 5
+		}
+	} else {
+		score = -score
+		switch {
+		case pos == 61 || pos == 68:
+			score -= 10
+		case pos < 20:
+			score -= 50 // seventh rank
+		case pos == 56 || pos == 53 || pos == 65 || pos == 64:
+			score -= 5
+		}
+	}
+
+	return score
+}
+
+// evalKnight evaluates for knight position.
+func (b *Board) evalKnight(pos int, isWhite bool) int {
+	var score int
+	score += 30 // just for being a knight
+	if b.pawnThreat(pos, isWhite) {
+		score -= 30 // attacked by opponent
+	}
+	// The score is inverted for Black
+	if isWhite {
+		if pos == 33 || 36 {
+			score += 20
+		} else if pos > 48 {
+			score += 30
+		}
+	} else {
+		score = -score
+		if pos == 63 || 66 {
+			score -= 20
+		} else if pos < 58 {
+			score -= 30
+		}
+	}
+	return score
+}
+
+// evalBishop evaluates bishop position.
+func (b *Board) evalBishop(pos int, isWhite bool) int {
+	var score int
+	score += 30 // just for being a knight
+	if b.pawnThreat(pos, isWhite) {
+		score -= 30 // attacked by opponent
+	}
+	// Score inverted for Black
+	if isWhite {
+		if pos == 46 || pos == 43 {
+			score += 20
+		}
+	} else {
+		score = -score
+	}
+	return score
+}
+func (b *Board) evalRook(pos int, isWhite bool) int {
+	var score int
+
+	return score
+}
+
+func (b *Board) evalQueen(pos int, isWhite bool) int {
+	var score int
+
+	return score
+}
+
+func (b *Board) evalKing(pos int, isWhite bool) int {
+	var score int
+
+	return score
+}
+
+/* DEPRICATED EVALUATION ISN'T RELEVANT */
+
 // SumEval returns the sum of evaluations of one side.
+// Depricated
 func (b *Board) SumEval() int {
 	origs, dests := b.SearchForValid()
 	evaluations := b.EvaluateMoves(origs, dests)
@@ -129,7 +260,7 @@ func (b *Board) EvaluateMove(orig, dest int) int {
 	target := byte(unicode.ToUpper(rune(b.board[dest])))
 	// If is Capture
 	isCapture := target != '.'
-	if b.PawnThreat(dest) && piece != 'P' {
+	if b.pawnThreat(dest, isWhite) && piece != 'P' {
 		score -= 70
 	}
 
@@ -140,9 +271,9 @@ func (b *Board) EvaluateMove(orig, dest int) int {
 	if isCapture {
 		if target != 'P' {
 			score += 40
-		} else if target == 'P' && piece == 'P' && !b.PawnThreat(dest) {
+		} else if target == 'P' && piece == 'P' && !b.pawnThreat(dest, isWhite) {
 			score += 25
-		} else if !b.PawnThreat(dest) {
+		} else if !b.pawnThreat(dest, isWhite) {
 			score += 25
 		}
 	}
@@ -274,35 +405,34 @@ func (b *Board) EvaluateMove(orig, dest int) int {
 	return score
 }
 
-func (b *Board) Minimax() int {
-	// Yikes A recurse Method which returns a score?
-	// No. It returns the move, the index of bests,
-	// which minimizes maximum loss
-	//score := b.SumEval()
-	return 0
-}
+// FindBest returns the best move from evaluation.
+func (b *Board) FindBestMove() (int, int) {
+	origs, dests := b.SearchForValid()
+	bests := b.EvaluateMoves(origs, dests)
+	// get best of bests and return the index
+	var best int
+	indexes := make([]int, 0)
+	var i int
+	for idx, val := range bests {
+		if val > best {
+			best = val
+			indexes = bests[:0]
+			indexes = append(indexes, idx)
+		} else if val == best {
+			indexes = append(indexes, idx)
+		} else {
+			continue
+		}
 
-func (b *Board) PawnThreat(dest int) bool {
-	isWhite := b.toMove == "w"
-
-	var pot1, pot2 int
-	var pawn byte
-	if isWhite {
-		pot1 = dest + 9
-		pot2 = dest + 11
-		pawn = 'p'
+	}
+	//fmt.Println(best) // Lol this shit is crazy
+	if len(indexes) > 1 {
+		i = rand.Intn(len(indexes))
+		//for _, x := range indexes {
+		//	fmt.Println(origs[x])
+		//}
 	} else {
-		pot1 = dest - 9
-		pot2 = dest - 11
-		pawn = 'P'
+		i = indexes[0]
 	}
-
-	switch pawn {
-	case b.board[pot1]:
-		return true
-	case b.board[pot2]:
-		return true
-	default:
-		return false
-	}
+	return origs[i], dests[i]
 }
