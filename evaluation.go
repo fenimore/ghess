@@ -11,7 +11,7 @@ import (
 	"unicode"
 )
 
-var TERMINAL_DEPTH int = 2
+var TERMINAL_DEPTH int = 3
 
 /*
 MiniMax implementation ###########################################
@@ -108,8 +108,11 @@ Minimax(depth) State:
 // MiniMax Recursive, pass in state and move and depth.
 // Consult notes. Consult Andrea
 func MiniMax(depth int, s State) State {
+	if depth == 0 {
+		fmt.Println("SHHH, I'm thinking")
+	}
 	if depth == TERMINAL_DEPTH { // that is, 2 ply
-		fmt.Println("Depth ", depth, s)
+		//fmt.Println("Depth ", depth, s)
 		return s
 	}
 

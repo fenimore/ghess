@@ -158,8 +158,14 @@ Loop:
 				score := game.Evaluate()
 				fmt.Println(score)
 			case input == "/minimax":
-				state := ghess.MiniMax(0, ghess.GetState(&game))
-				fmt.Println(state)
+				var wg sync.WaitGroup
+				wg.Add(1)
+				go func() {
+					state := ghess.MiniMax(0, ghess.GetState(&game))
+					fmt.Println(state)
+					wg.Done()
+				}
+				wg.Wait()
 			case input == "/rand":
 				origs, dests := game.SearchForValid()
 				e := game.MoveRandom(origs, dests)
