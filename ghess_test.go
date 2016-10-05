@@ -8,6 +8,11 @@ import (
 )
 
 func TestNewBoard(t *testing.T) {
+	game := NewBoard()
+	expected := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+	if game.Position() != expected {
+		t.Error("Unexpected FEN: %s", game.Position())
+	}
 
 }
 
