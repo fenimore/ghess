@@ -158,7 +158,7 @@ Loop:
 				score := game.Evaluate()
 				fmt.Println(score)
 			case input == "/minimax":
-				game.MiniMax()
+				game.MiniMax(1)
 			case input == "/rand":
 				origs, dests := game.SearchForValid()
 				e := game.MoveRandom(origs, dests)

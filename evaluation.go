@@ -56,7 +56,7 @@ func TryState(b *Board, o, d int) (State, error) {
 
 // GetStates returns a slice of State structs
 // Each with a score and the move that got there.
-func GetStates(b *Board) (States, error) {
+func GetPossibleStates(b *Board) (States, error) {
 	states := make(States, 0)
 	origs, dests := b.SearchForValid()
 	for i := 0; i < len(origs); i++ {
@@ -71,21 +71,50 @@ func GetStates(b *Board) (States, error) {
 
 // MiniMax Recursive, pass in state and move and depth.
 // Consult notes. Consult Andrea
-func (b *Board) MiniMax() {
+func (b *Board) MiniMax(depth int) {
+	if depth < 1 {
+		return
+	}
 	// Yikes A recurse Method which returns a score?
 	// No. It returns the move, the index of bests,
 	// which minimizes maximum loss
 	//score := b.SumEval()
-	states, err := GetStates(b)
+	states, err := GetPossibleStates(b)
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	for _, s := range states {
-		fmt.Println(s.eval)
+
+		//fmt.Println(s.eval, s.move, string(s.board.board[s.move[1]]))
 	}
 }
 
 /* Evaluation is HERE: */
+
+// pawnProtect returns true if piece is protected by a pawn.
+func (b *Board) pawnProtect(dest int, isWhite bool) bool {
+	var pot1, pot2 int
+	var pawn byte
+	if !isWhite {
+		pot1 = dest + 9
+		pot2 = dest + 11
+		pawn = 'p'
+	} else {
+		pot1 = dest - 9
+		pot2 = dest - 11
+		pawn = 'P'
+	}
+
+	switch pawn {
+	case b.board[pot1]:
+		return true
+	case b.board[pot2]:
+		return true
+	default:
+		return false
+	}
+}
 
 // pawnThreat returns true if square is attacked
 // by enemy pawn. According to turn
