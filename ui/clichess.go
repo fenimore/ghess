@@ -173,12 +173,18 @@ Loop:
 				for {
 					select {
 					case <-done:
-						fmt.Printf("This took me: %s\n", time.Since(now))
+						fmt.Printf("\nThis took me: %s\n", time.Since(now))
 						break ThinkLoop
 					default:
 						think(true)
 					}
 
+				}
+			case input == "/ai":
+				for {
+					fmt.Println(game.StringWhite())
+					state := ghess.MiniMax(0, ghess.GetState(&game))
+					game.Move(state.Init[0], state.Init[1])
 				}
 			case input == "/rand":
 				origs, dests := game.SearchForValid()

@@ -21,11 +21,11 @@ type State struct {
 	board *Board
 	eval  int
 	move  [2]int
-	init  [2]int
+	Init  [2]int
 }
 
 func (s State) String() string {
-	return fmt.Sprintf("Score: %d\nMove: %d, %d\n\n", s.eval, s.init[0], s.init[1])
+	return fmt.Sprintf("\nScore: %d\nMove: %d, %d", s.eval, s.Init[0], s.Init[1])
 }
 
 type States []State
@@ -73,10 +73,10 @@ func GetPossibleStates(state State) (States, error) {
 		if err != nil {
 			return states, err
 		}
-		if state.init[0] == 0 {
-			s.init[0], s.init[1] = origs[i], dests[i]
+		if state.Init[0] == 0 {
+			s.Init[0], s.Init[1] = origs[i], dests[i]
 		} else {
-			s.init[0], s.init[1] = state.init[0], state.init[1]
+			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
 
 		states = append(states, s)
