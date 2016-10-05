@@ -47,7 +47,7 @@ func (b *Board) Move(orig, dest int) error {
 	p := string(bytes.ToUpper(b.board[orig : orig+1]))
 	switch {
 	case p == "P":
-		e := b.validPawn(orig, dest, d)
+		e := b.validPawn(orig, dest)
 		if e != nil {
 			return e
 		}
@@ -302,7 +302,7 @@ func (b *Board) isPlayerInCheck() bool {
 // Automaticaly checks for turn by the target King.
 func (b *Board) isInCheck(target int) bool {
 	isWhite := b.isUpper(target)
-	k := b.board[target]
+	//k := b.board[target]
 
 	// store all the orig of the opponents pieces
 	attackers := make([]int, 0, 16)
@@ -324,11 +324,8 @@ func (b *Board) isInCheck(target int) bool {
 		p := string(bytes.ToUpper(b.board[val : val+1]))
 		switch {
 		case p == "P":
-			e := b.validPawn(val, target, k)
+			e := b.validPawn(val, target)
 			if e == nil {
-				// TODO: There is bug here.
-				// This has to do with Turn variable.
-				//fmt.Println("Pawn check")
 				return true
 			}
 		case p == "N":
@@ -385,7 +382,7 @@ func (b *Board) basicValidation(orig, dest int, o, d byte, isCastle bool) error 
 
 // validatePawn Move
 // d param is destination byte, used mainly fro empassant
-func (b *Board) validPawn(orig int, dest int, d byte) error {
+func (b *Board) validPawn(orig int, dest int) error {
 	err := errors.New("Illegal Pawn Move")
 	var remainder int
 	var empOffset int
@@ -417,14 +414,12 @@ func (b *Board) validPawn(orig int, dest int, d byte) error {
 			return err
 		}
 	case remainder == 9 || remainder == 11:
-		if b.board[dest] != '.' {
-			// Proper attack
-		} else if b.board[dest] == d && dest+empOffset == b.empassant {
+		if b.board[dest] == '.' && dest+empOffset == b.empassant {
 			// Empassant attack
 			if b.board[dest+empOffset] != empTarget {
 				return err
 			}
-		} else {
+		} else if b.board[dest] == '.' {
 			return err
 		}
 	default:
@@ -678,7 +673,6 @@ func (b *Board) SearchForValid() ([]int, []int) {
 	targets := make([]int, 0, 64)
 	origs := make([]int, 0, 16)
 	dests := make([]int, 0, 64)
-	var d byte
 	var validMoveCount int
 	var king int
 	for idx, val := range b.board {
@@ -710,14 +704,9 @@ func (b *Board) SearchForValid() ([]int, []int) {
 			// This is castling
 			//}
 
-			if isWhite {
-				d = []byte(bytes.ToLower(b.board[target : target+1]))[0]
-			} else {
-				d = []byte(bytes.ToLower(b.board[target : target+1]))[0]
-			}
 			switch {
 			case p == "P":
-				e := b.validPawn(val, target, d)
+				e := b.validPawn(val, target)
 				if e == nil {
 					validMoveCount++
 					origs = append(origs, val)

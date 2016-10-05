@@ -154,6 +154,10 @@ Loop:
 					dests)
 				fmt.Println("Score:")
 				fmt.Println(bests)
+			case input == "/val":
+				origs, dests := game.SearchValid()
+				fmt.Println(origs)
+				fmt.Println(dests)
 			case input == "/eval":
 				score := game.Evaluate()
 				fmt.Println(score)

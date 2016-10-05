@@ -1,9 +1,6 @@
 package ghess
 
-import (
-	"bytes"
-	"fmt"
-)
+import "bytes"
 
 // SearchValid finds two arrays, of all valid possible
 // destinations and origins.
@@ -34,15 +31,24 @@ func (b *Board) SearchValid() ([]int, []int) {
 		p := bytes.ToUpper(b.board[idx : idx+1])[0]
 		for _, target := range targets {
 			// TODO: Check for Castling
+			var e error
 			switch p {
 			case 'P':
-				fmt.Println(target)
+				e = b.validPawn(idx, target)
 			case 'N':
+				e = b.validKnight(idx, target)
 			case 'B':
+				e = b.validBishop(idx, target)
 			case 'R':
+				e = b.validRook(idx, target)
 			case 'Q':
+				e = b.validQueen(idx, target)
 			case 'K':
-
+				e = b.validKing(idx, target, false)
+			}
+			if e == nil {
+				origs = append(origs, idx)
+				dests = append(dests, target)
 			}
 		}
 	}
