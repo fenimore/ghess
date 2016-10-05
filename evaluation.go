@@ -5,23 +5,23 @@ package ghess
 
 import (
 	"bytes"
+	"fmt"
 	"math/rand"
 	"unicode"
 )
 
 /*
-Yikes, Notes:
-what are the scoring going to be?
-TODO: See how many times each side is attacking a square.
-
+MINIMAX implementation
 */
 // State struct holds a board position,
 // the move that got there, and the evaluation.
 type State struct {
-	board Board
+	board *Board
 	eval  int
 	move  [2]int
 }
+
+type States []State
 
 // CopyState takes in a Board pointer and returns
 // a copy of it's state, this is for modifying and then
@@ -29,14 +29,14 @@ type State struct {
 // the values of Board are []byte slices, and these are themselves
 // pointers.
 func CopyState(b *Board) *Board {
-	copy := *b                     // dereference the pointer
+	c := *b                        // dereference the pointer
 	boardCopy := make([]byte, 120) // []bytes are slices
 	castleCopy := make([]byte, 4)
 	copy(boardCopy, b.board)
 	copy(castleCopy, b.castle)
-	copy.board = boardCopy
-	copy.castle = castleCopy
-	return &copy
+	c.board = boardCopy
+	c.castle = castleCopy
+	return &c
 }
 
 // TryState takes in a *Board and valid move and returns
@@ -51,65 +51,41 @@ func TryState(b *Board, o, d int) (State, error) {
 	state.board = possible
 	state.move[0], state.move[1] = o, d
 	state.eval = possible.Evaluate()
+	return state, nil
 }
 
-func GetStates(b *Board) ([]State, error) {
-
+// GetStates returns a slice of State structs
+// Each with a score and the move that got there.
+func GetStates(b *Board) (States, error) {
+	states := make(States, 0)
+	origs, dests := b.SearchForValid()
+	for i := 0; i < len(origs); i++ {
+		s, err := TryState(b, origs[i], dests[i])
+		if err != nil {
+			return states, err
+		}
+		states = append(states, s)
+	}
+	return states, nil
 }
 
 // MiniMax Recursive, pass in state and move and depth.
 // Consult notes. Consult Andrea
-func (b *Board) Minimax() int {
+func (b *Board) MiniMax() {
 	// Yikes A recurse Method which returns a score?
 	// No. It returns the move, the index of bests,
 	// which minimizes maximum loss
 	//score := b.SumEval()
-	return 0
+	states, err := GetStates(b)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, s := range states {
+		fmt.Println(s.eval)
+	}
 }
 
-// MoveRandom picks move from lists of valid moves.
-// Return an error, such as checkmate or draw.
-func (b *Board) MoveRandom(origs, dests []int) error {
-	randomMove := rand.Intn(len(origs))
-	e := b.Move(origs[randomMove], dests[randomMove])
-	if e != nil {
-		return e
-	}
-	return nil
-}
-
-// MoveBest finds the best move of all valid moves.
-// This method is not operational.
-func (b *Board) MoveBest() {
-	origs, dests := b.SearchForValid()
-	bests := b.EvaluateMoves(origs, dests)
-	// get best of bests and return the index
-	var best int
-	indexes := make([]int, 0)
-	var i int
-	for idx, val := range bests {
-		if val > best {
-			best = val
-			indexes = bests[:0]
-			indexes = append(indexes, idx)
-		} else if val == best {
-			indexes = append(indexes, idx)
-		} else {
-			continue
-		}
-
-	}
-	//fmt.Println(best) // Lol this shit is crazy
-	if len(indexes) > 1 {
-		i = rand.Intn(len(indexes))
-		//for _, x := range indexes {
-		//	fmt.Println(origs[x])
-		//}
-	} else {
-		i = indexes[0]
-	}
-	b.Move(origs[i], dests[i])
-}
+/* Evaluation is HERE: */
 
 // pawnThreat returns true if square is attacked
 // by enemy pawn. According to turn
@@ -319,6 +295,19 @@ func (b *Board) evalKing(pos int, isWhite bool) int {
 	}
 
 	return score
+}
+
+/* LULZ EVALUATION ISN'T NECESSARY!!!1!*/
+
+// MoveRandom picks move from lists of valid moves.
+// Return an error, such as checkmate or draw.
+func (b *Board) MoveRandom(origs, dests []int) error {
+	randomMove := rand.Intn(len(origs))
+	e := b.Move(origs[randomMove], dests[randomMove])
+	if e != nil {
+		return e
+	}
+	return nil
 }
 
 /* DEPRICATED EVALUATION ISN'T RELEVANT */
@@ -537,4 +526,37 @@ func (b *Board) FindBestMove() (int, int) {
 		i = indexes[0]
 	}
 	return origs[i], dests[i]
+}
+
+// MoveBest finds the best move of all valid moves.
+// This method is not operational.
+func (b *Board) MoveBest() {
+	origs, dests := b.SearchForValid()
+	bests := b.EvaluateMoves(origs, dests)
+	// get best of bests and return the index
+	var best int
+	indexes := make([]int, 0)
+	var i int
+	for idx, val := range bests {
+		if val > best {
+			best = val
+			indexes = bests[:0]
+			indexes = append(indexes, idx)
+		} else if val == best {
+			indexes = append(indexes, idx)
+		} else {
+			continue
+		}
+
+	}
+	//fmt.Println(best) // Lol this shit is crazy
+	if len(indexes) > 1 {
+		i = rand.Intn(len(indexes))
+		//for _, x := range indexes {
+		//	fmt.Println(origs[x])
+		//}
+	} else {
+		i = indexes[0]
+	}
+	b.Move(origs[i], dests[i])
 }
