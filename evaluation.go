@@ -69,6 +69,17 @@ func GetPossibleStates(b *Board) (States, error) {
 	return states, nil
 }
 
+/*
+Sudo MiniMax:
+State {Move, Position, Score}
+
+Minimax(depth) State:
+    if depth == terminalstate:
+        return state
+    for _, s := range states:
+
+*/
+
 // MiniMax Recursive, pass in state and move and depth.
 // Consult notes. Consult Andrea
 func (b *Board) MiniMax(depth int) {
@@ -76,16 +87,16 @@ func (b *Board) MiniMax(depth int) {
 		return
 	}
 
-	states, err := GetPossibleStates(b)
+	states, err := GetPossibleStates(b.board)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	for _, s := range states {
-		fmt.Println(s.eval, s.move, string(s.board.board[s.move[1]]))
+	for _, st := range states {
+		fmt.Println(st.eval, st.move, string(st.board.board[st.move[1]]))
 	}
-	for _, s := range states {
-		newStates, _ := GetPossibleStates(s.board)
+	for _, st := range states {
+		newStates, _ := GetPossibleStates(st.board)
 		for _, n := range newStates {
 			fmt.Println(n.eval, n.move, string(n.board.board[n.move[1]]))
 		}
