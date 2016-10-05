@@ -11,7 +11,7 @@ import (
 )
 
 /*
-MINIMAX implementation
+MiniMax implementation ###########################################
 */
 // State struct holds a board position,
 // the move that got there, and the evaluation.
@@ -75,22 +75,26 @@ func (b *Board) MiniMax(depth int) {
 	if depth < 1 {
 		return
 	}
-	// Yikes A recurse Method which returns a score?
-	// No. It returns the move, the index of bests,
-	// which minimizes maximum loss
-	//score := b.SumEval()
+
 	states, err := GetPossibleStates(b)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	for _, s := range states {
-
-		//fmt.Println(s.eval, s.move, string(s.board.board[s.move[1]]))
+		fmt.Println(s.eval, s.move, string(s.board.board[s.move[1]]))
+	}
+	for _, s := range states {
+		newStates, _ := GetPossibleStates(s.board)
+		for _, n := range newStates {
+			fmt.Println(n.eval, n.move, string(n.board.board[n.move[1]]))
+		}
 	}
 }
 
-/* Evaluation is HERE: */
+/*
+ Evaluation is HERE: #######################################
+*/
 
 // pawnProtect returns true if piece is protected by a pawn.
 func (b *Board) pawnProtect(dest int, isWhite bool) bool {
@@ -142,6 +146,8 @@ func (b *Board) pawnThreat(dest int, isWhite bool) bool {
 		return false
 	}
 }
+
+// TODO: implement, pawnThreatensPiece
 
 // Evaluate returns score based on position.
 // When evaluating individual pieces, the boolean to pass
@@ -196,14 +202,19 @@ Evaluations:
 // TODO: is attacking a piece.
 func (b *Board) evalPawn(pos int, isWhite bool) int {
 	var score int
+	var isCenter bool
 	score += 10 // Score for simply having a pawn
 	// if in center
 	if pos == 44 || pos == 45 || pos == 54 || pos == 55 {
+		isCenter = true
 		score += 20
 	}
 	if b.pawnProtect(pos, isWhite) {
 		if !b.pawnThreat(pos, isWhite) {
-			score += 11
+			score += 2
+			if isCenter {
+				score += 6
+			}
 		}
 	} else if b.pawnThreat(pos, isWhite) {
 		score -= 11
@@ -243,9 +254,6 @@ func (b *Board) evalKnight(pos int, isWhite bool) int {
 	if b.pawnThreat(pos, isWhite) {
 		score -= 30 // attacked by opponent
 	}
-	if b.pawnProtect(pos, isWhite) {
-		score += 3
-	}
 	// The score is inverted for Black
 	if isWhite {
 		if pos == 33 || pos == 36 {
@@ -253,12 +261,18 @@ func (b *Board) evalKnight(pos int, isWhite bool) int {
 		} else if pos > 48 {
 			score += 30
 		}
+		if pos > 38 && b.pawnProtect(pos, isWhite) {
+			score += 3
+		}
 	} else {
 		score = -score
 		if pos == 63 || pos == 66 {
 			score -= 20
 		} else if pos < 58 {
 			score -= 30
+		}
+		if pos < 68 && b.pawnProtect(pos, isWhite) {
+			score -= 3
 		}
 	}
 	return score
@@ -341,7 +355,9 @@ func (b *Board) evalKing(pos int, isWhite bool) int {
 	return score
 }
 
-/* LULZ EVALUATION ISN'T NECESSARY!!!1!*/
+/*
+ LULZ EVALUATION ISN'T NECESSARY!!!1!#######################
+*/
 
 // MoveRandom picks move from lists of valid moves.
 // Return an error, such as checkmate or draw.
@@ -354,7 +370,9 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 	return nil
 }
 
-/* DEPRICATED EVALUATION ISN'T RELEVANT */
+/*
+DEPRICATED EVALUATION / ISN'T RELEVANT #####################
+*/
 
 // SumEval returns the sum of evaluations of one side.
 // Depricated
