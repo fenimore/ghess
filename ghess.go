@@ -3,7 +3,6 @@
 // Fenimore Love 2016
 // GPLv3
 //
-// TODO: Evaluation
 package ghess
 
 import (
