@@ -13,27 +13,29 @@ import (
 /*
 MiniMax implementation ###########################################
 */
+
 // State struct holds a board position,
 // the move that got there, and the evaluation.
+// Init is the move which began a certain branch of the tree.
 type State struct {
 	board *Board
 	eval  int
-	move  [2]int
 	Init  [2]int
 }
 
 func (s State) String() string {
-	return fmt.Sprintf("\nScore: %d\nMove: %d, %d", s.eval, s.Init[0], s.Init[1])
+	return fmt.Sprintf("\nScore: %d\nFrom Move: %d, %d", s.eval, s.Init[0], s.Init[1])
 }
 
 type States []State
 
+// Sort functionality depricated.
 func (s States) Len() int           { return len(s) }
 func (s States) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s States) Less(i, j int) bool { return s[i].eval < s[j].eval }
 
 // GetState turns a Board into a copy and it's state.
-// The move value is nil.
+// The Init value is nil.
 func GetState(b *Board) State {
 	c := *b                        // dereference the pointer
 	boardCopy := make([]byte, 120) // []bytes are slices
@@ -56,7 +58,6 @@ func TryState(b *Board, o, d int) (State, error) {
 		return state, err
 	}
 	state.board = possible
-	// state.move[0], state.move[1] = o, d
 	state.eval = possible.Evaluate()
 	return state, nil
 }
@@ -82,9 +83,10 @@ func GetPossibleStates(state State) (States, error) {
 	return states, nil
 }
 
-// MiniMax Recursive, pass in state and move and depth.
-// terminal is the final depth for when it recurses up.
-// and depth is always 0 when passed in.
+// MiniMax Recursive, pass in state, search depth and terminal depth.
+// and depth is always 0 when passed in initially.
+// This is like a DFS algorithm which tries to Minimize maximun loss.
+// TODO: write tests somehow.
 func MiniMax(depth, terminal int, s State) State {
 	if depth == 0 {
 		fmt.Println("SHHH, I'm thinking")
@@ -107,10 +109,9 @@ func MiniMax(depth, terminal int, s State) State {
 	}
 	even := (depth % 2) == 0
 	if even {
-		// If white, or the current ply is white?
-		//return bestStates[len(bestStates)-1]
+		// If White Player Return Maximum
 		return Max(bestStates)
-	}
+	} // Otherwise Return Minimum... Yup that's the idea.
 	return Min(bestStates)
 }
 
