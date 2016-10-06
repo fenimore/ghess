@@ -62,7 +62,10 @@ Commands:
     random-game  - play random game
     rand         - make a random move
     valid        - show valid moves
-    eval         - score position
+    eval         - score position (+ White | - Black)
+    minimax      - generate minimax score
+    ai           - watch AI match
+    vs           - play against AI as White
 
 `
 	reader := bufio.NewReader(os.Stdin)
@@ -145,22 +148,14 @@ Loop:
 				info = game.Stats()
 				fmt.Println(info["headers"])
 			case input == "/valid":
-				origs, dests := game.SearchForValid()
+				origs, dests := game.SearchValid()
 				fmt.Println(origs)
 				fmt.Println(dests)
 				fmt.Println("Total valid moves: ",
 					len(origs))
-				bests := game.EvaluateMoves(origs,
-					dests)
-				fmt.Println("Score:")
-				fmt.Println(bests)
-			case input == "/val":
-				origs, dests := game.SearchValid()
-				fmt.Println(origs)
-				fmt.Println(dests)
 			case input == "/eval":
 				score := game.Evaluate()
-				fmt.Println(score)
+				fmt.Println("Position: ", score)
 			case input == "/minimax":
 				done := make(chan bool)
 				go func() {
