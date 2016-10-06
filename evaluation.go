@@ -220,7 +220,22 @@ func (b *Board) Evaluate() int {
 		}
 		isWhitePiece := b.isUpper(idx)
 		piece := []byte(bytes.ToUpper(b.board[idx : idx+1]))[0]
-		//if isWhitePiece
+		// Tensions values are negative if the majority of attackers
+		// are black (etc). So if a piece moves to a 'controlled' square
+		// I'm giving 5 times the over protection.
+		if isWhitePiece {
+			if tension[idx] < 0 {
+				score -= 20
+			} else {
+				score += (5 * tension[idx])
+			}
+		} else {
+			if tension[idx] > 0 {
+				score += 20
+			} else {
+				score -= (-5 * tension[idx])
+			}
+		}
 		switch piece {
 		case 'P':
 			score += b.evalPawn(idx, isWhitePiece)
