@@ -458,7 +458,7 @@ func (b *Board) validBishop(orig int, dest int) error {
 	a1h8 := trajectory % 11 // if 0 remainder...
 	a8h1 := trajectory % 9
 	// Check which slope
-	if a8h1 == 0 {
+	if a1h8 == 0 {
 		if dest > orig { // go to bottom right
 			for i := orig + 11; i <= dest-11; i += 11 {
 				if b.board[i] != '.' {
@@ -472,7 +472,7 @@ func (b *Board) validBishop(orig int, dest int) error {
 				}
 			}
 		}
-	} else if a1h8 == 0 {
+	} else if a8h1 == 0 {
 		if dest > orig { // go to bottem left
 			for i := orig + 9; i <= dest-9; i += 9 {
 				if b.board[i] != '.' {
