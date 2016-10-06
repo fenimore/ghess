@@ -239,14 +239,18 @@ func (b *Board) StringTension() string {
 			continue
 		}
 		if tension[i] == 0 {
-			printBoard += "|" + "0" + "|"
+			printBoard += "| 0|"
 
 		} else {
-			printBoard += "|" + strconv.Itoa(tension[i]) + "|"
+			if tension[i] < 0 {
+				printBoard += "|" + strconv.Itoa(tension[i]) + "|"
+			} else {
+				printBoard += "| " + strconv.Itoa(tension[i]) + "|"
+			}
 		}
 	}
 
 	printBoard += string(nums[j]) + ": " + "\n"
-	printBoard += ":a::b::c::d::e::f::g::h:\n"
+	printBoard += ": a:: b:: c:: d:: e:: f:: g:: h:\n"
 	return printBoard
 }

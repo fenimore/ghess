@@ -2,6 +2,7 @@ package ghess
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"testing"
 	//"github.com/polypmer/ghess"
@@ -70,8 +71,30 @@ func TestStandard(t *testing.T) {
 	}
 }
 
-func TestSearchForValid(t *testing.T) {
-	// Test for valid
+func TestTension(t *testing.T) {
+	game := NewBoard()
+	fen := `rnbqkbnr/ppp2ppp/4p3/3p4/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 3`
+	var err error
+	err = game.LoadFen(fen)
+	if err != nil {
+		fmt.Println(err)
+	}
+	tension := game.Tension()
+	if tension[55] != 0 {
+		t.Error("d5 should be equally tense")
+	}
+}
+
+func TestSearchValid(t *testing.T) {
+	game := NewBoard()
+	fen := "6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42"
+	_ = game.LoadFen(fen)
+	o, d := game.SearchValid()
+	exO := []int{21, 21, 21, 21, 43}
+	exD := []int{11, 11, 12, 31, 23}
+	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
+		t.Error("Search doesn't return the correct/valid moves")
+	}
 }
 
 func ExampleStartPosition() {
