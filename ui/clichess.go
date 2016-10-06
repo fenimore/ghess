@@ -156,6 +156,8 @@ Loop:
 			case input == "/eval":
 				score := game.Evaluate()
 				fmt.Println("Position: ", score)
+			case input == "/computer":
+				// Play as white against the computer
 			case input == "/minimax":
 				done := make(chan bool)
 				go func() {
@@ -186,6 +188,14 @@ Loop:
 						fmt.Println(err)
 						break
 					}
+					o, d := game.SearchValid()
+					fmt.Println("Valid Moves")
+					fmt.Println(o)
+					fmt.Println(d)
+					fmt.Println("Best Move:")
+					fmt.Println(state.Init[0], state.Init[1])
+					fmt.Println(game.Position())
+					fmt.Println(game.Stats())
 					game.Move(state.Init[0], state.Init[1])
 				}
 			case input == "/rand":

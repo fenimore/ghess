@@ -111,6 +111,9 @@ func MiniMax(depth, terminal int, s State) (State, error) {
 		}
 		bestStates = append(bestStates, bestState)
 	}
+	if len(bestStates) < 1 {
+		return s, nil
+	}
 	even := (depth % 2) == 0
 	if even {
 		// If White Player Return Maximum
