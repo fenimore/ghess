@@ -229,6 +229,44 @@ Loop:
 						break VsLoop
 					}
 				}
+			case input == "/aivshuman":
+			HumLoop:
+				for {
+					now := time.Now()
+					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
+					if err != nil {
+						fmt.Println(err)
+						break HumLoop
+					}
+					fmt.Printf("\nThis took me: %s\n", time.Since(now))
+					game.Move(state.Init[0], state.Init[1])
+					info := game.Stats()
+					fmt.Println(getPanel(info))
+					fmt.Println(game.StringBlack())
+					if info["score"] != "*" {
+						fmt.Println("Game Over:")
+						fmt.Println(info["score"])
+						break HumLoop
+					}
+				InputLoop:
+					for {
+						fmt.Print("You're move: ")
+						input, _ = reader.ReadString('\n')
+						e := game.ParseMove(input)
+						if e != nil {
+							fmt.Println(e)
+						} else {
+							break InputLoop
+						}
+					}
+					fmt.Println(getPanel(info))
+					fmt.Println(game.StringBlack())
+					if info["score"] != "*" {
+						fmt.Println("Game Over:")
+						fmt.Println(info["score"])
+						break HumLoop
+					}
+				}
 			case input == "/rand":
 				origs, dests := game.SearchValid()
 				e := game.MoveRandom(origs, dests)

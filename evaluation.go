@@ -240,7 +240,6 @@ func (b *Board) Evaluate() int {
 	}
 
 	if b.checkmate {
-		fmt.Println("YOU SHOULD BE FUCKED")
 		if b.score == "0-1" {
 			score -= 9000
 		} else if b.score == "1-0" {

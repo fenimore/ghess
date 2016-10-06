@@ -3,7 +3,6 @@ package ghess
 import (
 	"bytes"
 	"errors"
-	"fmt"
 )
 
 // Move is the basic validation.
@@ -161,15 +160,13 @@ func (b *Board) Move(orig, dest int) error {
 		}
 	}
 	b.cycleHistory(orig, dest)
-	return nil
 	// Look for Checkmate
 	// Check all possibl moves after a check?
-	//isCheck = b.isPlayerInCheck()
-	isCheck = b.isInCheck(king)
+	isCheck = b.isPlayerInCheck()
+	//isCheck = b.isInCheck(king)
 	if isCheck {
 		isCheckMate := false
 		origs, _ := b.SearchValid()
-		fmt.Println(isCheckMate, origs)
 		if len(origs) < 1 {
 			isCheckMate = true
 		}
@@ -460,7 +457,7 @@ func (b *Board) validBishop(orig int, dest int) error {
 	a1h8 := trajectory % 11 // if 0 remainder...
 	a8h1 := trajectory % 9
 	// Check which slope
-	if a1h8 == 0 {
+	if a8h1 == 0 {
 		if dest > orig { // go to bottom right
 			for i := orig + 11; i <= dest-11; i += 11 {
 				if b.board[i] != '.' {
@@ -474,7 +471,7 @@ func (b *Board) validBishop(orig int, dest int) error {
 				}
 			}
 		}
-	} else if a8h1 == 0 {
+	} else if a1h8 == 0 {
 		if dest > orig { // go to bottem left
 			for i := orig + 9; i <= dest-9; i += 9 {
 				if b.board[i] != '.' {
