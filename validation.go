@@ -3,6 +3,7 @@ package ghess
 import (
 	"bytes"
 	"errors"
+	"fmt"
 )
 
 // Move is the basic validation.
@@ -163,10 +164,12 @@ func (b *Board) Move(orig, dest int) error {
 	return nil
 	// Look for Checkmate
 	// Check all possibl moves after a check?
-	isCheck = b.isPlayerInCheck()
+	//isCheck = b.isPlayerInCheck()
+	isCheck = b.isInCheck(king)
 	if isCheck {
 		isCheckMate := false
 		origs, _ := b.SearchValid()
+		fmt.Println(isCheckMate, origs)
 		if len(origs) < 1 {
 			isCheckMate = true
 		}

@@ -161,7 +161,7 @@ Loop:
 			case input == "/minimax":
 				done := make(chan bool)
 				go func() {
-					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
+					state, err := ghess.MiniMax(0, 4, ghess.GetState(&game))
 					fmt.Println(state)
 					if err != nil {
 						fmt.Println(err)
@@ -196,6 +196,37 @@ Loop:
 						fmt.Println("Game Over:")
 						fmt.Println(info["score"])
 						break AiLoop
+					}
+				}
+			case input == "/aivsrand":
+			VsLoop:
+				for {
+					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
+					if err != nil {
+						fmt.Println(err)
+						break VsLoop
+					}
+					game.Move(state.Init[0], state.Init[1])
+					info := game.Stats()
+					fmt.Println(getPanel(info))
+					fmt.Println(game.StringWhite())
+					if info["score"] != "*" {
+						fmt.Println("Game Over:")
+						fmt.Println(info["score"])
+						break VsLoop
+					}
+
+					origs, dests := game.SearchValid()
+					e := game.MoveRandom(origs, dests)
+					if e != nil {
+						fmt.Println(e)
+					}
+					fmt.Println(getPanel(info))
+					fmt.Println(game.StringWhite())
+					if info["score"] != "*" {
+						fmt.Println("Game Over:")
+						fmt.Println(info["score"])
+						break VsLoop
 					}
 				}
 			case input == "/rand":

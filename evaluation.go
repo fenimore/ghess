@@ -5,6 +5,7 @@ package ghess
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"math/rand"
 	"unicode"
@@ -239,6 +240,7 @@ func (b *Board) Evaluate() int {
 	}
 
 	if b.checkmate {
+		fmt.Println("YOU SHOULD BE FUCKED")
 		if b.score == "0-1" {
 			score -= 9000
 		} else if b.score == "1-0" {
@@ -471,6 +473,9 @@ func (b *Board) evalKing(pos int, isWhite bool) int {
 // MoveRandom picks move from lists of valid moves.
 // Return an error, such as checkmate or draw.
 func (b *Board) MoveRandom(origs, dests []int) error {
+	if len(origs) < 1 {
+		return errors.New("There are no valid moves left")
+	}
 	randomMove := rand.Intn(len(origs))
 	e := b.Move(origs[randomMove], dests[randomMove])
 	if e != nil {
