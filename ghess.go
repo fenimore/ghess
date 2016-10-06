@@ -107,62 +107,11 @@ func NewBoard() Board {
 // The board will rotate according to whose turn
 // it is.
 func (b *Board) String() string {
-	var nums [8]byte // somehow print these?
-	nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], nums[6], nums[7] = '1', '2', '3', '4', '5', '6', '7', '8'
-	r := make(map[int]bool) // black squares
-	r[17], r[15], r[13], r[11], r[28], r[26], r[24], r[22], r[37], r[35], r[33], r[31], r[48], r[46], r[44], r[42], r[57], r[55], r[53], r[51], r[68], r[66], r[64], r[62], r[77], r[75], r[73], r[71], r[88], r[86], r[84], r[82] = false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
-	game := b.board
-	p := b.pieces
 	var printBoard string
 	if b.toMove == "w" {
-		j := 7
-		for i := 89; i > 10; i-- {
-			if i%10 == 0 {
-				printBoard += string(nums[j]) + ": " + "\n"
-				j--
-				continue
-			} else if (i+1)%10 == 0 {
-				continue
-			}
-			if game[i] == '.' {
-				_, ok := r[i]
-				if ok { // white square
-					printBoard += "|" + " " + "|"
-				} else { // black square
-					printBoard += "|" + "\u2591" + "|"
-				}
-			} else {
-				printBoard += "|" + p[string(game[i])] + "|"
-			}
-		}
-
-		printBoard += string(nums[j]) + ": " + "\n"
-		printBoard += ":a::b::c::d::e::f::g::h:\n"
+		printBoard = b.StringWhite()
 	} else {
-		// Black to Move
-		j := 0
-		for i := 11; i < 90; i++ {
-			if i%10 == 0 {
-				printBoard += string(nums[j]) + ": " + "\n"
-				j++
-				continue
-			} else if (i+1)%10 == 0 {
-				continue
-			}
-			if game[i] == '.' {
-				_, ok := r[i]
-				if ok { // white square
-					printBoard += "|" + " " + "|"
-				} else { // black square
-					printBoard += "|" + "\u2591" + "|"
-				}
-			} else {
-				printBoard += "|" + p[string(game[i])] + "|"
-			}
-		}
-
-		printBoard += string(nums[j]) + ": " + "\n"
-		printBoard += ":a::b::c::d::e::f::g::h:\n"
+		printBoard = b.StringBlack()
 	}
 	return printBoard
 }
