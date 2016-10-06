@@ -65,7 +65,8 @@ Commands:
     eval         - score position (+ White | - Black)
     minimax      - generate minimax score
     ai           - watch AI match
-    vs           - play against AI as White
+    aivshuman    - play against AI (human is black)
+    aivsrand     - ai vs random
 
 `
 	reader := bufio.NewReader(os.Stdin)

@@ -184,7 +184,7 @@ func (b *Board) StringBlack() string {
 	}
 
 	printBoard += string(nums[j]) + ": " + "\n"
-	printBoard += ":a::b::c::d::e::f::g::h:\n"
+	printBoard += ":h::g::f::e::d::c::b::a:\n"
 	return printBoard
 }
 

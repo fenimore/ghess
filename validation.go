@@ -409,6 +409,7 @@ func (b *Board) validPawn(orig int, dest int) error {
 			return err
 		}
 	case remainder == 20:
+		// Check if inbetween is free too
 		if b.board[dest] != '.' {
 			return err
 		}
