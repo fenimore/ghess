@@ -384,7 +384,7 @@ func (b *Board) evalQueen(pos int, isWhite bool) int {
 	var score int
 	score += 90
 	if b.pawnThreat(pos, isWhite) {
-		score -= 90
+		score -= 200 // Because this is real dumb
 	}
 	if !isWhite {
 		score = -score

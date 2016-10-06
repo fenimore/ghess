@@ -159,7 +159,7 @@ Loop:
 			case input == "/minimax":
 				done := make(chan bool)
 				go func() {
-					state := ghess.MiniMax(0, 10, ghess.GetState(&game))
+					state := ghess.MiniMax(0, 4, ghess.GetState(&game))
 					fmt.Println(state)
 					done <- true
 				}()
@@ -182,7 +182,7 @@ Loop:
 					game.Move(state.Init[0], state.Init[1])
 				}
 			case input == "/rand":
-				origs, dests := game.SearchForValid()
+				origs, dests := game.SearchValid()
 				e := game.MoveRandom(origs, dests)
 				if e != nil {
 					fmt.Println(e)
@@ -205,7 +205,7 @@ Loop:
 					if exit == true {
 						break LoopRand
 					}
-					origs, dests := game.SearchForValid()
+					origs, dests := game.SearchValid()
 					game.MoveRandom(origs, dests)
 					info = game.Stats()
 					fmt.Println("Move ", info["move"])
