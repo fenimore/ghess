@@ -409,8 +409,12 @@ func (b *Board) validPawn(orig int, dest int) error {
 			return err
 		}
 	case remainder == 20:
-		// Check if inbetween is free too
 		if b.board[dest] != '.' {
+			return err
+		}
+		if isWhite && b.board[dest-10] != '.' {
+			return err
+		} else if !isWhite && b.board[dest+10] != '.' {
 			return err
 		}
 		if orig > 28 && b.toMove == "w" { // Only from 2nd rank
