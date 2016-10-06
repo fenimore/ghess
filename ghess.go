@@ -377,8 +377,9 @@ func (b *Board) cycleHistory(o, d int) {
 	b.history[2] = b.history[0]
 	//b.history[i-1] = b.history[i-2]
 	//fmt.Println(b.history[i-2])
+	b.history[1] = d
+	b.history[0] = o
 
-	b.history[0], b.history[1] = o, d
 }
 
 // CopyState takes in a Board pointer and returns
