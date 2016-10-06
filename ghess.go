@@ -38,6 +38,7 @@ type Board struct {
 	headers    string         // Pgn format
 	pgnPattern *regexp.Regexp // For parsing PGN
 	fenPattern *regexp.Regexp // For validating FEN input
+	tension    map[int]int    // For keeping track of tension
 }
 
 // NewBoard returns pointer to new Board in the starting position.

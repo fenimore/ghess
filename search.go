@@ -93,3 +93,8 @@ func (b *Board) SearchValid() ([]int, []int) {
 
 	return validO, validD
 }
+
+func Tension() map[int]int {
+	tension := make(map[string]int)
+	return tension
+}
