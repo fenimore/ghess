@@ -181,22 +181,21 @@ Loop:
 
 				}
 			case input == "/ai":
+			AiLoop:
 				for {
 					fmt.Println(game.StringWhite())
 					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
 					if err != nil {
 						fmt.Println(err)
-						break
+						break AiLoop
 					}
-					o, d := game.SearchValid()
-					fmt.Println("Valid Moves")
-					fmt.Println(o)
-					fmt.Println(d)
-					fmt.Println("Best Move:")
-					fmt.Println(state.Init[0], state.Init[1])
-					fmt.Println(game.Position())
-					fmt.Println(game.Stats())
 					game.Move(state.Init[0], state.Init[1])
+					info := game.Stats()
+					if info["score"] != "*" {
+						fmt.Println("Game Over:")
+						fmt.Println(info["score"])
+						break AiLoop
+					}
 				}
 			case input == "/rand":
 				origs, dests := game.SearchValid()
