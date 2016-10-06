@@ -214,6 +214,38 @@ func (b *Board) Evaluate() int {
 	// For position, if piece,
 	var score int
 	tension := b.Tension()
+	var whiteKing int
+	var blackKing int
+
+	// Find and sort pieces:
+	for idx, val := range b.board {
+		// Only look for 64 squares
+		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
+			continue
+		}
+
+		if val == 'K' {
+			whiteKing = idx
+		} else if val == 'k' {
+			blackKing = idx
+		}
+	}
+
+	if b.isInCheck(whiteKing) {
+		score -= 200
+	}
+	if b.isInCheck(blackKing) {
+		score += 200
+	}
+
+	if b.checkmate {
+		if b.score == "0-1" {
+			score -= 9000
+		} else if b.score == "1-0" {
+			score += 9000
+		}
+	}
+
 	for idx, val := range b.board {
 		// only look at 64 squares:
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
@@ -283,6 +315,8 @@ func (b *Board) evalPawn(pos int, isWhite bool) int {
 	if pos == 44 || pos == 45 || pos == 54 || pos == 55 {
 		isCenter = true
 		score += 20
+	} else if pos == 51 || pos == 41 || pos == 48 || pos == 58 {
+		score -= 20
 	}
 	if b.pawnProtect(pos, isWhite) {
 		if !b.pawnThreat(pos, isWhite) {

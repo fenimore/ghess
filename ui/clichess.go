@@ -183,7 +183,6 @@ Loop:
 			case input == "/ai":
 			AiLoop:
 				for {
-					fmt.Println(game.StringWhite())
 					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
 					if err != nil {
 						fmt.Println(err)
@@ -191,6 +190,8 @@ Loop:
 					}
 					game.Move(state.Init[0], state.Init[1])
 					info := game.Stats()
+					fmt.Println(getPanel(info))
+					fmt.Println(game.StringWhite())
 					if info["score"] != "*" {
 						fmt.Println("Game Over:")
 						fmt.Println(info["score"])
