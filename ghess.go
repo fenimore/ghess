@@ -167,11 +167,6 @@ func (b *Board) String() string {
 	return printBoard
 }
 
-// String for satisfying Stringer interface.
-func (b *Board) String() string {
-	return b.StringWhite()
-}
-
 // StringWhite returns a string printable board
 // from white's perspective.
 func (b *Board) StringWhite() string {

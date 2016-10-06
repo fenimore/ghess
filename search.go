@@ -215,3 +215,35 @@ func (b *Board) TensionSum() int {
 	}
 	return sum
 }
+
+// StringTension Prints the board with numbers according to the
+// amount of attacks by either black or white, negative for black
+// and positive for white.
+func (b *Board) StringTension() string {
+	tension := b.Tension()
+	var nums [8]byte // somehow print these?
+	nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], nums[6], nums[7] = '1', '2', '3', '4', '5', '6', '7', '8'
+
+	//p := b.pieces
+	var printBoard string
+	j := 7
+	for i := 89; i > 10; i-- {
+		if i%10 == 0 {
+			printBoard += string(nums[j]) + ": " + "\n"
+			j--
+			continue
+		} else if (i+1)%10 == 0 {
+			continue
+		}
+		if tension[i] == 0 {
+			printBoard += "|" + "0" + "|"
+
+		} else {
+			printBoard += "|" + string(tension[i]) + "|"
+		}
+	}
+
+	printBoard += string(nums[j]) + ": " + "\n"
+	printBoard += ":a::b::c::d::e::f::g::h:\n"
+	return printBoard
+}
