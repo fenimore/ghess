@@ -3,9 +3,6 @@
 # go-chess || ghess
 
 A Golang chess engine and user interfaces
-* Command line interface
-* Websocket interface
-* Basic artificial intelligence
 
     |Move:  3     Turn: b
     |Check: false Castle: KQkq
@@ -40,6 +37,7 @@ A Golang chess engine and user interfaces
 - To evaluate a board position, with positive numbers as a White advantage and negative as Black advantage:
 
     `> /eval`
+	
 
 # Basic Features and Functionality
 - *Most* rules are implemented:
@@ -48,13 +46,13 @@ A Golang chess engine and user interfaces
 - PGN import-export via `Board.LoadPgn()` and `Board.PgnString()`
 - FEN import-export via `Board.LoadFen()` and `Board.Position()`
 - Command Line interface.
-- Random game!
+- Simple AI
 
 # Search and Evaluate Features
 
 - Looks for all possible and valid moves via `Board.SearchForValid()`, which returns two `[]int` slices with the coordinates of possible origins and possible targets. The `Board` field `pieceMap` is a `map[int]string`; the aforementioned `int`s are keys for the standard notation coordinates.
 - Evaluation returns a score with a positive value for white advantage and negative value for black advantage. See the `evaluation.go` file for it's emerging api. There is also a `Board.MoveRandom()` method which passes in two `[]int` slices and `math/rand` chooses a move.
-- A MiniMax algorithm is in the works.
+- A MiniMax algorithm is a work in progress, but with it one can play a game against a rather low level opponent.
 
 ----
 
@@ -106,8 +104,8 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 1. More tests.
 4. Export `Board` fields.
 6. Change `Board` to `Game`, as that makes more sense...
-2. Benchmarks for Search and Validation.
 3. Convert `ParseStand()` to PGN move.
+7. Save history
 
 ### TODO Basic rules
 
@@ -122,7 +120,7 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 ### TODO Search & Evaluate
 
 - There is a bug for castling possibilities in `SearchForValid()`.
-- Give all moves a score.
+- Better implement evaluation.
 
 ### TODO Extra features
 
@@ -144,7 +142,8 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 ## Growser
 - A server api using `gorilla/websocket` for live network chess playing!
 - Dependency: gorilla/websocket (BSD) and Chessboard.js (MIT)
-  * TODO: Add watch random :)
+  * TODO: Add watch random
+  * TODO: Add play AI
   * TODO: context and game index...
   * TODO: everything user
 - Castling is only when King steps on Rook, not like normals.

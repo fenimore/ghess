@@ -10,8 +10,6 @@ import (
 	"unicode"
 )
 
-var TERMINAL_DEPTH int = 3
-
 /*
 MiniMax implementation ###########################################
 */
@@ -85,12 +83,13 @@ func GetPossibleStates(state State) (States, error) {
 }
 
 // MiniMax Recursive, pass in state and move and depth.
-// Consult notes. Consult Andrea
-func MiniMax(depth int, s State) State {
+// terminal is the final depth for when it recurses up.
+// and depth is always 0 when passed in.
+func MiniMax(depth, terminal int, s State) State {
 	if depth == 0 {
 		fmt.Println("SHHH, I'm thinking")
 	}
-	if depth == TERMINAL_DEPTH { // that is, 2 ply
+	if depth == terminal { // that is, 2 ply
 		//fmt.Println("Depth ", depth, s)
 		return s
 	}
@@ -103,7 +102,7 @@ func MiniMax(depth int, s State) State {
 	var bestState State
 	var bestStates States
 	for _, state := range states {
-		bestState = MiniMax(depth+1, state)
+		bestState = MiniMax(depth+1, terminal, state)
 		bestStates = append(bestStates, bestState)
 	}
 	even := (depth % 2) == 0
