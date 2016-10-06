@@ -1,3 +1,5 @@
+// Package ghess is a chess engine. This file concerns the Search
+// and keeps a tally of board tension.
 package ghess
 
 import "bytes"
@@ -49,7 +51,8 @@ func (b *Board) SearchValid() ([]int, []int) {
 			var e error
 			switch p {
 			case 'P':
-				e = b.validPawn(idx, target)
+
+				//e = b.validPawn(idx, target)
 			case 'N':
 				e = b.validKnight(idx, target)
 			case 'B':
@@ -97,8 +100,9 @@ func (b *Board) SearchValid() ([]int, []int) {
 // Tension returns a map of which squares are attacked
 // by which side. Negative for black Positive for white.
 // TODO: For now it wont take not moving out of check into account?
+// TODO: Empassant isn't counted in tension
 func (b *Board) Tension() map[int]int {
-	tension := make(map[string]int)
+	tension := make(map[int]int)
 	whites := make([]int, 0, 16) // white movers black targets
 	blacks := make([]int, 0, 16) // black movers white targets
 	blanks := make([]int, 0, 63) // everyone's targets
@@ -108,14 +112,6 @@ func (b *Board) Tension() map[int]int {
 		// Only look for 64 squares
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
 			continue
-		}
-
-		if val == 'K' || val == 'k' {
-			if val == 'K' {
-				//king = idx
-			} else if val == 'k' {
-				//king = idx
-			}
 		}
 
 		// TODO:
@@ -131,14 +127,24 @@ func (b *Board) Tension() map[int]int {
 
 	// Increment For Squares white is attacking
 	for _, idx := range whites {
-		whiteTargets := append(blanks, blacks)
+		whiteTargets := append(blanks, blacks...)
 		p := bytes.ToUpper(b.board[idx : idx+1])[0]
+		// Check for Pawn attacks, cause they're weird:
+		if p == 'P' {
+			if (idx+9)%10 != 0 {
+				tension[idx+9]++
+			}
+			if (idx+11)%10 != 0 {
+				tension[idx+11]++
+			}
+		}
+	WhiteValidator:
 		for _, target := range whiteTargets {
 			// TODO: Check for Castling
 			var e error
 			switch p {
 			case 'P':
-				e = b.validPawn(idx, target)
+				continue WhiteValidator
 			case 'N':
 				e = b.validKnight(idx, target)
 			case 'B':
@@ -149,12 +155,7 @@ func (b *Board) Tension() map[int]int {
 				e = b.validQueen(idx, target)
 			case 'K':
 				e = b.validKing(idx, target, false)
-				if e == nil {
-					origs = append(origs, idx)
-					dests = append(dests, target)
-				}
 				// Don't check for castling? Cause that's not pressure
-				//e = b.validKing(idx, target, true)
 			}
 			if e == nil {
 				// Is valid
@@ -165,14 +166,25 @@ func (b *Board) Tension() map[int]int {
 
 	//Decrement for Squares black is attacking
 	for _, idx := range blacks {
-		blackTargets := append(blanks, whites)
+		blackTargets := append(blanks, whites...)
 		p := bytes.ToUpper(b.board[idx : idx+1])[0]
+		// Check for Pawn attacks, cause they're weird:
+		if p == 'P' {
+			if (idx-9)%10 != 0 {
+				tension[idx-9]--
+			}
+			if (idx-11)%10 != 0 {
+				tension[idx-11]--
+			}
+
+		}
+	BlackValidator:
 		for _, target := range blackTargets {
 			// TODO: Check for Castling
 			var e error
 			switch p {
-			case 'P':
-				e = b.validPawn(idx, target)
+			case 'P': // Cause pawns are weird
+				continue BlackValidator
 			case 'N':
 				e = b.validKnight(idx, target)
 			case 'B':
@@ -193,4 +205,13 @@ func (b *Board) Tension() map[int]int {
 	}
 
 	return tension
+}
+
+func (b *Board) TensionSum() int {
+	tension := b.Tension()
+	var sum int
+	for _, v := range tension {
+		sum += v
+	}
+	return sum
 }

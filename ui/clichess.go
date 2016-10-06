@@ -221,6 +221,10 @@ Loop:
 					}
 				}
 				fmt.Println(info["score"])
+			case input == "/tension":
+				fmt.Println("Tension Coordinates:")
+				fmt.Println(game.Tension())
+				fmt.Println("Total Tension: ", game.TensionSum())
 			default:
 				fmt.Println("Mysterious input")
 			}
