@@ -2,7 +2,10 @@
 // and keeps a tally of board tension.
 package ghess
 
-import "bytes"
+import (
+	"bytes"
+	"strconv"
+)
 
 // SearchValid finds two arrays, of all valid possible
 // destinations and origins. These are int coordinates
@@ -239,7 +242,7 @@ func (b *Board) StringTension() string {
 			printBoard += "|" + "0" + "|"
 
 		} else {
-			printBoard += "|" + string(tension[i]) + "|"
+			printBoard += "|" + strconv.Itoa(tension[i]) + "|"
 		}
 	}
 

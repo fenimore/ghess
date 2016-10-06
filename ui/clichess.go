@@ -159,8 +159,11 @@ Loop:
 			case input == "/minimax":
 				done := make(chan bool)
 				go func() {
-					state := ghess.MiniMax(0, 4, ghess.GetState(&game))
+					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
 					fmt.Println(state)
+					if err != nil {
+						fmt.Println(err)
+					}
 					done <- true
 				}()
 				now := time.Now()
@@ -178,7 +181,11 @@ Loop:
 			case input == "/ai":
 				for {
 					fmt.Println(game.StringWhite())
-					state := ghess.MiniMax(0, 3, ghess.GetState(&game))
+					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
+					if err != nil {
+						fmt.Println(err)
+						break
+					}
 					game.Move(state.Init[0], state.Init[1])
 				}
 			case input == "/rand":
@@ -225,6 +232,7 @@ Loop:
 				fmt.Println("Tension Coordinates:")
 				fmt.Println(game.Tension())
 				fmt.Println("Total Tension: ", game.TensionSum())
+				fmt.Println(game.StringTension())
 			default:
 				fmt.Println("Mysterious input")
 			}

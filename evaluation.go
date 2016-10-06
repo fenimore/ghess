@@ -87,32 +87,36 @@ func GetPossibleStates(state State) (States, error) {
 // and depth is always 0 when passed in initially.
 // This is like a DFS algorithm which tries to Minimize maximun loss.
 // TODO: write tests somehow.
-func MiniMax(depth, terminal int, s State) State {
+// Pass bback error LOL
+func MiniMax(depth, terminal int, s State) (State, error) {
 	if depth == 0 {
 		fmt.Println("SHHH, I'm thinking")
 	}
 	if depth == terminal { // that is, 2 ply
 		//fmt.Println("Depth ", depth, s)
-		return s
+		return s, nil
 	}
 
 	states, err := GetPossibleStates(s)
 	if err != nil {
-		fmt.Println(err)
+		return s, err
 	}
 
 	var bestState State
 	var bestStates States
 	for _, state := range states {
-		bestState = MiniMax(depth+1, terminal, state)
+		bestState, err = MiniMax(depth+1, terminal, state)
+		if err != nil {
+			return bestState, err
+		}
 		bestStates = append(bestStates, bestState)
 	}
 	even := (depth % 2) == 0
 	if even {
 		// If White Player Return Maximum
-		return Max(bestStates)
+		return Max(bestStates), nil
 	} // Otherwise Return Minimum... Yup that's the idea.
-	return Min(bestStates)
+	return Min(bestStates), nil
 }
 
 // Max returns the state from States with
@@ -206,6 +210,7 @@ func (b *Board) pawnThreat(dest int, isWhite bool) bool {
 func (b *Board) Evaluate() int {
 	// For position, if piece,
 	var score int
+	tension := b.Tension()
 	for idx, val := range b.board {
 		// only look at 64 squares:
 		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
@@ -215,6 +220,7 @@ func (b *Board) Evaluate() int {
 		}
 		isWhitePiece := b.isUpper(idx)
 		piece := []byte(bytes.ToUpper(b.board[idx : idx+1]))[0]
+		//if isWhitePiece
 		switch piece {
 		case 'P':
 			score += b.evalPawn(idx, isWhitePiece)
