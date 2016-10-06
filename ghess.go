@@ -38,6 +38,7 @@ type Board struct {
 	headers    string         // Pgn format
 	pgnPattern *regexp.Regexp // For parsing PGN
 	fenPattern *regexp.Regexp // For validating FEN input
+	history    [8]int         // For Draws, last six coordinates
 }
 
 // NewBoard returns pointer to new Board in the starting position.
@@ -252,6 +253,7 @@ func (b *Board) Stats() map[string]string {
 	m["headers"] = b.headers
 	m["score"] = b.score
 	m["checkmate"] = strconv.FormatBool(b.checkmate)
+	//m["lastthree"] =
 	return m
 }
 
@@ -364,6 +366,19 @@ func (b *Board) Coordinates() {
 // [TODO] or it is empty square.
 func (b Board) isUpper(x int) bool {
 	return b.board[x] < []byte{0x5a}[0]
+}
+
+func (b *Board) cycleHistory(o, d int) {
+	b.history[7] = b.history[5]
+	b.history[6] = b.history[4]
+	b.history[5] = b.history[3]
+	b.history[4] = b.history[2]
+	b.history[3] = b.history[1]
+	b.history[2] = b.history[0]
+	//b.history[i-1] = b.history[i-2]
+	//fmt.Println(b.history[i-2])
+
+	b.history[0], b.history[1] = o, d
 }
 
 // CopyState takes in a Board pointer and returns

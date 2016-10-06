@@ -3,6 +3,7 @@ package ghess
 import (
 	"bytes"
 	"errors"
+	"fmt"
 )
 
 // Move is the basic validation.
@@ -152,7 +153,15 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// update real board
 	b.updateBoard(orig, dest, val, isEmpassant, isCastle)
-
+	// Check if it is draw// If not TODO
+	if orig == b.history[6] && orig == b.history[2] && b.history[0] == b.history[4] {
+		// origins all match upppp... suspicious
+		if dest == b.history[7] && dest == b.history[3] && b.history[1] == b.history[5] {
+			fmt.Println("Draw!!!")
+		}
+	}
+	fmt.Println(b.history)
+	b.cycleHistory(orig, dest)
 	// Look for Checkmate
 	// Check all possibl moves after a check?
 	isCheck = b.isPlayerInCheck()
