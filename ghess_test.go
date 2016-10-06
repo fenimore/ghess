@@ -97,6 +97,90 @@ func TestSearchValid(t *testing.T) {
 	}
 }
 
+/* Piece validation check */
+
+func TestQueenValid(t *testing.T) {
+	game := NewBoard()
+	var err error
+	// weird Queen surrounded by pawns
+	fen := `rnbqkbnr/8/8/2ppp3/2pQp3/2ppp3/P4PPP/R5KR w KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen Error")
+	}
+	err = game.Move(45, 27)
+	if err == nil {
+		t.Error("Queen can't move there!!")
+	}
+	err = game.Move(45, 67)
+	if err == nil {
+		t.Error("Queen can't move there!!")
+	}
+	err = game.Move(45, 36)
+	if err != nil {
+		t.Error("Queen should be able to move here")
+	}
+	fen = `rnbqkbnr/ppNppppp/8/8/8/8/PPPPPPPP/RNBQKB1R w KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen Error")
+	}
+	err = game.Move(85, 76)
+	if err != nil {
+		t.Error("Queen should be able to move here")
+	}
+}
+
+func TestBishopValid(t *testing.T) {
+	game := NewBoard()
+	var err error
+	fen := `rnbqkbnr/pp1p1ppp/8/8/1P1p4/2B5/PP2PPPP/RN1QKBNR w KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen Error")
+	}
+	err = game.Move(36, 54)
+	if err == nil {
+		t.Error("Bishop can't move there!!")
+	}
+	err = game.Move(36, 58)
+	if err == nil {
+		t.Error("Bishop can't move there!!")
+	}
+	err = game.Move(36, 47)
+	if err == nil {
+		t.Error("Bishop can't move there!!")
+	}
+	err = game.Move(36, 45)
+	if err != nil {
+		t.Error("Bishop should move there!!")
+	}
+}
+
+func TestPawnValid(t *testing.T) {
+	fen := `rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R w KQkq - 0 1`
+	game := NewBoard()
+	var err error
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen Error")
+	}
+
+	err = game.Move(23, 43)
+	if err == nil {
+		t.Error("Illegal Pawn move")
+	}
+	err = game.Move(23, 34)
+	if err == nil {
+		t.Error("There's no attack there..")
+	}
+	err = game.Move(24, 44)
+	if err != nil {
+		t.Error("But that's a legal move")
+	}
+
+}
+
 func ExampleStartPosition() {
 	game := NewBoard()
 	fmt.Print(game.Position())

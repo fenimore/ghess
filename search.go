@@ -131,6 +131,7 @@ func (b *Board) Tension() map[int]int {
 	// Increment For Squares white is attacking
 	for _, idx := range whites {
 		whiteTargets := append(blanks, blacks...)
+		whiteTargets = append(whiteTargets, whites...)
 		p := bytes.ToUpper(b.board[idx : idx+1])[0]
 		// Check for Pawn attacks, cause they're weird:
 		if p == 'P' {
@@ -170,6 +171,7 @@ func (b *Board) Tension() map[int]int {
 	//Decrement for Squares black is attacking
 	for _, idx := range blacks {
 		blackTargets := append(blanks, whites...)
+		blackTargets = append(blackTargets, blacks...)
 		p := bytes.ToUpper(b.board[idx : idx+1])[0]
 		// Check for Pawn attacks, cause they're weird:
 		if p == 'P' {
