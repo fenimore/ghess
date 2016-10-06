@@ -3,11 +3,12 @@ package ghess
 import "bytes"
 
 // SearchValid finds two arrays, of all valid possible
-// destinations and origins.
-// TODO
+// destinations and origins. These are int coordinates
+// which point to the index of the byte slice Board.board
+// TODO: Castling is not quite working.
 func (b *Board) SearchValid() ([]int, []int) {
 	movers := make([]int, 0, 16)
-	targets := make([]int, 0, 63) // There will only ever be 63 open squares
+	targets := make([]int, 0, 63)
 	origs := make([]int, 0, 16)
 	dests := make([]int, 0, 63)
 	validO := make([]int, 0, 16)

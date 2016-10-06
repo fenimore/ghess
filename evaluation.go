@@ -66,7 +66,7 @@ func TryState(b *Board, o, d int) (State, error) {
 // Each with a score and the move that got there.
 func GetPossibleStates(state State) (States, error) {
 	states := make(States, 0)
-	origs, dests := state.board.SearchForValid()
+	origs, dests := state.board.SearchValid()
 	for i := 0; i < len(origs); i++ {
 		s, err := TryState(state.board, origs[i], dests[i])
 		if err != nil {
@@ -428,7 +428,7 @@ DEPRICATED EVALUATION / ISN'T RELEVANT #####################
 // SumEval returns the sum of evaluations of one side.
 // Depricated
 func (b *Board) SumEval() int {
-	origs, dests := b.SearchForValid()
+	origs, dests := b.SearchValid()
 	evaluations := b.EvaluateMoves(origs, dests)
 	var sum int
 	for _, eval := range evaluations {
@@ -611,7 +611,7 @@ func (b *Board) EvaluateMove(orig, dest int) int {
 
 // FindBest returns the best move from evaluation.
 func (b *Board) FindBestMove() (int, int) {
-	origs, dests := b.SearchForValid()
+	origs, dests := b.SearchValid()
 	bests := b.EvaluateMoves(origs, dests)
 	// get best of bests and return the index
 	var best int
@@ -644,7 +644,7 @@ func (b *Board) FindBestMove() (int, int) {
 // MoveBest finds the best move of all valid moves.
 // This method is not operational.
 func (b *Board) MoveBest() {
-	origs, dests := b.SearchForValid()
+	origs, dests := b.SearchValid()
 	bests := b.EvaluateMoves(origs, dests)
 	// get best of bests and return the index
 	var best int
