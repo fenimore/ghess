@@ -94,7 +94,103 @@ func (b *Board) SearchValid() ([]int, []int) {
 	return validO, validD
 }
 
-func Tension() map[int]int {
+// Tension returns a map of which squares are attacked
+// by which side. Negative for black Positive for white.
+// TODO: For now it wont take not moving out of check into account?
+func (b *Board) Tension() map[int]int {
 	tension := make(map[string]int)
+	whites := make([]int, 0, 16) // white movers black targets
+	blacks := make([]int, 0, 16) // black movers white targets
+	blanks := make([]int, 0, 63) // everyone's targets
+
+	// Find and sort pieces:
+	for idx, val := range b.board {
+		// Only look for 64 squares
+		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
+			continue
+		}
+
+		if val == 'K' || val == 'k' {
+			if val == 'K' {
+				//king = idx
+			} else if val == 'k' {
+				//king = idx
+			}
+		}
+
+		// TODO:
+		// This is why Castle search return in valid doesn't work
+		if b.isUpper(idx) && val != '.' {
+			whites = append(whites, idx)
+		} else if !b.isUpper(idx) && val != '.' {
+			blacks = append(blacks, idx)
+		} else {
+			blanks = append(blanks, idx)
+		}
+	}
+
+	// Increment For Squares white is attacking
+	for _, idx := range whites {
+		whiteTargets := append(blanks, blacks)
+		p := bytes.ToUpper(b.board[idx : idx+1])[0]
+		for _, target := range whiteTargets {
+			// TODO: Check for Castling
+			var e error
+			switch p {
+			case 'P':
+				e = b.validPawn(idx, target)
+			case 'N':
+				e = b.validKnight(idx, target)
+			case 'B':
+				e = b.validBishop(idx, target)
+			case 'R':
+				e = b.validRook(idx, target)
+			case 'Q':
+				e = b.validQueen(idx, target)
+			case 'K':
+				e = b.validKing(idx, target, false)
+				if e == nil {
+					origs = append(origs, idx)
+					dests = append(dests, target)
+				}
+				// Don't check for castling? Cause that's not pressure
+				//e = b.validKing(idx, target, true)
+			}
+			if e == nil {
+				// Is valid
+				tension[target]++
+			}
+		}
+	}
+
+	//Decrement for Squares black is attacking
+	for _, idx := range blacks {
+		blackTargets := append(blanks, whites)
+		p := bytes.ToUpper(b.board[idx : idx+1])[0]
+		for _, target := range blackTargets {
+			// TODO: Check for Castling
+			var e error
+			switch p {
+			case 'P':
+				e = b.validPawn(idx, target)
+			case 'N':
+				e = b.validKnight(idx, target)
+			case 'B':
+				e = b.validBishop(idx, target)
+			case 'R':
+				e = b.validRook(idx, target)
+			case 'Q':
+				e = b.validQueen(idx, target)
+			case 'K':
+				e = b.validKing(idx, target, false)
+				//e = b.validKing(idx, target, true)
+				//fmt.Println("King")
+			}
+			if e == nil {
+				tension[target]--
+			}
+		}
+	}
+
 	return tension
 }
