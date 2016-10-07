@@ -617,6 +617,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 // Check for castle.
 func (b *Board) validKing(orig int, dest int, castle bool) error {
 	validCastle := dest != 88 && dest != 81 && dest != 11 && dest != 18
+	// LOL validCastle is invalidCaslte... weird.
 	// validCastle is a not so valid castle position
 	if validCastle && castle {
 		return errors.New("Castle by moving K to R position")

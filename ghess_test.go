@@ -121,6 +121,36 @@ func TestSearchValid(t *testing.T) {
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		t.Error("Search doesn't return the correct/valid moves")
 	}
+
+	// SearchValid finds Castling:
+	fen = `r3k2r/P6P/8/8/8/8/p6p/R3K2R w KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen error")
+	}
+	o, d = game.SearchValid()
+	exO = []int{11}
+	exD = []int{76}
+	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
+		fmt.Println(o)
+		fmt.Println(d)
+		t.Error("Search doesn't return the correct/valid moves")
+	}
+	// For black:
+	fen = `r3k2r/P6P/8/8/8/8/p6p/R3K2R b KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+
+		t.Error("Fen error")
+	}
+	o, d = game.SearchValid()
+	exO = []int{85}
+	exD = []int{76}
+	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
+		fmt.Println(o)
+		fmt.Println(d)
+		t.Error("Search doesn't return the correct/valid moves")
+	}
 }
 
 /* Piece validation check */

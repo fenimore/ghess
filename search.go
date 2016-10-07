@@ -4,6 +4,7 @@ package ghess
 
 import (
 	"bytes"
+	"fmt"
 	"strconv"
 )
 
@@ -31,6 +32,10 @@ func (b *Board) SearchValid() ([]int, []int) {
 		if val == 'K' || val == 'k' {
 			if isWhite && val == 'K' {
 				king = idx
+				//				if idx == 14 {
+				//					targets = append(targets, 11)
+				///					targets = append(targets, 18)
+				//				}
 			} else if !isWhite && val == 'k' {
 				king = idx
 			}
@@ -40,6 +45,7 @@ func (b *Board) SearchValid() ([]int, []int) {
 		// This is why Castle search return in valid doesn't work
 		if b.toMove == "w" && b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
+			// This should work?
 			if b.toMove == "w" && (idx == 11 || idx == 18) {
 				targets = append(targets, idx)
 			}
@@ -74,6 +80,16 @@ func (b *Board) SearchValid() ([]int, []int) {
 			case 'Q':
 				e = b.validQueen(idx, target)
 			case 'K':
+				switch target {
+				case 11:
+					fmt.Println("This should work")
+				case 18:
+					fmt.Println("This should work")
+				case 81:
+					fmt.Println("This should work")
+				case 88:
+					fmt.Println("This should work")
+				}
 				e = b.validKing(idx, target, false)
 				if e == nil {
 					origs = append(origs, idx)
