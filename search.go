@@ -4,7 +4,6 @@ package ghess
 
 import (
 	"bytes"
-	"fmt"
 	"strconv"
 )
 
@@ -80,16 +79,7 @@ func (b *Board) SearchValid() ([]int, []int) {
 			case 'Q':
 				e = b.validQueen(idx, target)
 			case 'K':
-				switch target {
-				case 11:
-					fmt.Println("This should work")
-				case 18:
-					fmt.Println("This should work")
-				case 81:
-					fmt.Println("This should work")
-				case 88:
-					fmt.Println("This should work")
-				}
+
 				e = b.validKing(idx, target, false)
 				if e == nil {
 					origs = append(origs, idx)
@@ -97,6 +87,11 @@ func (b *Board) SearchValid() ([]int, []int) {
 				}
 				e = b.validKing(idx, target, true)
 				//fmt.Println("King")
+				//fmt.Println(e)
+				if e == nil {
+					origs = append(origs, idx)
+					dests = append(dests, target)
+				}
 			}
 			if e == nil {
 				origs = append(origs, idx)

@@ -91,9 +91,11 @@ func TestSearchValid(t *testing.T) {
 	fen := "6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42"
 	_ = game.LoadFen(fen)
 	o, d := game.SearchValid()
-	exO := []int{21, 21, 21, 21, 43}
-	exD := []int{11, 11, 12, 31, 23}
+	exO := []int{21, 21, 21, 43}
+	exD := []int{11, 12, 31, 23}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
+		fmt.Println(o)
+		fmt.Println(d)
 		t.Error("Search doesn't return the correct/valid moves")
 	}
 
@@ -134,7 +136,7 @@ func TestSearchValid(t *testing.T) {
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		fmt.Println(o)
 		fmt.Println(d)
-		t.Error("Search doesn't return the correct/valid moves")
+		t.Error("Search doesn't find white castle")
 	}
 	// For black:
 	fen = `r3k2r/P6P/8/8/8/8/p6p/R3K2R b KQkq - 0 1`
@@ -149,7 +151,7 @@ func TestSearchValid(t *testing.T) {
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		fmt.Println(o)
 		fmt.Println(d)
-		t.Error("Search doesn't return the correct/valid moves")
+		t.Error("Search doesn't find Black castle")
 	}
 }
 
