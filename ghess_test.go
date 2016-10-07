@@ -86,12 +86,38 @@ func TestTension(t *testing.T) {
 }
 
 func TestSearchValid(t *testing.T) {
+	var err error
 	game := NewBoard()
 	fen := "6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42"
 	_ = game.LoadFen(fen)
 	o, d := game.SearchValid()
 	exO := []int{21, 21, 21, 21, 43}
 	exD := []int{11, 11, 12, 31, 23}
+	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
+		t.Error("Search doesn't return the correct/valid moves")
+	}
+
+	fen = `rn1q1kbr/ppNNpppp/8/3p4/4P3/8/PPPP1PPP/R1BQKB1R b KQkq - 0 2`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen error")
+	}
+	o, d = game.SearchValid()
+	exO = []int{85, 87}
+	exD = []int{75, 75}
+	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
+		fmt.Println(o, exO, d, exD)
+		t.Error("Search doesn't return the correct/valid moves")
+	}
+
+	fen = `rn1qkb1r/ppNppppp/8/8/4P3/8/PPPP1PPP/R1BQKBNR b KQkq - 0 2`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen error")
+	}
+	o, d = game.SearchValid()
+	exO = []int{85}
+	exD = []int{76}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		t.Error("Search doesn't return the correct/valid moves")
 	}
@@ -153,6 +179,17 @@ func TestQueenValid(t *testing.T) {
 	if err != nil {
 		t.Error("Queen should be able to move here")
 	}
+
+	fen = `r2q1kbr/ppNN1ppp/4p3/3p4/4P3/8/PPPP1PPP/R1BQKB1R b KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen error")
+	}
+	err = game.Move(85, 75)
+	if err != nil {
+		t.Error("Queen should be able to move here")
+	}
+
 }
 
 func TestBishopValid(t *testing.T) {

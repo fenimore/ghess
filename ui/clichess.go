@@ -202,6 +202,7 @@ Loop:
 			case input == "/aivsrand":
 			VsLoop:
 				for {
+					fmt.Println(game.Position())
 					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
 					if err != nil {
 						fmt.Println(err)
@@ -222,6 +223,7 @@ Loop:
 					if e != nil {
 						fmt.Println(e)
 					}
+					info = game.Stats()
 					fmt.Println(getPanel(info))
 					fmt.Println(game.StringWhite())
 					if info["score"] != "*" {

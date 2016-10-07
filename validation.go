@@ -5,6 +5,8 @@ import (
 	"errors"
 )
 
+// Problem: 1nbq1knr/1rNpppb1/pp4pp/4N3/3P4/P6P/1PP1PPP1/R1BQKB1R w KQ-- - 0 9
+
 // Move is the basic validation.
 // The origin and destination square are tested
 // in a dereferenced b.board to keep from moving
