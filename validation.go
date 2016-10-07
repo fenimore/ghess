@@ -544,8 +544,8 @@ func (b *Board) validQueen(orig int, dest int) error {
 	remainder := dest - orig
 	vertical := remainder%10 == 0
 	horizontal := remainder < 9 && remainder > -9 // Horizontal
-	diagA8 := remainder%9 == 0                    // Diag a8h1
-	diagA1 := remainder%11 == 0                   // Diag a1h8
+	a8h1 := remainder%9 == 0                      // Diag a8h1 A8
+	a1h8 := remainder%11 == 0                     // Diag a1h8 A1
 	// Check if moves through not-empty squares
 	if horizontal { // 1st
 		if remainder < 0 {
@@ -575,7 +575,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 				}
 			}
 		}
-	} else if diagA8 {
+	} else if a8h1 {
 		if dest > orig { // go to bottem left
 			for i := orig + 9; i <= dest-9; i += 9 {
 				if b.board[i] != '.' {
@@ -589,7 +589,7 @@ func (b *Board) validQueen(orig int, dest int) error {
 				}
 			}
 		}
-	} else if diagA1 {
+	} else if a1h8 {
 		if dest > orig { // go to bottom right
 			for i := orig + 11; i <= dest-11; i += 11 {
 				if b.board[i] != '.' {

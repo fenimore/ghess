@@ -120,12 +120,36 @@ func TestQueenValid(t *testing.T) {
 	if err != nil {
 		t.Error("Queen should be able to move here")
 	}
-	fen = `rnbqkbnr/ppNppppp/8/8/8/8/PPPPPPPP/RNBQKB1R w KQkq - 0 1`
+	fen = `rnbqkbnr/ppNppppp/8/8/8/8/PPPPPPPP/RNBQKB1R b KQkq - 0 1`
 	err = game.LoadFen(fen)
 	if err != nil {
 		t.Error("Fen Error")
 	}
 	err = game.Move(85, 76)
+	if err != nil {
+		t.Error("Queen should be able to move here")
+	}
+	fen = `rnbqkbnr/ppNppppp/8/8/8/8/PPPPPPPP/RNBQKB1R b KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen Error")
+	}
+
+	fen = `rnbqkbnr/pp1ppppp/8/8/8/8/PPPPPPPP/RNBQKB1R b KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen error")
+	}
+	err = game.Move(85, 76)
+	if err != nil {
+		t.Error("Queen should be able to move here")
+	}
+	fen = `rnbqkbnr/pp1ppppp/8/8/8/8/PPPPPPPP/RNBQKB1R b KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen error")
+	}
+	err = game.Move(85, 67)
 	if err != nil {
 		t.Error("Queen should be able to move here")
 	}

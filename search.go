@@ -108,6 +108,7 @@ func (b *Board) Tension() map[int]int {
 	tension := make(map[int]int)
 	whites := make([]int, 0, 16) // white movers black targets
 	blacks := make([]int, 0, 16) // black movers white targets
+	// Todo, do I need blanks?
 	blanks := make([]int, 0, 63) // everyone's targets
 
 	// Find and sort pieces:
