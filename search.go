@@ -40,10 +40,19 @@ func (b *Board) SearchValid() ([]int, []int) {
 		// This is why Castle search return in valid doesn't work
 		if b.toMove == "w" && b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
+			if b.toMove == "w" && (idx == 11 || idx == 18) {
+				targets = append(targets, idx)
+			}
+
 		} else if b.toMove == "b" && !b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
+			// For Castling:
+			if b.toMove == "b" && (idx == 81 || idx == 88) {
+				targets = append(targets, idx)
+			}
 		} else {
 			targets = append(targets, idx)
+
 		}
 	}
 
