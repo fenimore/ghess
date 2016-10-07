@@ -221,6 +221,7 @@ Loop:
 
 					origs, dests := game.SearchValid()
 					e := game.MoveRandom(origs, dests)
+					think(true)
 					if e != nil {
 						fmt.Println(e)
 					}
@@ -232,7 +233,7 @@ Loop:
 						fmt.Println(info["score"])
 						break VsLoop
 					}
-					think(false)
+
 				}
 			case input == "/aivshuman":
 			HumLoop:
