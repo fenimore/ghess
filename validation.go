@@ -624,6 +624,7 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	}
 	castlerr := errors.New("Something is in your way")
 	noCastle := errors.New("Castle on this side is foutu")
+
 	var possibilities [8]int
 	g := b.board // g for gameboard
 	possibilities[0], possibilities[1],
@@ -638,8 +639,13 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 		}
 	}
 	if castle {
+
 		queenSideCastle := !(g[orig+1] != '.' || g[orig+2] != '.' || g[orig+3] != '.')
 		kingSideCastle := !(g[orig-1] != '.' || g[orig-2] != '.')
+		//fmt.Println(orig, dest)
+		//fmt.Println(kingSideCastle)
+		//fmt.Println(queenSideCastle)
+		//fmt.Println(string(b.castle))
 		if dest > orig { // Queen side
 			if !queenSideCastle {
 				return castlerr
@@ -668,7 +674,6 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 				}
 			}
 		}
-
 	} else {
 		return errors.New("Illegal King Move")
 	}

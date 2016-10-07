@@ -31,10 +31,6 @@ func (b *Board) SearchValid() ([]int, []int) {
 		if val == 'K' || val == 'k' {
 			if isWhite && val == 'K' {
 				king = idx
-				//				if idx == 14 {
-				//					targets = append(targets, 11)
-				///					targets = append(targets, 18)
-				//				}
 			} else if !isWhite && val == 'k' {
 				king = idx
 			}
@@ -48,7 +44,6 @@ func (b *Board) SearchValid() ([]int, []int) {
 			if b.toMove == "w" && (idx == 11 || idx == 18) {
 				targets = append(targets, idx)
 			}
-
 		} else if b.toMove == "b" && !b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
 			// For Castling:
