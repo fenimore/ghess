@@ -81,18 +81,20 @@ func (b *Board) SearchValid() ([]int, []int) {
 	}
 
 	// Check if it moves into Check
-	for i := 0; i < len(origs); i++ {
+	//for i := 0; i < len(origs); i++ {
+	for i, v := range origs {
+		var k int
 		// Check if King is the piece moved
-
-		// This isthe Problem for my Search Valid
-		if b.board[origs[i]] == 'k' || b.board[origs[i]] == 'K' {
-			king = dests[i]
+		if b.board[v] == 'k' || b.board[v] == 'K' {
+			k = dests[i]
+		} else {
+			k = king
 		}
 		// Copy board to "make move" as the move must be made
 		// in order to test for check
 		possible := CopyBoard(b)
 		err := possible.Move(origs[i], dests[i])
-		isCheck := possible.isInCheck(king)
+		isCheck := possible.isInCheck(k)
 		if dests[i] == 75 && isCheck {
 			//fmt.Println(origs[i], "What?", king)
 		}
