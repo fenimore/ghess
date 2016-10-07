@@ -206,6 +206,43 @@ func (b *Board) pawnThreat(dest int, isWhite bool) bool {
 	}
 }
 
+// threatenQueen checks if the piece threatens the enemy queen.
+func (b *Board) queenThreaten(pos int, piece byte, isWhite bool) bool {
+	// find queen
+	var queen int
+	var e error
+	for idx, val := range b.board {
+		// Only look for 64 squares
+		if idx%10 == 0 || (idx+1)%10 == 0 ||
+			idx > 88 || idx < 11 {
+			continue
+		}
+		if isWhite && val == 'q' {
+			queen = idx
+		} else if !isWhite && val == 'Q' {
+			queen = idx
+		}
+	}
+	switch piece {
+	case 'P': // Cause pawns are weird
+		return false
+	case 'N':
+		e = b.validKnight(pos, queen)
+	case 'B':
+		e = b.validBishop(pos, queen)
+	case 'R':
+		e = b.validRook(pos, queen)
+	case 'Q':
+		return false
+	case 'K':
+		e = b.validKing(pos, queen, false)
+	}
+	if e == nil {
+		return true
+	}
+	return false
+}
+
 // TODO: implement, pawnThreatensPiece
 
 // Evaluate returns score based on position.
@@ -218,10 +255,11 @@ func (b *Board) Evaluate() int {
 	var whiteKing int
 	var blackKing int
 
-	// Find and sort pieces:
+	// Find King
 	for idx, val := range b.board {
 		// Only look for 64 squares
-		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
+		if idx%10 == 0 || (idx+1)%10 == 0 ||
+			idx > 88 || idx < 11 {
 			continue
 		}
 
@@ -249,7 +287,8 @@ func (b *Board) Evaluate() int {
 
 	for idx, val := range b.board {
 		// only look at 64 squares:
-		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
+		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 ||
+			idx < 11 {
 			continue
 		} else if val == '.' {
 			continue
@@ -277,6 +316,7 @@ func (b *Board) Evaluate() int {
 			score += b.evalPawn(idx, isWhitePiece)
 		case 'N':
 			score += b.evalKnight(idx, isWhitePiece)
+
 		case 'B':
 			score += b.evalBishop(idx, isWhitePiece)
 		case 'R':
@@ -288,6 +328,13 @@ func (b *Board) Evaluate() int {
 		default:
 			//wtf default?
 			score += 0
+		}
+		if b.queenThreaten(idx, piece, isWhitePiece) {
+			if isWhitePiece {
+				score += 200
+			} else {
+				score -= 200
+			}
 		}
 	}
 	return score

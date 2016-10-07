@@ -184,6 +184,7 @@ Loop:
 			case input == "/ai":
 			AiLoop:
 				for {
+					now := time.Now()
 					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
 					if err != nil {
 						fmt.Println(err)
@@ -193,6 +194,7 @@ Loop:
 					info := game.Stats()
 					fmt.Println(getPanel(info))
 					fmt.Println(game.StringWhite())
+					fmt.Printf("\nThis took me: %s\n", time.Since(now))
 					if info["score"] != "*" {
 						fmt.Println("Game Over:")
 						fmt.Println(info["score"])
@@ -202,7 +204,6 @@ Loop:
 			case input == "/aivsrand":
 			VsLoop:
 				for {
-					fmt.Println(game.Position())
 					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
 					if err != nil {
 						fmt.Println(err)
@@ -231,6 +232,7 @@ Loop:
 						fmt.Println(info["score"])
 						break VsLoop
 					}
+					think(false)
 				}
 			case input == "/aivshuman":
 			HumLoop:
