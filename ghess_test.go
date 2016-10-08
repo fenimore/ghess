@@ -12,7 +12,7 @@ func TestNewBoard(t *testing.T) {
 	game := NewBoard()
 	expected := "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 	if game.Position() != expected {
-		t.Error("Unexpected FEN: %s", game.Position())
+		t.Error("Unexpected FEN:", game.Position())
 	}
 
 }
@@ -67,7 +67,7 @@ func TestStandard(t *testing.T) {
 		t.Error("This move doesn't make any sense.")
 	}
 	if game.Position() != "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1" {
-		t.Error("FEN looks funny: %s", game.Position())
+		t.Error("FEN looks funny ")
 	}
 }
 

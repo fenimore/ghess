@@ -382,7 +382,7 @@ func (b *Board) cycleHistory(o, d int) {
 
 }
 
-// CopyState takes in a Board pointer and returns
+// CopyBoard takes in a Board pointer and returns
 // a copy of it's state, this is for modifying and then
 // keeping the originals state intact. One must be careful because
 // the values of Board are []byte slices, and these are themselves

@@ -316,7 +316,7 @@ func (b *Board) isInCheck(target int) bool {
 	// store all the orig of the opponents pieces
 	attackers := make([]int, 0, 16)
 
-	for idx, _ := range b.board {
+	for idx := range b.board {
 		whitePiece := b.isUpper(idx)
 		if isWhite && !whitePiece {
 			attackers = append(attackers, idx)

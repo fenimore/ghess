@@ -1,6 +1,4 @@
-// ghess Evaluation is trying to take all possible moves,
-// And somehow pick the best? Yikes
-//
+// Package ghess Evaluation scores a certain position.
 package ghess
 
 import (
@@ -63,7 +61,7 @@ func TryState(b *Board, o, d int) (State, error) {
 	return state, nil
 }
 
-// GetStates returns a slice of State structs
+// GetPossibleStates returns a slice of State structs
 // Each with a score and the move that got there.
 func GetPossibleStates(state State) (States, error) {
 	states := make(States, 0)
@@ -718,7 +716,7 @@ func (b *Board) EvaluateMove(orig, dest int) int {
 	return score
 }
 
-// FindBest returns the best move from evaluation.
+// FindBestMove returns the best move from evaluation.
 func (b *Board) FindBestMove() (int, int) {
 	origs, dests := b.SearchValid()
 	bests := b.EvaluateMoves(origs, dests)
