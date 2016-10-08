@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"time"
 	"unicode"
 )
 
@@ -22,10 +23,12 @@ type State struct {
 	Init  [2]int
 }
 
+// String returns some basic info of a State.
 func (s State) String() string {
 	return fmt.Sprintf("\nScore: %d\nFrom Move: %d, %d", s.eval, s.Init[0], s.Init[1])
 }
 
+// States are a slice of State structs.
 type States []State
 
 // Sort functionality depricated.
@@ -90,6 +93,11 @@ func GetPossibleStates(state State) (States, error) {
 func MiniMax(depth, terminal int, s State) (State, error) {
 	if depth == 0 {
 		fmt.Println("SHHH, I'm thinking")
+		// DICT attack
+		openState, err := DictionaryAttack(s)
+		if err == nil {
+			return openState, nil
+		}
 	}
 	if depth == terminal { // that is, 2 ply
 		//fmt.Println("Depth ", depth, s)
@@ -147,6 +155,17 @@ func Min(states States) State {
 		}
 	}
 	return states[minIdx]
+}
+
+func DictionaryAttack(s State) (State, error) {
+	key := s.board.Position()
+	dict := make(map[string][2]int)
+	dict["rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"] = [2]int{24, 44}
+	if val, ok := dict[key]; ok {
+		state := State{Init: val}
+		return state, nil
+	}
+	return s, errors.New("No Dictionary Attack Found")
 }
 
 /*
@@ -252,6 +271,7 @@ func (b *Board) Evaluate() int {
 	tension := b.Tension()
 	var whiteKing int
 	var blackKing int
+	var material int
 
 	// Find King
 	for idx, val := range b.board {
@@ -312,15 +332,39 @@ func (b *Board) Evaluate() int {
 		switch piece {
 		case 'P':
 			score += b.evalPawn(idx, isWhitePiece)
+			if isWhitePiece {
+				material += 10
+			} else {
+				material -= 10
+			}
 		case 'N':
 			score += b.evalKnight(idx, isWhitePiece)
-
+			if isWhitePiece {
+				material += 30
+			} else {
+				material -= 30
+			}
 		case 'B':
 			score += b.evalBishop(idx, isWhitePiece)
+			if isWhitePiece {
+				material += 30
+			} else {
+				material -= 30
+			}
 		case 'R':
 			score += b.evalRook(idx, isWhitePiece)
+			if isWhitePiece {
+				material += 50
+			} else {
+				material -= 50
+			}
 		case 'Q':
 			score += b.evalQueen(idx, isWhitePiece)
+			if isWhitePiece {
+				material += 100
+			} else {
+				material -= 100
+			}
 		case 'K':
 			score += b.evalKing(idx, isWhitePiece)
 		default:
@@ -335,6 +379,9 @@ func (b *Board) Evaluate() int {
 			}
 		}
 	}
+	// Take the material advantage
+	// and multiply by two for greater weight.
+	score += (material * 2)
 	return score
 
 }
@@ -520,6 +567,7 @@ func (b *Board) MoveRandom(origs, dests []int) error {
 	if len(origs) < 1 {
 		return errors.New("There are no valid moves left")
 	}
+	rand.Seed(time.Now().UTC().UnixNano())
 	randomMove := rand.Intn(len(origs))
 	e := b.Move(origs[randomMove], dests[randomMove])
 	if e != nil {
