@@ -74,15 +74,12 @@ func (b *Board) SearchValid() ([]int, []int) {
 			case 'Q':
 				e = b.validQueen(idx, target)
 			case 'K':
-
 				e = b.validKing(idx, target, false)
 				if e == nil {
 					origs = append(origs, idx)
 					dests = append(dests, target)
 				}
 				e = b.validKing(idx, target, true)
-				//fmt.Println("King")
-				//fmt.Println(e)
 				if e == nil {
 					origs = append(origs, idx)
 					dests = append(dests, target)

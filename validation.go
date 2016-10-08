@@ -639,41 +639,38 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 		}
 	}
 	if castle {
-
-		queenSideCastle := !(g[orig+1] != '.' || g[orig+2] != '.' || g[orig+3] != '.')
-		kingSideCastle := !(g[orig-1] != '.' || g[orig-2] != '.')
-		//fmt.Println(orig, dest)
-		//fmt.Println(kingSideCastle)
-		//fmt.Println(queenSideCastle)
-		//fmt.Println(string(b.castle))
-		if dest > orig { // Queen side
-			if !queenSideCastle {
-				return castlerr
-			}
-			if b.toMove == "w" {
-				if b.castle[1] != 'Q' {
-					return noCastle
-				}
-
-			} else { // b
-				if b.castle[3] != 'q' {
-					return noCastle
-				}
-			}
-		} else if orig > dest {
-			if !kingSideCastle {
-				return castlerr
-			}
-			if b.toMove == "w" {
-				if b.castle[0] != 'K' {
-					return noCastle
-				}
+		isQueenSide := dest > orig
+		isKingSide := dest < orig
+		validQueenSide := !(g[orig+1] != '.' ||
+			g[orig+2] != '.' || g[orig+3] != '.')
+		validKingSide := !(g[orig-1] != '.' ||
+			g[orig-2] != '.')
+		isWhite := b.toMove == "w"
+		// Is castle Left?
+		whiteQueenCastle := b.castle[1] == 'Q'
+		whiteKingCastle := b.castle[0] == 'K'
+		blackQueenCastle := b.castle[3] == 'q'
+		blackKingCastle := b.castle[2] == 'k'
+		if isQueenSide && validQueenSide {
+			if isWhite && whiteQueenCastle {
+				return nil
+			} else if !isWhite && blackQueenCastle {
+				return nil
 			} else {
-				if b.castle[2] != 'k' {
-					return noCastle
-				}
+				return noCastle
 			}
+		} else if isKingSide && validKingSide {
+			if isWhite && whiteKingCastle {
+				return nil
+			} else if !isWhite && blackKingCastle {
+				return nil
+			} else {
+				return noCastle
+			}
+		} else {
+			return castlerr
 		}
+
 	} else {
 		return errors.New("Illegal King Move")
 	}
