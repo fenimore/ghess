@@ -125,33 +125,45 @@ func TestSearchValid(t *testing.T) {
 	}
 
 	// SearchValid finds Castling:
-	fen = `r3k2r/P6P/8/8/8/8/p6p/R3K2R w KQkq - 0 1`
+	fen = `r3k2r/p6p/8/8/8/8/P6P/R3K2R w KQkq - 0 1`
 	err = game.LoadFen(fen)
 	if err != nil {
 		t.Error("Fen error")
 	}
 	o, d = game.SearchValid()
-	exO = []int{11}
-	exD = []int{76}
+	exO = []int{11, 11, 14, 14, 14, 14, 14, 14, 14, 18, 18, 18, 21, 21, 28, 28}
+	exD = []int{12, 13, 13, 15, 23, 24, 25, 18, 11, 15, 16, 17, 31, 41, 38, 48}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		fmt.Println(o)
 		fmt.Println(d)
 		t.Error("Search doesn't find white castle")
 	}
 	// For black:
-	fen = `r3k2r/P6P/8/8/8/8/p6p/R3K2R b KQkq - 0 1`
+	fen = `r3k2r/p6p/8/8/8/8/P6P/R3K2R b KQkq - 0 1`
 	err = game.LoadFen(fen)
 	if err != nil {
 
 		t.Error("Fen error")
 	}
 	o, d = game.SearchValid()
-	exO = []int{85}
-	exD = []int{76}
+	exO = []int{71, 71, 78, 78, 81, 81, 84, 84, 84, 84, 84, 84, 84, 88, 88, 88}
+	exD = []int{51, 61, 58, 68, 82, 83, 73, 74, 75, 83, 85, 88, 81, 85, 86, 87}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		fmt.Println(o)
 		fmt.Println(d)
 		t.Error("Search doesn't find Black castle")
+	}
+	// Search for Pawn:
+	fen = `7k/pppppppp/8/8/8/8/PPPPPPPP/K7 w KQkq - 0 1`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Fen error")
+	}
+	o, d = game.SearchValid()
+	exO = []int{18, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28}
+	exD = []int{17, 31, 41, 32, 42, 33, 43, 34, 44, 35, 45, 36, 46, 37, 47, 38, 48}
+	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
+		t.Error("Search doesn't find White Pawn Moves")
 	}
 }
 
