@@ -182,6 +182,7 @@ Loop:
 
 				}
 			case input == "/ai":
+				// TODO, AI versus weaker AI
 			AiLoop:
 				for {
 					now := time.Now()

@@ -180,7 +180,7 @@ func DictionaryAttack(s State) (State, error) {
 	//1 Nf3 d5
 	dict["rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 0 1"] = [2]int{75, 55}
 	// 2. d4
-	dic["rnbqkbnr/ppp1pppp/8/3p4/8/5N2/PPPPPPPP/RNBQKB1R w KQkq d6 0 2"] = [2]int{25, 45}
+	dict["rnbqkbnr/ppp1pppp/8/3p4/8/5N2/PPPPPPPP/RNBQKB1R w KQkq d6 0 2"] = [2]int{25, 45}
 
 	// Check if opening exists
 	if val, ok := dict[key]; ok {
