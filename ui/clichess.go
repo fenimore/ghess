@@ -257,7 +257,7 @@ Loop:
 					}
 				InputLoop:
 					for {
-						fmt.Print("You're move: ")
+						fmt.Print("Your move: ")
 						input, _ = reader.ReadString('\n')
 						e := game.ParseMove(input)
 						if e != nil {
