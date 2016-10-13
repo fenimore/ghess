@@ -76,6 +76,7 @@ A Golang chess engine and user interfaces
 - headers string [for PGN]
 - pgnPattern *regexp.Regexp
 - fenPattern *regexp.Regexp
+- history []int
 
 As long as it remains on my `TODO` list to change, these fields are unexported and for accessing this data, one can call `Board.Stats()` to return a `map[string]string` of various imminently useful fields, such as "turn", "check", and "scores" (see `ghess.go` `Stats()` for a complete list.
 
@@ -116,11 +117,6 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 
 - Checkmate should update PGN headers/history.
 - `ParseMove` should allow for resign.
-
-### TODO Search & Evaluate
-
-- There is a bug for castling possibilities in `SearchForValid()`.
-- Better implement evaluation.
 
 ### TODO Extra features
 
