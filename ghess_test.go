@@ -286,14 +286,7 @@ func TestPawnValid(t *testing.T) {
 
 }
 
-func ExampleNewBoard() {
-	game := NewBoard()
-	fmt.Print(game.Position())
-	// Output:
-	// rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-}
-
-func ExampleLoadPgnAndCheck() {
+func TestLoadPgnAndCheck(t *testing.T) {
 	hist := `
 [White "Amor"]
 [Black "Caput"]
@@ -303,21 +296,90 @@ func ExampleLoadPgnAndCheck() {
 	game := NewBoard()
 	err = game.LoadPgn(hist)
 	if err != nil {
-		fmt.Println(err)
+		t.Error("But that's a legal PGN")
 	}
 	info := game.Stats()
 	ch, _ := strconv.ParseBool(info["check"])
-	if ch {
-		fmt.Println("****Check!****")
+	if !ch {
+		t.Error("But that's should be check")
 	}
-	fmt.Println(info["move"])
-	// Output:
-	// ****Check!****
-	// 42
-
+	if info["move"] != "42" {
+		t.Error("But that's should be move 42")
+	}
 }
 
-func ExampleMoveStandard() {
+func TestCannotCastleThroughCheck(t *testing.T) {
+	game := NewBoard()
+	hist := `r3k2r/ppp4p/n4Q1n/8/1bB3q1/N1P1p2N/PP3PPP/R3K2R w KQkq - 0 14`
+	var err error
+	err = game.LoadFen(hist)
+	if err != nil {
+		t.Error("But that's a legal FEN")
+	}
+	err = game.ParseMove("O-O-O")
+	if err == nil {
+		t.Error("Shouldn't be allowed to castle")
+	}
+}
+
+func TestCheckWithPawn(t *testing.T) {
+	game := NewBoard()
+	hist := "1. e4 e5 2. Ke2 Qf6 3. Kd3 Nh6 4. Kc4"
+	var err error
+	err = game.LoadPgn(hist)
+	if err != nil {
+		t.Error("Shouldn't be error")
+	}
+	err = game.ParseMove("b5")
+	if err != nil {
+		t.Error("Shouldn't be error")
+	}
+	info := game.Stats()
+	ch, _ := strconv.ParseBool(info["check"])
+	if !ch {
+		t.Error("Should be check")
+	}
+}
+
+func TestMoveIntoCheck(t *testing.T) {
+	game := NewBoard()
+	hist := `1. e4 e5 2. Qf3 Qg5 3. Qxf7 Ke7`
+	var err error
+	err = game.LoadPgn(hist)
+	if err == nil {
+		t.Error("Valid")
+	}
+	fen := `r1b1kbnr/p1qp1ppp/npp5/4p3/4P1K1/5P2/PPPP2PP/RNBQ1BNR w kq - 1 6`
+	_ = game.LoadFen(fen)
+	err = game.ParseMove("Kg5")
+	if err != nil {
+		t.Error("Hould be valid")
+	}
+	fen = `	rnbqk1nr/ppp2ppp/5b2/3pp3/8/1K1P4/PPP1PPPP/RNBQ1BNR w kq - 4 5`
+	err = game.LoadFen(fen)
+	if err != nil {
+		t.Error("Can't load fen")
+	}
+	err = game.ParseMove("Kb4")
+	if err != nil {
+		t.Error("Valid")
+	}
+	// Output:
+	// Cannot move into Check
+}
+
+/**********************************
+Examples
+***********************************/
+
+func ExampleNewBoard() {
+	game := NewBoard()
+	fmt.Print(game.Position())
+	// Output:
+	// rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+}
+
+func ExampleBoard_ParseStand() {
 	game := NewBoard()
 	o := "e2"
 	d := "e4"
@@ -352,75 +414,7 @@ func ExampleMoveStandard() {
 	// rnbqkb1r/pppppppp/5n2/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2
 }
 
-func ExampleCannotCastleThroughCheck() {
-	game := NewBoard()
-	hist := `r3k2r/ppp4p/n4Q1n/8/1bB3q1/N1P1p2N/PP3PPP/R3K2R w KQkq - 0 14`
-	var err error
-	err = game.LoadFen(hist)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = game.ParseMove("O-O-O")
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-	// Cannot Castle through check
-}
-
-func ExampleCheckWithPawn() {
-	game := NewBoard()
-	hist := "1. e4 e5 2. Ke2 Qf6 3. Kd3 Nh6 4. Kc4"
-	var err error
-	err = game.LoadPgn(hist)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = game.ParseMove("b5")
-	if err != nil {
-		fmt.Println(err)
-	}
-	info := game.Stats()
-	ch, _ := strconv.ParseBool(info["check"])
-	if ch {
-		fmt.Println("****Check!****")
-	}
-
-	// Output:
-	// ****Check!****
-}
-
-func ExampleMoveIntoCheck() {
-	game := NewBoard()
-	hist := `1. e4 e5 2. Qf3 Qg5 3. Qxf7 Ke7`
-	var err error
-	err = game.LoadPgn(hist)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fen := `r1b1kbnr/p1qp1ppp/npp5/4p3/4P1K1/5P2/PPPP2PP/RNBQ1BNR w kq - 1 6`
-	err = game.LoadFen(fen)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = game.ParseMove("Kg5")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fen = `	rnbqk1nr/ppp2ppp/5b2/3pp3/8/1K1P4/PPP1PPPP/RNBQ1BNR w kq - 4 5`
-	err = game.LoadFen(fen)
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = game.ParseMove("Kb4")
-	if err != nil {
-		fmt.Println(err)
-	}
-	// Output:
-	// Cannot move into Check
-}
-
-func ExampleLoadFen() {
+func ExampleBoard_LoadFen() {
 	game := NewBoard()
 	fen := "6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5"
 	var err error
@@ -564,7 +558,7 @@ func ExampleCheckMate() {
 	// true
 }
 
-func ExampleSearchValid() {
+func ExampleBoard_SearchValid() {
 	game := NewBoard()
 	o, d := game.SearchValid()
 	fmt.Println(o)
@@ -581,6 +575,10 @@ func ExampleSearchValid() {
 	// [21 21 21 43]
 	// [11 12 31 23]
 }
+
+/**********************************
+Benchmarks
+***********************************/
 
 func BenchmarkMinimax(b *testing.B) {
 	// Opening position doesn't count,
