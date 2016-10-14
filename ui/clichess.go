@@ -334,7 +334,7 @@ HumLoop:
 		game.Move(state.Init[0], state.Init[1])
 		info := game.Stats()
 		fmt.Println(getPanel(info))
-		fmt.Println(game.StringBlack())
+		fmt.Println(game.String())
 		if info["score"] != "*" {
 			fmt.Println("Game Over:")
 			fmt.Println(info["score"])
@@ -352,7 +352,12 @@ HumLoop:
 			}
 		}
 		fmt.Println(getPanel(info))
-		fmt.Println(game.StringBlack())
+		if info["turn"] == "b" {
+			fmt.Println(game.StringBlack())
+		} else {
+			fmt.Println(game.StringWhite())
+		}
+
 		if info["score"] != "*" {
 			fmt.Println("Game Over:")
 			fmt.Println(info["score"])
