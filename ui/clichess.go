@@ -159,6 +159,30 @@ Loop:
 				fmt.Println("Position: ", score)
 			case input == "/computer":
 				// Play as white against the computer
+			case input == "/ai":
+				done := make(chan bool)
+				go func() {
+					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
+
+					if err != nil {
+						fmt.Println(err)
+					}
+					game.Move(state.Init[0], state.Init[1])
+					fmt.Println(game.String())
+					done <- true
+				}()
+				now := time.Now()
+			Think2Loop:
+				for {
+					select {
+					case <-done:
+						fmt.Printf("\nThis took me: %s\n", time.Since(now))
+						break Think2Loop
+					default:
+						think(true)
+					}
+
+				}
 			case input == "/minimax":
 				done := make(chan bool)
 				go func() {
@@ -181,7 +205,7 @@ Loop:
 					}
 
 				}
-			case input == "/ai":
+			case input == "/aivsai":
 				// TODO, AI versus weaker AI
 			AiLoop:
 				for {

@@ -129,6 +129,8 @@ func MiniMax(depth, terminal int, s State) (State, error) {
 	return Min(bestStates), nil
 }
 
+// The Max and Mini functions are O(n)
+
 // Max returns the state from States with
 // highest evaluation.
 func Max(states States) State {
