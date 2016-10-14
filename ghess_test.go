@@ -286,7 +286,7 @@ func TestPawnValid(t *testing.T) {
 
 }
 
-func ExampleStartPosition() {
+func ExampleNewBoard() {
 	game := NewBoard()
 	fmt.Print(game.Position())
 	// Output:
@@ -583,10 +583,16 @@ func ExampleSearchValid() {
 }
 
 func BenchmarkMinimax(b *testing.B) {
+	// Opening position doesn't count,
+	// cause of the dictionary attack
+	// Seems to be about 17 seconds
 	game := NewBoard()
+	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
+	_ = game.LoadFen(fen)
+	s := GetState(&game)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_, err := MiniMax(0, 3, GetState(&game))
+		_, err := MiniMax(0, 3, s)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -594,12 +600,14 @@ func BenchmarkMinimax(b *testing.B) {
 }
 
 func BenchmarkMidMinimax(b *testing.B) {
+	// Seems to be about 42 seconds
 	game := NewBoard()
-	fen := "6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42"
+	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
 	_ = game.LoadFen(fen)
+	s := GetState(&game)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_, err := MiniMax(0, 3, GetState(&game))
+		_, err := MiniMax(0, 3, s)
 		if err != nil {
 			fmt.Println(err)
 		}
