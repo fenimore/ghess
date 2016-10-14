@@ -160,144 +160,15 @@ Loop:
 			case input == "/computer":
 				// Play as white against the computer
 			case input == "/ai":
-				done := make(chan bool)
-				go func() {
-					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
-
-					if err != nil {
-						fmt.Println(err)
-					}
-					game.Move(state.Init[0], state.Init[1])
-					fmt.Println(game.String())
-					done <- true
-				}()
-				now := time.Now()
-			Think2Loop:
-				for {
-					select {
-					case <-done:
-						fmt.Printf("\nThis took me: %s\n", time.Since(now))
-						break Think2Loop
-					default:
-						think(true)
-					}
-
-				}
+				makeAiMove(game)
 			case input == "/minimax":
-				done := make(chan bool)
-				go func() {
-					state, err := ghess.MiniMax(0, 4, ghess.GetState(&game))
-					fmt.Println(state)
-					if err != nil {
-						fmt.Println(err)
-					}
-					done <- true
-				}()
-				now := time.Now()
-			ThinkLoop:
-				for {
-					select {
-					case <-done:
-						fmt.Printf("\nThis took me: %s\n", time.Since(now))
-						break ThinkLoop
-					default:
-						think(true)
-					}
-
-				}
+				predictAiMove(game)
 			case input == "/aivsai":
-				// TODO, AI versus weaker AI
-			AiLoop:
-				for {
-					now := time.Now()
-					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
-					if err != nil {
-						fmt.Println(err)
-						break AiLoop
-					}
-					game.Move(state.Init[0], state.Init[1])
-					info := game.Stats()
-					fmt.Println(getPanel(info))
-					fmt.Println(game.StringWhite())
-					fmt.Printf("\nThis took me: %s\n", time.Since(now))
-					if info["score"] != "*" {
-						fmt.Println("Game Over:")
-						fmt.Println(info["score"])
-						break AiLoop
-					}
-				}
+				aiVsAi(game)
 			case input == "/aivsrand":
-			VsLoop:
-				for {
-					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
-					if err != nil {
-						fmt.Println(err)
-						break VsLoop
-					}
-					game.Move(state.Init[0], state.Init[1])
-					info := game.Stats()
-					fmt.Println(getPanel(info))
-					fmt.Println(game.StringWhite())
-					if info["score"] != "*" {
-						fmt.Println("Game Over:")
-						fmt.Println(info["score"])
-						break VsLoop
-					}
-
-					origs, dests := game.SearchValid()
-					e := game.MoveRandom(origs, dests)
-					think(true)
-					if e != nil {
-						fmt.Println(e)
-					}
-					info = game.Stats()
-					fmt.Println(getPanel(info))
-					fmt.Println(game.StringWhite())
-					if info["score"] != "*" {
-						fmt.Println("Game Over:")
-						fmt.Println(info["score"])
-						break VsLoop
-					}
-
-				}
+				aiVsRandom(game)
 			case input == "/aivshuman":
-			HumLoop:
-				for {
-					now := time.Now()
-					state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
-					if err != nil {
-						fmt.Println(err)
-						break HumLoop
-					}
-					fmt.Printf("\nThis took me: %s\n", time.Since(now))
-					game.Move(state.Init[0], state.Init[1])
-					info := game.Stats()
-					fmt.Println(getPanel(info))
-					fmt.Println(game.StringBlack())
-					if info["score"] != "*" {
-						fmt.Println("Game Over:")
-						fmt.Println(info["score"])
-						break HumLoop
-					}
-				InputLoop:
-					for {
-						fmt.Print("Your move: ")
-						input, _ = reader.ReadString('\n')
-						e := game.ParseMove(input)
-						if e != nil {
-							fmt.Println(e)
-						} else {
-							break InputLoop
-						}
-					}
-					fmt.Println(getPanel(info))
-					fmt.Println(game.StringBlack())
-					if info["score"] != "*" {
-						fmt.Println("Game Over:")
-						fmt.Println(info["score"])
-						break HumLoop
-					}
-				}
+				aiVsHuman(game, reader)
 			case input == "/rand":
 				origs, dests := game.SearchValid()
 				e := game.MoveRandom(origs, dests)
@@ -371,6 +242,159 @@ Loop:
 		}
 	}
 	fmt.Println("\nGood Game.")
+}
+
+func aiVsRandom(game ghess.Board) {
+VsLoop:
+	for {
+		state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+			break VsLoop
+		}
+		game.Move(state.Init[0], state.Init[1])
+		info := game.Stats()
+		fmt.Println(getPanel(info))
+		fmt.Println(game.StringWhite())
+		if info["score"] != "*" {
+			fmt.Println("Game Over:")
+			fmt.Println(info["score"])
+			break VsLoop
+		}
+
+		origs, dests := game.SearchValid()
+		e := game.MoveRandom(origs, dests)
+		think(true)
+		if e != nil {
+			fmt.Println(e)
+		}
+		info = game.Stats()
+		fmt.Println(getPanel(info))
+		fmt.Println(game.StringWhite())
+		if info["score"] != "*" {
+			fmt.Println("Game Over:")
+			fmt.Println(info["score"])
+			break VsLoop
+		}
+	}
+
+}
+
+func aiVsAi(game ghess.Board) {
+	// TODO, AI versus weaker AI
+AiLoop:
+	for {
+		now := time.Now()
+		state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+			break AiLoop
+		}
+		game.Move(state.Init[0], state.Init[1])
+		info := game.Stats()
+		fmt.Println(getPanel(info))
+		fmt.Println(game.StringWhite())
+		fmt.Printf("\nThis took me: %s\n", time.Since(now))
+		if info["score"] != "*" {
+			fmt.Println("Game Over:")
+			fmt.Println(info["score"])
+			break AiLoop
+		}
+	}
+
+}
+
+func aiVsHuman(game ghess.Board, reader *bufio.Reader) {
+HumLoop:
+	for {
+		now := time.Now()
+		state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+			break HumLoop
+		}
+		fmt.Printf("\nThis took me: %s\n", time.Since(now))
+		game.Move(state.Init[0], state.Init[1])
+		info := game.Stats()
+		fmt.Println(getPanel(info))
+		fmt.Println(game.StringBlack())
+		if info["score"] != "*" {
+			fmt.Println("Game Over:")
+			fmt.Println(info["score"])
+			break HumLoop
+		}
+	InputLoop:
+		for {
+			fmt.Print("Your move: ")
+			input, _ := reader.ReadString('\n')
+			e := game.ParseMove(input)
+			if e != nil {
+				fmt.Println(e)
+			} else {
+				break InputLoop
+			}
+		}
+		fmt.Println(getPanel(info))
+		fmt.Println(game.StringBlack())
+		if info["score"] != "*" {
+			fmt.Println("Game Over:")
+			fmt.Println(info["score"])
+			break HumLoop
+		}
+	}
+
+}
+
+func predictAiMove(game ghess.Board) {
+	done := make(chan bool)
+	go func() {
+		state, err := ghess.MiniMax(0, 4, ghess.GetState(&game))
+		fmt.Println(state)
+		if err != nil {
+			fmt.Println(err)
+		}
+		done <- true
+	}()
+	now := time.Now()
+ThinkLoop:
+	for {
+		select {
+		case <-done:
+			fmt.Printf("\nThis took me: %s\n", time.Since(now))
+			break ThinkLoop
+		default:
+			think(true)
+		}
+
+	}
+
+}
+
+func makeAiMove(game ghess.Board) {
+	done := make(chan bool)
+	go func() {
+		state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
+
+		if err != nil {
+			fmt.Println(err)
+		}
+		game.Move(state.Init[0], state.Init[1])
+		fmt.Println(game.String())
+		done <- true
+	}()
+	now := time.Now()
+Think2Loop:
+	for {
+		select {
+		case <-done:
+			fmt.Printf("\nThis took me: %s\n", time.Since(now))
+			break Think2Loop
+		default:
+			think(true)
+		}
+
+	}
+
 }
 
 func getPanel(m map[string]string) string {
