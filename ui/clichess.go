@@ -9,17 +9,7 @@ import "strconv"
 import "strings"
 import "time"
 
-func main() {
-	game := ghess.NewBoard()
-	PlayGame(game)
-}
-
-// PlayGame is the command line user interface.
-// It is used mostly for debugging.
-func PlayGame(game ghess.Board) { // TODO Rotate Board
-	var info map[string]string
-	var turn string
-	welcome := `
+var welcome string = `
 =================
          go-chess
 
@@ -30,7 +20,7 @@ func PlayGame(game ghess.Board) { // TODO Rotate Board
     Enter /help for more options
 
 `
-	manuel := `
+var manuel string = `
     ====================
         /~ |_ _  _ _
         \_|||(/__\_\
@@ -64,11 +54,23 @@ Commands:
     valid        - show valid moves
     eval         - score position (+ White | - Black)
     minimax      - generate minimax score
-    ai           - watch AI match
+    aivsai       - watch AI match
     aivshuman    - play against AI (human is black)
     aivsrand     - ai vs random
 
 `
+
+func main() {
+	game := ghess.NewBoard()
+	PlayGame(game)
+}
+
+// PlayGame is the command line user interface.
+// It is used mostly for debugging.
+func PlayGame(game ghess.Board) { // TODO Rotate Board
+	var info map[string]string
+	var turn string
+
 	reader := bufio.NewReader(os.Stdin)
 	// welcome message
 	fmt.Println(welcome)
@@ -176,39 +178,7 @@ Loop:
 					fmt.Println(e)
 				}
 			case input == "/random-game":
-				reader := bufio.NewReader(os.Stdin)
-				exit := false
-				go func() {
-					_, err := reader.ReadString('\n')
-					if err != nil {
-						fmt.Println(err)
-					}
-					// Todo turn into chan
-					exit = true
-				}()
-				fmt.Println("\nPress Return to stop")
-				time.Sleep(2000 * time.Millisecond)
-			LoopRand:
-				for {
-					if exit == true {
-						break LoopRand
-					}
-					origs, dests := game.SearchValid()
-					game.MoveRandom(origs, dests)
-					info = game.Stats()
-					fmt.Println("Move ", info["move"])
-					fmt.Print(game.StringWhite())
-					think(true)
-					gameOver, _ := strconv.ParseBool(info["checkmate"])
-					check, _ := strconv.ParseBool(info["check"])
-					if check {
-						fmt.Println("****Check****")
-					}
-					if gameOver {
-						break
-					}
-				}
-				fmt.Println(info["score"])
+				randomGame(game)
 			case input == "/tension":
 				fmt.Println("Tension Coordinates:")
 				fmt.Println(game.Tension())
@@ -242,6 +212,44 @@ Loop:
 		}
 	}
 	fmt.Println("\nGood Game.")
+}
+
+func randomGame(game ghess.Board) {
+	reader := bufio.NewReader(os.Stdin)
+	info := game.Stats()
+	exit := false
+	go func() {
+		_, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println(err)
+		}
+		// Todo turn into chan
+		exit = true
+	}()
+	fmt.Println("\nPress Return to stop")
+	time.Sleep(2000 * time.Millisecond)
+LoopRand:
+	for {
+		if exit == true {
+			break LoopRand
+		}
+		origs, dests := game.SearchValid()
+		game.MoveRandom(origs, dests)
+		info := game.Stats()
+		fmt.Println("Move ", info["move"])
+		fmt.Print(game.StringWhite())
+		think(true)
+		gameOver, _ := strconv.ParseBool(info["checkmate"])
+		check, _ := strconv.ParseBool(info["check"])
+		if check {
+			fmt.Println("****Check****")
+		}
+		if gameOver {
+			break
+		}
+	}
+	fmt.Println(info["score"])
+
 }
 
 func aiVsRandom(game ghess.Board) {
