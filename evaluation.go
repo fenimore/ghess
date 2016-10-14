@@ -121,6 +121,8 @@ func MiniMax(depth, terminal int, s State) (State, error) {
 	if len(bestStates) < 1 {
 		return s, nil
 	}
+	// The return is fucked up,
+	// It finds the best for white no matter what
 	even := (depth % 2) == 0
 	if even {
 		// If White Player Return Maximum

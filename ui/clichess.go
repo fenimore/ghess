@@ -370,7 +370,7 @@ HumLoop:
 func predictAiMove(game ghess.Board) {
 	done := make(chan bool)
 	go func() {
-		state, err := ghess.MiniMax(0, 4, ghess.GetState(&game))
+		state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
 		fmt.Println(state)
 		if err != nil {
 			fmt.Println(err)
