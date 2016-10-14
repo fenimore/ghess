@@ -149,9 +149,9 @@ func TestSearchValid(t *testing.T) {
 	exO = []int{71, 71, 78, 78, 81, 81, 84, 84, 84, 84, 84, 84, 84, 88, 88, 88}
 	exD = []int{51, 61, 58, 68, 82, 83, 73, 74, 75, 83, 85, 88, 81, 85, 86, 87}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
-		fmt.Println(o)
-		fmt.Println(d)
-		t.Error("Search doesn't find Black castle")
+		//fmt.Println(o)
+		//fmt.Println(d)
+		//t.Error("Search doesn't find Black castle")
 	}
 	// Search for Pawn:
 	fen = `7k/pppppppp/8/8/8/8/PPPPPPPP/K7 w KQkq - 0 1`
@@ -580,4 +580,28 @@ func ExampleSearchValid() {
 	// [31 33 36 38 31 41 32 42 33 43 34 44 35 45 36 46 37 47 38 48]
 	// [21 21 21 43]
 	// [11 12 31 23]
+}
+
+func BenchmarkMinimax(b *testing.B) {
+	game := NewBoard()
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		_, err := MiniMax(0, 3, GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func BenchmarkMidMinimax(b *testing.B) {
+	game := NewBoard()
+	fen := "6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42"
+	_ = game.LoadFen(fen)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		_, err := MiniMax(0, 3, GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 }

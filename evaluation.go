@@ -92,7 +92,7 @@ func GetPossibleStates(state State) (States, error) {
 // Pass bback error LOL
 func MiniMax(depth, terminal int, s State) (State, error) {
 	if depth == 0 {
-		fmt.Println("SHHH, I'm thinking")
+		//fmt.Println("SHHH, I'm thinking")
 		// DICT attack
 		openState, err := DictionaryAttack(s)
 		if err == nil {
