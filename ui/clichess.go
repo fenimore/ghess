@@ -59,6 +59,7 @@ Commands:
     aivsrand     - ai vs random
 
 `
+var turn string
 
 func main() {
 	game := ghess.NewBoard()
@@ -69,7 +70,6 @@ func main() {
 // It is used mostly for debugging.
 func PlayGame(game ghess.Board) { // TODO Rotate Board
 	var info map[string]string
-	var turn string
 
 	reader := bufio.NewReader(os.Stdin)
 	// welcome message
@@ -88,35 +88,35 @@ Loop:
 		isCmd, _ := regexp.MatchString(`/`, input)
 		if isCmd {
 			input = strings.TrimRight(input, "\r\n")
-			// REFACTOR:
-			// Have Switch (input)... simplify
-			switch {
-			case input == "/help":
+			switch input {
+			case "/help":
 				fmt.Print("\n", manuel)
-			case input == "/quit" || input == "/exit":
+			case "/quit":
 				break Loop
-			case input == "/new":
+			case "/exit":
+				break Loop
+			case "/new":
 				game = ghess.NewBoard()
 				fmt.Print(game.String())
-			case input == "/print":
+			case "/print":
 				fmt.Print(game.String())
-			case input == "/panel":
+			case "/panel":
 				info = game.Stats()
 				fmt.Print(getPanel(info))
-			case input == "/coordinates":
+			case "/coordinates":
 				fmt.Println("Coordinates:")
 				game.Coordinates()
-			case input == "/score":
+			case "/score":
 				checkMate, _ := strconv.ParseBool(info["checkmate"])
 				score := info["score"]
 				if checkMate { // TODO: or draw
 					fmt.Println("Game over")
 				}
 				fmt.Println("Score: ", score)
-			case input == "/pgn":
+			case "/pgn":
 				fmt.Println("PGN history:")
 				fmt.Println(game.PgnString())
-			case input == "/load-pgn":
+			case "/load-pgn":
 				var err error
 				fmt.Print("Enter PGN history: ")
 				history, _ := reader.ReadString('\n')
@@ -127,7 +127,7 @@ Loop:
 				info := game.Stats()
 				fmt.Print(getPanel(info))
 				fmt.Print(game.String())
-			case input == "/load-fen":
+			case "/load-fen":
 				var err error
 				fmt.Print("Enter FEN position: ")
 				position, _ := reader.ReadString('\n')
@@ -138,48 +138,48 @@ Loop:
 				info := game.Stats()
 				fmt.Print(getPanel(info))
 				fmt.Print(game.String())
-			case input == "/fen":
+			case "/fen":
 				fmt.Println("FEN position:")
 				fmt.Println(game.Position())
-			case input == "/set-headers":
+			case "/set-headers":
 				fmt.Print("Enter White Player: ")
 				first, _ := reader.ReadString('\n')
 				fmt.Print("Enter Black Player: ")
 				second, _ := reader.ReadString('\n')
 				game.SetHeaders(first, second)
-			case input == "/headers":
+			case "/headers":
 				info = game.Stats()
 				fmt.Println(info["headers"])
-			case input == "/valid":
+			case "/valid":
 				origs, dests := game.SearchValid()
 				fmt.Println(origs)
 				fmt.Println(dests)
 				fmt.Println("Total valid moves: ",
 					len(origs))
-			case input == "/eval":
+			case "/eval":
 				score := game.Evaluate()
 				fmt.Println("Position: ", score)
-			case input == "/computer":
+			case "/computer":
 				// Play as white against the computer
-			case input == "/ai":
+			case "/ai":
 				makeAiMove(game)
-			case input == "/minimax":
+			case "/minimax":
 				predictAiMove(game)
-			case input == "/aivsai":
+			case "/aivsai":
 				aiVsAi(game)
-			case input == "/aivsrand":
+			case "/aivsrand":
 				aiVsRandom(game)
-			case input == "/aivshuman":
+			case "/aivshuman":
 				aiVsHuman(game, reader)
-			case input == "/rand":
+			case "/rand":
 				origs, dests := game.SearchValid()
 				e := game.MoveRandom(origs, dests)
 				if e != nil {
 					fmt.Println(e)
 				}
-			case input == "/random-game":
+			case "/random-game":
 				randomGame(game)
-			case input == "/tension":
+			case "/tension":
 				fmt.Println("Tension Coordinates:")
 				fmt.Println(game.Tension())
 				fmt.Println("Total Tension: ", game.TensionSum())
@@ -189,29 +189,35 @@ Loop:
 			}
 			continue
 		}
-		e := game.ParseMove(input)
-		if info["turn"] == "w" {
-			turn = "White"
-		} else {
-			turn = "Black"
-		}
-		fmt.Println("\n_________________")
-		info = game.Stats()
-		fmt.Print(getPanel(info))
-		// TODO use formats.
-		if e != nil {
-			fmt.Printf("|   [Error: %v]\n", e)
-		}
-		fmt.Print(game.StringWhite())
-		ch, _ := strconv.ParseBool(info["check"])
-		checkmate, _ := strconv.ParseBool(info["checkmate"])
-		if checkmate {
-			fmt.Println("****Check and Mate.****")
-		} else if ch {
-			fmt.Println("****Check!****")
-		}
+		makeMove(&game, input)
 	}
 	fmt.Println("\nGood Game.")
+}
+
+func makeMove(game *ghess.Board, input string) {
+	e := game.ParseMove(input)
+	info := game.Stats()
+	if info["turn"] == "w" {
+		turn = "White"
+	} else {
+		turn = "Black"
+	}
+	fmt.Println("\n_________________")
+	info = game.Stats()
+	fmt.Print(getPanel(info))
+	// TODO use formats.
+	if e != nil {
+		fmt.Printf("|   [Error: %v]\n", e)
+	}
+	fmt.Print(game.StringWhite())
+	ch, _ := strconv.ParseBool(info["check"])
+	checkmate, _ := strconv.ParseBool(info["checkmate"])
+	if checkmate {
+		fmt.Println("****Check and Mate.****")
+	} else if ch {
+		fmt.Println("****Check!****")
+	}
+
 }
 
 func randomGame(game ghess.Board) {
