@@ -1,13 +1,16 @@
 package main
 
-import "github.com/polypmer/ghess"
-import "fmt"
-import "bufio"
-import "regexp"
-import "os"
-import "strconv"
-import "strings"
-import "time"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/polypmer/ghess"
+)
 
 var welcome string = `
 =================
