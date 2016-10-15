@@ -1,0 +1,84 @@
+<html>
+    <head>
+
+	<link href="/css/style.css" rel="stylesheet">
+	<link rel="stylesheet" href="/css/chessboard-0.3.0.min.css">
+	<script src="/js/chessboard-0.3.0.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/json3/3.3.2/json3.min.js"></script>
+	<script
+	    src="https://code.jquery.com/jquery-1.12.4.min.js"
+	    integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+	    crossorigin="anonymous"></script>    
+    </head>
+    <body>
+	
+	<h1>Ghess</h1>
+	<a href="/new" >New Game</a>|<a href="/" >Index</a>
+
+	<table>
+	    <tr>
+		<td>
+		    <div id="board" style="width: 450px"></div>
+		</td>
+		<td>
+		    <div id="output" ></div>
+		    <div id="feedback"></div>
+		</td>
+	    </tr>
+	</table>
+
+
+	<script>
+	 var move; // json to be
+	 var moveExample = {
+	     type: "move", // as opposed to message
+	     origin: "e2", // or Source in chessboardjs
+	     destination: "e4",
+	     // Player?
+	     // Time?, or // Date.now()
+	 };
+	 // Example: conn.send(JSON.stringify(moveExample));
+	 
+	 // This onDrop function has other param which I don't use
+	 var parseStand = function(source, target) {
+	     var standMove = {
+		 type: "move", // as opposed to message
+		 origin: source, // or Source in chessboardjs
+		 destination: target,
+	     };
+	     return JSON.stringify(standMove)
+	 };
+	 
+	 var pos = {{ . }}
+	 //'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+	 var config = {
+	     draggable: true,
+	     position: pos,
+	     onDrop: parseStand,
+	 };
+	 var board = ChessBoard('board', config);
+	 board.flip();
+
+
+	 // AJAX
+	     (function() {
+		 window.onload = function() {
+		     var form = document.querySelector("form")
+		     form.addEventListener("submit", function(e) {
+			 e.preventDefault()
+			 var x = new XMLHttpRequest()
+			 x.onreadystatechange = function() {
+			     if(x.readyState == 4) {
+				 //console.log(x.response)
+				 board.position(x.response)
+			     }
+			 }
+			 x.open("POST", "/move")
+			 x.send()
+		     })
+		 }
+	     })() 
+	 
+	</script>    
+    </body>  
+</html>

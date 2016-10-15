@@ -9,13 +9,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/polypmer/ghess"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/websocket"
+	"github.com/polypmer/ghess"
 )
 
 // ChessHandler for persistent game
@@ -32,7 +33,7 @@ func (h *ChessHandler) indexHandler(w http.ResponseWriter,
 <html>
 <link href="/css/style.css" rel="stylesheet">
 <h1>Ghess Index</h1>
-<a href=/new >New Game</a><br>
+<a href=/new >New Game Human Vs Human</a><br>
 <a href=/cxt/1>Text Context?</a>
 <a href=/board >View Current Game</a><br>
 <br><br><br>
