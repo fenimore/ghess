@@ -52,13 +52,10 @@ func (h *Chess) playGame(w http.ResponseWriter,
 
 func (h *Chess) movePiece(w http.ResponseWriter,
 	r *http.Request) {
-	if r.Method != "POST" {
-		http.NotFound(w, r)
-		return
-	}
-	// get value
+
+	fmt.Println(r.Body)
 	// parse move
-	// w.Write([]byte(pos))
+	w.Write([]byte("Hi"))
 }
 
 func main() {
@@ -69,7 +66,7 @@ func main() {
 	http.HandleFunc("/", h.Index)          // link to new game
 	http.HandleFunc("/board/", h.playGame) // view
 	http.HandleFunc("/new/", h.newGame)    // new board
-
+	http.HandleFunc("/move/", h.movePiece) // ajax call
 	// Handle Static Files
 	// TODO: Combine into one function?
 	http.Handle("/css/", http.StripPrefix("/css/",

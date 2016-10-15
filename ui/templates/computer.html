@@ -38,7 +38,35 @@
 	     // Time?, or // Date.now()
 	 };
 	 // Example: conn.send(JSON.stringify(moveExample));
-	 
+	 // AJAX
+	 (function() {
+	     window.onload = function() {
+		 var form = document.querySelector("form")
+		 
+		 function parse() {
+		     var x = new XMLHttpRequest()
+		     x.onreadystatechange = function() {
+			 if(x.readyState == 4) {
+			     console.log(x.response)
+			     board.position(x.response)
+			 }
+		     }
+		     x.open("POST", "/move")
+		     x.send(JSON.stringify(moveExample));
+		     // Example: conn.send(JSON.stringify(moveExample));
+		 }
+
+		 var pos = {{ . }}
+		 //'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+		 var config = {
+		     draggable: true,
+		     position: pos,
+		     onDrop: parse,
+		 };
+		 var board = ChessBoard('board', config);
+		 board.flip();		 
+	     }
+	 })() 	 
 	 // This onDrop function has other param which I don't use
 	 var parseStand = function(source, target) {
 	     var standMove = {
@@ -49,35 +77,10 @@
 	     return JSON.stringify(standMove)
 	 };
 	 
-	 var pos = {{ . }}
-	 //'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-	 var config = {
-	     draggable: true,
-	     position: pos,
-	     onDrop: parseStand,
-	 };
-	 var board = ChessBoard('board', config);
-	 board.flip();
 
 
-	 // AJAX
-	     (function() {
-		 window.onload = function() {
-		     var form = document.querySelector("form")
-		     form.addEventListener("submit", function(e) {
-			 e.preventDefault()
-			 var x = new XMLHttpRequest()
-			 x.onreadystatechange = function() {
-			     if(x.readyState == 4) {
-				 //console.log(x.response)
-				 board.position(x.response)
-			     }
-			 }
-			 x.open("POST", "/move")
-			 x.send()
-		     })
-		 }
-	     })() 
+
+
 	 
 	</script>    
     </body>  
