@@ -38,9 +38,11 @@
 		     console.log(data.message);
 		     console.log(data.position);		     
 		     board.position(data.position);
+		     board.draggable = true;
 		 }
 	     }
 	     x.open("POST", "/move/"+source+"/"+target, true);
+	     board.draggable = false;
 	     x.send();
 
 	 };
