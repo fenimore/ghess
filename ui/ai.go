@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/polypmer/ghess"
 )
@@ -37,6 +38,7 @@ func (h *Chess) Index(w http.ResponseWriter,
 func (h *Chess) newGame(w http.ResponseWriter,
 	r *http.Request) {
 	h.g = ghess.NewBoard()
+	h.g.Move(24, 44)
 	h.init = true
 	http.Redirect(w, r, "/board", http.StatusSeeOther)
 }
@@ -71,9 +73,17 @@ func (h *Chess) movePiece(w http.ResponseWriter,
 			Message:  "Not a Valid Move",
 		}
 	} else {
+		now := time.Now()
+		state, err := ghess.MiniMax(0, 3, ghess.GetState(&h.g))
+		if err != nil {
+			fmt.Println("Minimax broken")
+		}
+		h.g.Move(state.Init[0], state.Init[1])
+		msg := fmt.Sprintf("Your Move, my move took %s",
+			time.Since(now))
 		mv = &Move{
 			Position: h.g.Position(),
-			Message:  "Your Move",
+			Message:  msg,
 		}
 	}
 	js, _ := json.Marshal(mv)
