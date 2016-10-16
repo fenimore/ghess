@@ -43,14 +43,11 @@
 		     console.log(data.position);		     
 		     board.position(data.position);
 		     feedback.innerHTML = "<b>"+data.message+"</b>";
-		     board.draggable = true;
 		 }
 	     }
 	     x.open("POST", "/move/"+source+"/"+target, true);
-	     board.draggable = false;
 	     feedback.innerHTML = "<b>> Great I'm Thinking . . .</b>";
 	     x.send();
-
 	 };
 	 
 	 var pos = {{ . }}
@@ -61,7 +58,7 @@
 	     onDrop: parseStand,
 	 };
 	 var board = ChessBoard('board', config);
-	 board.flip();		 
+	 board.flip();
 	</script>    
     </body>  
 </html>
