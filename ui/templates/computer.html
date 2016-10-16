@@ -22,15 +22,18 @@
 
 		</td>
 		<td>
+		    <img id="loading" style="visibility:hidden;" src="/img/loading.gif" />
 		</td>
 	    </tr>
 	</table>
 	<div id="feedback"></div>
-	<div id="output" ></div>		    
+	<div id="output" ></div>
+
 	<script>
 	 // TODO: Highlight Last move:
 	 // http://chessboardjs.com/examples#5004
 	 var feedback = document.getElementById("output");
+	 var lodaing = document.getElementById("loading");
 	 //var log = document.getElementById("output");
 	 // This onDrop function has other param which I don't use
 	 var parseStand = function(source, target) {
@@ -42,11 +45,13 @@
 		     console.log(data.message);
 		     console.log(data.position);		     
 		     board.position(data.position);
+		     loading.style.visibility = "hidden";
 		     feedback.innerHTML = "<b>"+data.message+"</b>";
 		 }
 	     }
 	     x.open("POST", "/move/"+source+"/"+target, true);
 	     feedback.innerHTML = "<b>> Great I'm Thinking . . .</b>";
+	     loading.style.visibility = "visible";
 	     x.send();
 	 };
 	 
