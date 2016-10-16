@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 
 	"github.com/polypmer/ghess"
 )
@@ -50,12 +52,37 @@ func (h *Chess) playGame(w http.ResponseWriter,
 	t.Execute(w, h.g.Position())
 }
 
+type Move struct {
+	Position string `json:"position"`
+	Message  string `json:"message"`
+}
+
 func (h *Chess) movePiece(w http.ResponseWriter,
 	r *http.Request) {
+	if r.Method != "POST" {
+		fmt.Println("Not Post wtf")
+	}
+	mv := &Move{}
+	move := strings.Split(r.URL.Path[len("/move/"):], "/")
+	err := h.g.ParseStand(move[0], move[1])
+	if err != nil {
+		mv = &Move{
+			Position: h.g.Position(),
+			Message:  "Not a Valid Move",
+		}
+	} else {
+		mv = &Move{
+			Position: h.g.Position(),
+			Message:  "Your Move",
+		}
+	}
+	js, _ := json.Marshal(mv)
+	w.Write([]byte(js))
 
-	fmt.Println(r.Body)
+	//
+
 	// parse move
-	w.Write([]byte("Hi"))
+
 }
 
 func main() {

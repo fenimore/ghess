@@ -29,59 +29,31 @@
 
 
 	<script>
-	 var move; // json to be
-	 var moveExample = {
-	     type: "move", // as opposed to message
-	     origin: "e2", // or Source in chessboardjs
-	     destination: "e4",
-	     // Player?
-	     // Time?, or // Date.now()
-	 };
-	 // Example: conn.send(JSON.stringify(moveExample));
-	 // AJAX
-	 (function() {
-	     window.onload = function() {
-		 var form = document.querySelector("form")
-		 
-		 function parse() {
-		     var x = new XMLHttpRequest()
-		     x.onreadystatechange = function() {
-			 if(x.readyState == 4) {
-			     console.log(x.response)
-			     board.position(x.response)
-			 }
-		     }
-		     x.open("POST", "/move")
-		     x.send(JSON.stringify(moveExample));
-		     // Example: conn.send(JSON.stringify(moveExample));
-		 }
-
-		 var pos = {{ . }}
-		 //'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
-		 var config = {
-		     draggable: true,
-		     position: pos,
-		     onDrop: parse,
-		 };
-		 var board = ChessBoard('board', config);
-		 board.flip();		 
-	     }
-	 })() 	 
 	 // This onDrop function has other param which I don't use
 	 var parseStand = function(source, target) {
-	     var standMove = {
-		 type: "move", // as opposed to message
-		 origin: source, // or Source in chessboardjs
-		 destination: target,
-	     };
-	     return JSON.stringify(standMove)
+	     var x = new XMLHttpRequest();
+	     x.onreadystatechange = function() {
+		 if(x.readyState == 4) {
+		     var data = JSON.parse(x.response);
+		     console.log(data.message);
+		     console.log(data.position);		     
+		     board.position(data.position);
+		 }
+	     }
+	     x.open("POST", "/move/"+source+"/"+target, true);
+	     x.send();
+
 	 };
 	 
-
-
-
-
-	 
+	 var pos = {{ . }}
+	 //'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+	 var config = {
+	     draggable: true,
+	     position: pos,
+	     onDrop: parseStand,
+	 };
+	 var board = ChessBoard('board', config);
+	 board.flip();		 
 	</script>    
     </body>  
 </html>
