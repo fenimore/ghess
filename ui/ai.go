@@ -23,8 +23,9 @@ func (h *Chess) Index(w http.ResponseWriter,
 <html>
 <link href="/css/style.css" rel="stylesheet">
 <h1>Ghess Index</h1>
-<a href=/new >New Game Human Vs Computer</a><br>
-<a href=/cxt/1>Text Context?</a>
+<a href=/new/black >New Game Computer Vs Human</a><br>
+<a href=/new/white >New Game Human Vs Computer</a><br>
+<hr>
 <a href=/board >View Current Game</a><br>
 <br><br><br>
 <a href="https://github.com/polypmer/go-chess">Source Code</a>
@@ -38,9 +39,14 @@ func (h *Chess) Index(w http.ResponseWriter,
 func (h *Chess) newGame(w http.ResponseWriter,
 	r *http.Request) {
 	h.g = ghess.NewBoard()
-	h.g.Move(24, 44)
 	h.init = true
-	http.Redirect(w, r, "/board", http.StatusSeeOther)
+	choice := r.URL.Path[len("/new/"):]
+	if choice == "white" {
+		http.Redirect(w, r, "/board", http.StatusSeeOther)
+	} else {
+		h.g.Move(24, 44)
+		http.Redirect(w, r, "/board", http.StatusSeeOther)
+	}
 }
 
 func (h *Chess) playGame(w http.ResponseWriter,
