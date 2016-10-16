@@ -21,6 +21,7 @@ type State struct {
 	board *Board
 	eval  int
 	Init  [2]int
+	isMax bool // find for maximun player
 }
 
 // String returns some basic info of a State.
