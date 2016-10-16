@@ -70,16 +70,16 @@ func (h *Chess) movePiece(w http.ResponseWriter,
 	if err != nil {
 		mv = &Move{
 			Position: h.g.Position(),
-			Message:  "Not a Valid Move",
+			Message:  "> That's Not a Valid Move!",
 		}
 	} else {
 		now := time.Now()
 		state, err := ghess.MiniMax(0, 3, ghess.GetState(&h.g))
 		if err != nil {
-			fmt.Println("Minimax broken")
+			fmt.Println("> Minimax broken")
 		}
 		h.g.Move(state.Init[0], state.Init[1])
-		msg := fmt.Sprintf("Your Move, my move took %s",
+		msg := fmt.Sprintf("> Your Move, my move took %s",
 			time.Since(now))
 		mv = &Move{
 			Position: h.g.Position(),

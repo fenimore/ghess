@@ -19,18 +19,22 @@
 	    <tr>
 		<td>
 		    <div id="board" style="width: 450px"></div>
+
 		</td>
 		<td>
-		    <div id="output" ></div>
-		    <div id="feedback"></div>
 		</td>
 	    </tr>
 	</table>
-
-
+	<div id="feedback"></div>
+	<div id="output" ></div>		    
 	<script>
+	 // TODO: Highlight Last move:
+	 // http://chessboardjs.com/examples#5004
+	 var feedback = document.getElementById("output");
+	 //var log = document.getElementById("output");
 	 // This onDrop function has other param which I don't use
 	 var parseStand = function(source, target) {
+	     //var item = document.createElement("div");
 	     var x = new XMLHttpRequest();
 	     x.onreadystatechange = function() {
 		 if(x.readyState == 4) {
@@ -38,11 +42,13 @@
 		     console.log(data.message);
 		     console.log(data.position);		     
 		     board.position(data.position);
+		     feedback.innerHTML = "<b>"+data.message+"</b>";
 		     board.draggable = true;
 		 }
 	     }
 	     x.open("POST", "/move/"+source+"/"+target, true);
 	     board.draggable = false;
+	     feedback.innerHTML = "<b>> Great I'm Thinking . . .</b>";
 	     x.send();
 
 	 };
