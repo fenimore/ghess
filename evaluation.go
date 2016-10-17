@@ -310,29 +310,20 @@ func (b *Board) Evaluate() int {
 	// For position, if piece,
 	var score int
 	tension := b.Tension()
-	var whiteKing int
-	var blackKing int
 	var material int
 
 	// Find King
-	for idx, val := range b.board {
+	for idx, _ := range b.board {
 		// Only look for 64 squares
 		if idx%10 == 0 || (idx+1)%10 == 0 ||
 			idx > 88 || idx < 11 {
 			continue
 		}
-
-		if val == 'K' {
-			whiteKing = idx
-		} else if val == 'k' {
-			blackKing = idx
-		}
 	}
 
-	if b.isInCheck(whiteKing) {
+	if b.check && b.toMove == "w" {
 		score -= 200
-	}
-	if b.isInCheck(blackKing) {
+	} else if b.check && b.toMove == "b" {
 		score += 200
 	}
 
