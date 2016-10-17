@@ -180,27 +180,7 @@ func Min(states States) State {
 // for less stupid opening moves.
 func DictionaryAttack(s State) (State, error) {
 	key := s.board.Position()
-	dict := make(map[string][2]int)
-	/* e4 e5 */
-	//1 e4
-	dict["rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"] = [2]int{24, 44}
-	//1 e4 e5
-	dict["rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"] = [2]int{74, 54}
-	//2. Bc4
-	dict["rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2"] = [2]int{13, 46}
-	//2. Bc4 Nf6
-	dict["rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 0 2"] = [2]int{82, 63}
-	/* d4 d5 */
-	//1 d4 d5
-	dict["rnbqkbnr/pppppppp/8/8/4P3/8/PPP1PPPP/RNBQKBNR b KQkq d3 0 1"] = [2]int{75, 55}
-	//2 Nf3
-	dict["rnbqkbnr/pppppppp/8/8/4P3/8/PPP1PPPP/RNBQKBNR w KQkq d6 0 2"] = [2]int{12, 33}
-	/*  Nf3 */
-	//1 Nf3 d5
-	dict["rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 0 1"] = [2]int{75, 55}
-	// 2. d4
-	dict["rnbqkbnr/ppp1pppp/8/3p4/8/5N2/PPPPPPPP/RNBQKB1R w KQkq d6 0 2"] = [2]int{25, 45}
-
+	dictionary()
 	// Check if opening exists
 	if val, ok := dict[key]; ok {
 		state := State{Init: val}
