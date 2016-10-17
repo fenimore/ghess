@@ -180,7 +180,6 @@ func Min(states States) State {
 // for less stupid opening moves.
 func DictionaryAttack(s State) (State, error) {
 	key := s.board.Position()
-	dictionary()
 	// Check if opening exists
 	if val, ok := dict[key]; ok {
 		state := State{Init: val}

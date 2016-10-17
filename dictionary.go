@@ -12,6 +12,7 @@ func dictionary() {
 	dict["rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2"] = [2]int{13, 46}
 	//2. Bc4 Nf6
 	dict["rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 0 2"] = [2]int{82, 63}
+	// alternative white move 2. Nf3
 	// 2 Nf3 Nc6
 	dict["rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 0 2"] = [2]int{87, 66}
 	// 3 Bc4

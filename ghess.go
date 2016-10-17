@@ -45,6 +45,7 @@ type Board struct {
 // NewBoard returns pointer to new Board in the starting position.
 func NewBoard() Board {
 	b := make([]byte, 120)
+	dictionary()
 	// starting position
 	b = []byte(`           RNBKQBNR  PPPPPPPP  ........  ........  ........  ........  pppppppp  rnbkqbnr                                `)
 
