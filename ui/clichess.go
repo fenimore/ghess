@@ -396,12 +396,12 @@ func makeAiMove(game ghess.Board) {
 	done := make(chan bool)
 	go func() {
 		state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
-
 		if err != nil {
 			fmt.Println(err)
 		}
 		game.Move(state.Init[0], state.Init[1])
 		fmt.Println(game.String())
+		fmt.Println(state)
 		done <- true
 	}()
 	now := time.Now()

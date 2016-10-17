@@ -80,6 +80,7 @@ func GetPossibleStates(state State) (States, error) {
 		} else {
 			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
+		s.isMax = state.isMax
 
 		states = append(states, s)
 	}
@@ -93,6 +94,12 @@ func GetPossibleStates(state State) (States, error) {
 // Pass bback error LOL
 func MiniMax(depth, terminal int, s State) (State, error) {
 	if depth == 0 {
+		// set the Min or Max
+		if s.board.toMove == "w" {
+			s.isMax = true
+		} else {
+			s.isMax = false
+		}
 		//fmt.Println("SHHH, I'm thinking")
 		// DICT attack
 		openState, err := DictionaryAttack(s)
@@ -122,14 +129,21 @@ func MiniMax(depth, terminal int, s State) (State, error) {
 	if len(bestStates) < 1 {
 		return s, nil
 	}
-	// The return is fucked up,
-	// It finds the best for white no matter what
+
 	even := (depth % 2) == 0
 	if even {
 		// If White Player Return Maximum
-		return Max(bestStates), nil
+		if s.isMax {
+			return Max(bestStates), nil
+		} else {
+			return Min(bestStates), nil
+		}
 	} // Otherwise Return Minimum... Yup that's the idea.
-	return Min(bestStates), nil
+	if s.isMax {
+		return Min(bestStates), nil
+	} else {
+		return Max(bestStates), nil
+	}
 }
 
 // The Max and Mini functions are O(n)
