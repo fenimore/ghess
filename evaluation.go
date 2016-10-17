@@ -300,9 +300,9 @@ func (b *Board) Evaluate() int {
 		}
 	}
 
-	if b.check && b.toMove == "w" {
+	if b.Check && b.toMove == "w" {
 		score -= 200
-	} else if b.check && b.toMove == "b" {
+	} else if b.Check && b.toMove == "b" {
 		score += 200
 	}
 

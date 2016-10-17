@@ -285,9 +285,9 @@ func (b *Board) updateBoard(orig, dest int,
 	// Check if move put other player in Check
 	isCheck := b.isPlayerInCheck()
 	if isCheck {
-		b.check = true
+		b.Check = true
 	} else {
-		b.check = false
+		b.Check = false
 	}
 }
 

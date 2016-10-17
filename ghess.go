@@ -25,7 +25,7 @@ type Board struct {
 	score     string
 	toMove    string // Next move is w or b
 	moves     int    // the count of moves
-	check     bool
+	Check     bool
 	Checkmate bool // start Capitalizing
 	// Map for display grid
 	pgnMap   map[string]int    // the pgn format
@@ -252,7 +252,7 @@ func (b *Board) Stats() map[string]string {
 	m["castling"] = string(b.castle)
 	m["position"] = b.fen
 	m["history"] = b.pgn
-	m["check"] = strconv.FormatBool(b.check)
+	m["check"] = strconv.FormatBool(b.Check)
 	m["headers"] = b.headers
 	m["score"] = b.score
 	m["checkmate"] = strconv.FormatBool(b.Checkmate)
@@ -335,7 +335,7 @@ Loop:
 		fmt.Print(board.String())
 		if board.Checkmate {
 			fmt.Println("****CheckMate!****")
-		} else if board.check {
+		} else if board.Check {
 			fmt.Println("****Check!****")
 		}
 	}

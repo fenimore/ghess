@@ -438,7 +438,7 @@ func ExampleBoard_LoadFen() {
 	} else {
 		fmt.Println("Success")
 	}
-	fmt.Println(game.check)
+	fmt.Println(game.Check)
 
 	//Output:
 	// Success

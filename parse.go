@@ -356,7 +356,7 @@ func (b *Board) ParseMove(move string) error {
 			b.pgn += (move)
 			if b.Checkmate && matchMate {
 				b.pgn += "# "
-			} else if b.check && matchCheck {
+			} else if b.Check && matchCheck {
 
 				b.pgn += "+ "
 			} else {
@@ -450,6 +450,6 @@ func (b *Board) LoadFen(fen string) error {
 	b.moves = turns
 	b.fen = fen
 	b.toMove = res[2]
-	b.check = b.isPlayerInCheck()
+	b.Check = b.isPlayerInCheck()
 	return nil
 }
