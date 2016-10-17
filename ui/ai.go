@@ -65,6 +65,7 @@ type Move struct {
 	Message  string `json:"message"`
 }
 
+// This is an ajax function
 func (h *Chess) movePiece(w http.ResponseWriter,
 	r *http.Request) {
 	if r.Method != "POST" {
