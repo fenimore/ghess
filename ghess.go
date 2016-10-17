@@ -30,6 +30,7 @@ type Board struct {
 	// Map for display grid
 	pgnMap   map[string]int    // the pgn format
 	pieceMap map[int]string    // coord to standard notation
+	PieceMap map[int]string    // exported cord to stand notation
 	pieces   map[string]string // the unicode fonts
 	rows     map[int][8]int    // rows for white/black squaring
 	// Game Positions
@@ -94,6 +95,7 @@ func NewBoard() Board {
 		castle:     []byte(`KQkq`),
 		pgnMap:     m,
 		pieceMap:   p,
+		PieceMap:   p,
 		pieces:     r,
 		rows:       rows,
 		toMove:     "w",

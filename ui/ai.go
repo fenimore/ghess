@@ -63,6 +63,7 @@ func (h *Chess) playGame(w http.ResponseWriter,
 type Move struct {
 	Position string `json:"position"`
 	Message  string `json:"message"`
+	LastMove string `json:"target"`
 }
 
 // This is an ajax function
@@ -91,6 +92,7 @@ func (h *Chess) movePiece(w http.ResponseWriter,
 		mv = &Move{
 			Position: h.g.Position(),
 			Message:  msg,
+			LastMove: h.g.PieceMap[state.Init[1]],
 		}
 	}
 	js, _ := json.Marshal(mv)
