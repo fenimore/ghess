@@ -14,7 +14,7 @@ import (
 // in separate methods. Finally this method updates
 // the board, updateBoard().
 func (b *Board) Move(orig, dest int) error {
-	if b.checkmate {
+	if b.Checkmate {
 		return errors.New("Cannot Move in Checkmate")
 	}
 	val := b.board[orig]
@@ -173,7 +173,7 @@ func (b *Board) Move(orig, dest int) error {
 			isCheckMate = true
 		}
 		if isCheckMate {
-			b.checkmate = true
+			b.Checkmate = true
 			if b.toMove == "w" {
 				b.score = "0-1"
 			} else {

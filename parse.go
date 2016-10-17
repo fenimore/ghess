@@ -354,7 +354,7 @@ func (b *Board) ParseMove(move string) error {
 				b.pgn += strconv.Itoa(b.moves) + ". "
 			}
 			b.pgn += (move)
-			if b.checkmate && matchMate {
+			if b.Checkmate && matchMate {
 				b.pgn += "# "
 			} else if b.check && matchCheck {
 

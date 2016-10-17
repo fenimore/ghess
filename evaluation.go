@@ -306,7 +306,7 @@ func (b *Board) Evaluate() int {
 		score += 200
 	}
 
-	if b.checkmate {
+	if b.Checkmate {
 		if b.score == "0-1" {
 			score -= 9000
 		} else if b.score == "1-0" {

@@ -549,9 +549,9 @@ func ExampleCheckMate() {
 	game := NewBoard()
 	fen := "6Q1/8/8/p7/k7/5p2/1K6/8 w ---- - 0 5"
 	_ = game.LoadFen(fen)
-	fmt.Println(game.checkmate)
+	fmt.Println(game.Checkmate)
 	game.ParseMove("Qc4")
-	fmt.Println(game.checkmate)
+	fmt.Println(game.Checkmate)
 
 	// Output:
 	// false
@@ -645,4 +645,35 @@ func BenchmarkMidGameMinimaxDepth3(b *testing.B) {
 	}
 }
 
-// Depth Four, taking about four minutes for opening, crashes the benchmark
+// Depth Four, taking about four minutes for opening, crashes the benchmar
+func BenchmarkOpeningMinimaxDepth4(b *testing.B) {
+	// Opening position doesn't count,
+	// cause of the dictionary attack
+	// Seems to be about 17 seconds
+	game := NewBoard()
+	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
+	_ = game.LoadFen(fen)
+	s := GetState(&game)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		_, err := MiniMax(0, 4, s)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func BenchmarkMidGameMinimaxDepth4(b *testing.B) {
+	// Seems to be about 42 seconds
+	game := NewBoard()
+	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
+	_ = game.LoadFen(fen)
+	s := GetState(&game)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		_, err := MiniMax(0, 4, s)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
