@@ -22,6 +22,8 @@ type State struct {
 	eval  int
 	Init  [2]int
 	isMax bool // find for maximun player
+	alpha int
+	beta  int
 }
 
 // String returns some basic info of a State.
@@ -81,7 +83,8 @@ func GetPossibleStates(state State) (States, error) {
 			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
 		s.isMax = state.isMax
-
+		s.alpha = -1000000000
+		s.beta = 1000000000
 		states = append(states, s)
 	}
 	return states, nil
@@ -94,6 +97,8 @@ func GetPossibleStates(state State) (States, error) {
 // Pass bback error LOL
 func MiniMax(depth, terminal int, s State) (State, error) {
 	if depth == 0 {
+		s.alpha = -1000000000
+		s.beta = 1000000000
 		// set the Min or Max
 		if s.board.toMove == "w" {
 			s.isMax = true
@@ -112,67 +117,89 @@ func MiniMax(depth, terminal int, s State) (State, error) {
 		return s, nil
 	}
 
+	// Determine which node this is
+	// TODO: Why is this so complicated?
+	// Because when minimax from perspective black,
+	// things are totally different
+	even := (depth % 2) == 0
+	var maxNode bool
+	if even {
+		// If White Player Return Maximum
+		if s.isMax {
+			maxNode = true
+			//return Max(bestStates), nil
+		} else {
+			maxNode = false
+			//return Min(bestStates), nil
+		}
+	} else { // Otherwise Return Minimum... Yup that's the idea.
+		if s.isMax {
+			maxNode = false
+			//return Min(bestStates), nil
+		} else {
+			maxNode = true
+			//return Max(bestStates), nil
+		}
+	}
+
 	states, err := GetPossibleStates(s)
 	if err != nil {
 		return s, err
 	}
 
-	/* Alpha Beta Pruning */
-	//if white, we'll get the lower bound after each tree search.
-	//var alpha, beta int
-	// SO here I have all states possible
-	// And their scores.
-	// I'm supposed to simple return (not call recursively like below
-	// If their score is not impressive enough.
-	// But for this I need to keep track of whether I'm looking for mini or max....
-
-	// DOES THIS MAKE SENSE?
-	//	lowerState := Min(states)
-	//	higherState := Max(states)
-	//	beta := lowerState.eval
-	//	alpha := higherState.eval
-	// DOES THIS?
-	//	if s.board.toMove == "w" { // That means
-	//		// Of all the states, the one with the lower bound is going to be sent up
-	//	} else {
-	//		// Of all the states (after black response), I'm taking in the
-	//	}
-
-	//var alpha, beta int
 	// Recursive Call
 	var bestState State
 	var bestStates States
-	fmt.Println(len(states))
+	//	if depth == 1 {
+	//		fmt.Println(len(states), s.eval)
+	//	}
+	//fmt.Println(len(states), s.eval, depth
+
 	for _, state := range states {
-		// AND THIS?
-		//if state.eval < beta {
-		//	beta = state.eval
-		//		} else if state.eval > alpha {
-		//			alpha = state.eval
-		//		}
 		bestState, err = MiniMax(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
 		}
 		bestStates = append(bestStates, bestState)
+
+		// If the player is Max, I want to compare against beta
+		// otherwise against alpha.
+
+		// If we are considering Max, and state's value >= beta, then return NOW
+		// otherwise, set alpha = Max(alpha, state's value)
+
+		// If we are considering Min, and state's value <= alpha, then return NOW
+		// otherwise, set beta = Min(beta, state's value) [beta, state.val]
+		if !maxNode {
+			if bestState.eval <= s.alpha {
+				fmt.Println("ALPHA")
+				return bestState, nil
+			} else {
+				if bestState.eval < s.beta {
+					bestState.beta = bestState.eval
+				}
+			}
+		}
+		if maxNode {
+			if bestState.eval >= s.beta {
+				fmt.Println("BETA")
+				return bestState, nil
+			} else {
+				if bestState.eval > s.alpha {
+					bestState.alpha = bestState.eval
+				}
+			}
+		}
+
 	}
 	if len(bestStates) < 1 {
 		return s, nil
 	}
 
-	even := (depth % 2) == 0
-	if even {
-		// If White Player Return Maximum
-		if s.isMax {
-			return Max(bestStates), nil
-		} else {
-			return Min(bestStates), nil
-		}
-	} // Otherwise Return Minimum... Yup that's the idea.
-	if s.isMax {
-		return Min(bestStates), nil
-	} else {
+	if maxNode {
 		return Max(bestStates), nil
+	} else {
+		return Min(bestStates), nil
 	}
 }
 
