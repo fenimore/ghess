@@ -85,7 +85,6 @@ func MiniMax(depth, terminal int, s State) (State, error) {
 		//fmt.Println("Depth ", depth, s)
 		return s, nil
 	}
-	fmt.Println("Mini Dpeth", depth)
 	// Determine which node this is
 	// TODO: Why is this so complicated?
 	// Because when minimax from perspective black,
@@ -163,7 +162,7 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		//fmt.Println("Depth ", depth, s)
 		return s, nil
 	}
-	fmt.Println("Pruning Dpeth", depth)
+	fmt.Println("Pruning", s.alpha, s.beta, "Depth", depth)
 	// Determine which node this is
 	// TODO: Why is this so complicated?
 	// Because when minimax from perspective black,
@@ -198,11 +197,46 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	var bestState State
 	var bestStates States
 	for _, state := range states {
+		//		state.alpha = s.alpha
+		//		state.beta = s.beta
+
+		if maxNode {
+			if state.eval > s.beta {
+				fmt.Println("Bingo Alpha", state.eval)
+				//fmt.Println("Alpha")
+				return state, nil
+			} else {
+				state.beta = s.beta
+				state.alpha = max(s.alpha, state.eval)
+			}
+		}
+		if !maxNode {
+			if state.eval < s.alpha {
+				fmt.Println("Bingo Beta", state.eval)
+				//fmt.Println("BETA")
+				return state, nil
+			} else {
+				state.alpha = s.alpha
+				state.beta = min(s.beta, state.eval)
+
+			}
+		}
 		bestState, err = MiniMaxPruning(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
 		}
 		bestStates = append(bestStates, bestState)
+		// If the player is Max, I want to compare against beta
+		// otherwise against alpha.
+
+		// If we are considering Max,
+		//and state's value >= beta, then return NOW
+		// otherwise, set alpha = Max(alpha, state's value)
+
+		// If we are considering Min,
+		// and state's value <= alpha, then return NOW
+		// otherwise, set beta = Min(beta, state's value)
+
 	}
 	if len(bestStates) < 1 {
 		return s, nil
@@ -232,14 +266,3 @@ func max(a, b int) int {
 		return b
 	}
 }
-
-// If the player is Max, I want to compare against beta
-// otherwise against alpha.
-
-// If we are considering Max,
-//and state's value >= beta, then return NOW
-// otherwise, set alpha = Max(alpha, state's value)
-
-// If we are considering Min,
-// and state's value <= alpha, then return NOW
-// otherwise, set beta = Min(beta, state's value)
