@@ -68,8 +68,6 @@ func Min(states States) State {
 // Pass bback error LOL
 func MiniMax(depth, terminal int, s State) (State, error) {
 	if depth == 0 {
-		s.alpha = -1000000000
-		s.beta = 1000000000
 		// set the Min or Max
 		if s.board.toMove == "w" {
 			s.isMax = true
@@ -228,10 +226,9 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		// If we are considering Min,
 		// and state's value <= alpha, then return NOW
 		// otherwise, set beta = Min(beta, state's value)
-
-		if !maxNode {
-			if bestState.eval >= s.alpha {
-				fmt.Println("ALPHA")
+		if maxNode {
+			if bestState.eval < s.alpha {
+				fmt.Println("Alpha")
 				return bestState, nil
 			} else {
 				if bestState.eval < s.beta {
@@ -239,8 +236,8 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 				}
 			}
 		}
-		if maxNode {
-			if bestState.eval >= s.beta {
+		if !maxNode {
+			if bestState.eval > s.beta {
 				fmt.Println("BETA")
 				return bestState, nil
 			} else {
@@ -249,6 +246,27 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 				}
 			}
 		}
+
+		/*		if !maxNode {
+					if bestState.eval <= s.alpha {
+						fmt.Println("ALPHA")
+						return bestState, nil
+					} else {
+						if bestState.eval < s.beta {
+							bestState.beta = bestState.eval
+						}
+					}
+				}
+				if maxNode {
+					if bestState.eval >= s.beta {
+						fmt.Println("BETA")
+						return bestState, nil
+					} else {
+						if bestState.eval > s.alpha {
+							bestState.alpha = bestState.eval
+						}
+					}
+				}*/
 
 	}
 	if len(bestStates) < 1 {

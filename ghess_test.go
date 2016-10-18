@@ -582,9 +582,10 @@ func TestPruning(t *testing.T) {
 	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
 	_ = game.LoadFen(fen)
 	s := GetState(&game)
-	state_mini, _ := MiniMax(0, 2, s)
-	state_prun, _ := MiniMaxPruning(0, 2, s)
+	state_mini, _ := MiniMax(0, 3, s)
+	state_prun, _ := MiniMaxPruning(0, 3, s)
 	if state_mini.Init[0] != state_prun.Init[0] {
+		fmt.Println(state_mini, state_prun)
 		t.Error("Unexpected")
 	}
 	if state_mini.Init[1] != state_prun.Init[1] {
