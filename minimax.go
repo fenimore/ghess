@@ -169,28 +169,21 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		return s, nil
 	}
 
-	// Determine which node this is
-	// TODO: Why is this so complicated?
-	// Because when minimax from perspective black,
-	// things are totally different
+	// Determine which node is to return
 	even := (depth % 2) == 0
 	var maxNode bool
 	if even {
 		// If White Player Return Maximum
 		if s.isMax {
 			maxNode = true
-			//return Max(bestStates), nil
 		} else {
 			maxNode = false
-			//return Min(bestStates), nil
 		}
 	} else { // Otherwise Return Minimum... Yup that's the idea.
 		if s.isMax {
 			maxNode = false
-			//return Min(bestStates), nil
 		} else {
 			maxNode = true
-			//return Max(bestStates), nil
 		}
 	}
 
@@ -202,19 +195,33 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	// Recursive Call
 	var bestState State
 	var bestStates States
-	//	if depth == 1 {
-	//		fmt.Println(len(states), s.eval)
-	//	}
-	//fmt.Println(len(states), s.eval, depth
 
 	for _, state := range states {
+		if maxNode {
+			if state.eval < s.alpha {
+				fmt.Println("Alpha")
+				return state, nil
+			} else {
+				if state.eval < s.beta {
+					state.beta = state.eval
+				}
+			}
+		}
+		if !maxNode {
+			if state.eval > s.beta {
+				fmt.Println("BETA")
+				return state, nil
+			} else {
+				if state.eval > s.alpha {
+					state.alpha = state.eval
+				}
+			}
+		}
 		bestState, err = MiniMax(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
 		}
 		bestStates = append(bestStates, bestState)
-
-		// beta == +10000
 
 		// If the player is Max, I want to compare against beta
 		// otherwise against alpha.
@@ -226,47 +233,6 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		// If we are considering Min,
 		// and state's value <= alpha, then return NOW
 		// otherwise, set beta = Min(beta, state's value)
-		if maxNode {
-			if bestState.eval < s.alpha {
-				fmt.Println("Alpha")
-				return bestState, nil
-			} else {
-				if bestState.eval < s.beta {
-					bestState.beta = bestState.eval
-				}
-			}
-		}
-		if !maxNode {
-			if bestState.eval > s.beta {
-				fmt.Println("BETA")
-				return bestState, nil
-			} else {
-				if bestState.eval > s.alpha {
-					bestState.alpha = bestState.eval
-				}
-			}
-		}
-
-		/*		if !maxNode {
-					if bestState.eval <= s.alpha {
-						fmt.Println("ALPHA")
-						return bestState, nil
-					} else {
-						if bestState.eval < s.beta {
-							bestState.beta = bestState.eval
-						}
-					}
-				}
-				if maxNode {
-					if bestState.eval >= s.beta {
-						fmt.Println("BETA")
-						return bestState, nil
-					} else {
-						if bestState.eval > s.alpha {
-							bestState.alpha = bestState.eval
-						}
-					}
-				}*/
 
 	}
 	if len(bestStates) < 1 {
