@@ -197,35 +197,56 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	var bestState State
 	var bestStates States
 	for _, state := range states {
-		//		state.alpha = s.alpha
-		//		state.beta = s.beta
+		state.alpha = s.alpha
+		state.beta = s.beta
 
-		if maxNode {
-			if state.eval > s.beta {
-				fmt.Println("Bingo Alpha", state.eval)
-				//fmt.Println("Alpha")
-				return state, nil
-			} else {
-				state.beta = s.beta
-				state.alpha = max(s.alpha, state.eval)
-			}
-		}
-		if !maxNode {
-			if state.eval < s.alpha {
-				fmt.Println("Bingo Beta", state.eval)
-				//fmt.Println("BETA")
-				return state, nil
-			} else {
-				state.alpha = s.alpha
-				state.beta = min(s.beta, state.eval)
+		/*		if maxNode {
+					if state.eval > s.beta {
+						fmt.Println("Bingo Alpha", state.eval)
+						//fmt.Println("Alpha")
+						return state, nil
+					} else {
+						state.beta = s.beta
+						state.alpha = max(s.alpha, state.eval)
+					}
+				}
+				if !maxNode {
+					if state.eval < s.alpha {
+						fmt.Println("Bingo Beta", state.eval)
+						//fmt.Println("BETA")
+						return state, nil
+					} else {
+						state.alpha = s.alpha
+						state.beta = min(s.beta, state.eval)
 
-			}
-		}
+					}
+				}
+		*/
 		bestState, err = MiniMaxPruning(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
 		}
-		bestStates = append(bestStates, bestState)
+		/*
+			if maxNode {
+				if bestState.eval > s.beta {
+					fmt.Println("Bingo Alpha", bestState.eval)
+					return bestState, nil
+				} else {
+					bestState.beta = s.beta
+					bestState.alpha = max(s.alpha, bestState.eval)
+				}
+			}
+			if !maxNode {
+				if bestState.eval < s.alpha {
+					fmt.Println("Bingo Beta", bestState.eval)
+					return bestState, nil
+				} else {
+					bestState.alpha = s.alpha
+					bestState.beta = min(s.beta, bestState.eval)
+
+				}
+			}
+		*/
 		// If the player is Max, I want to compare against beta
 		// otherwise against alpha.
 
@@ -237,6 +258,7 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		// and state's value <= alpha, then return NOW
 		// otherwise, set beta = Min(beta, state's value)
 
+		bestStates = append(bestStates, bestState)
 	}
 	if len(bestStates) < 1 {
 		return s, nil
