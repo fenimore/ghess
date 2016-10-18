@@ -56,9 +56,7 @@ func GetPossibleStates(state State) (States, error) {
 		} else {
 			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
-		s.isMax = state.isMax
-		s.alpha = -1000000000
-		s.beta = 1000000000
+		s.isMax = state.isMax // Basically is White
 		states = append(states, s)
 	}
 	return states, nil

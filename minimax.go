@@ -13,7 +13,7 @@ type State struct {
 	board *Board
 	eval  int
 	Init  [2]int
-	isMax bool // find for maximun player
+	isMax bool // find for maximun player ie. White player
 	alpha int
 	beta  int
 }
@@ -195,14 +195,13 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	// Recursive Call
 	var bestState State
 	var bestStates States
-
+	fmt.Println("Detph", depth)
 	for _, state := range states {
 
 		bestState, err = MiniMax(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
 		}
-		bestStates = append(bestStates, bestState)
 
 		// If the player is Max, I want to compare against beta
 		// otherwise against alpha.
@@ -214,26 +213,29 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		// If we are considering Min,
 		// and state's value <= alpha, then return NOW
 		// otherwise, set beta = Min(beta, state's value)
-		if !maxNode {
-			if state.eval < s.alpha {
-				fmt.Println("Alpha")
-				return state, nil
-			} else {
-				if state.eval < s.beta {
-					state.beta = state.eval
-				}
-			}
-		}
+
 		if maxNode {
-			if state.eval > s.beta {
-				fmt.Println("BETA")
-				return state, nil
+			if bestState.eval > s.beta {
+				fmt.Println("Alpha")
+				return bestState, nil
 			} else {
-				if state.eval > s.alpha {
-					state.alpha = state.eval
-				}
+				bestState.beta = s.beta
+				bestState.alpha = max(s.alpha, bestState.eval)
 			}
 		}
+		if !maxNode {
+			if bestState.eval < s.alpha {
+				fmt.Println("BETA")
+				return bestState, nil
+			} else {
+				bestState.alpha = s.alpha
+				bestState.beta = min(s.beta, bestState.eval)
+
+			}
+		}
+		//fmt.Println("what?", bestState.alpha, bestState.beta)
+		// Then append to list of best states
+		bestStates = append(bestStates, bestState)
 	}
 	if len(bestStates) < 1 {
 		return s, nil
@@ -243,5 +245,23 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		return Max(bestStates), nil
 	} else {
 		return Min(bestStates), nil
+	}
+}
+
+// small min, doesn't take state,
+// but it takes numbers
+func min(a, b int) int {
+	if a < b {
+		return a
+	} else {
+		return b
+	}
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	} else {
+		return b
 	}
 }

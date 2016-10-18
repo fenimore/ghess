@@ -166,6 +166,9 @@ Loop:
 				// Play as white against the computer
 			case "/ai":
 				makeAiMove(game)
+			case "/prune":
+				s, e := ghess.MiniMaxPruning(0, 4, ghess.GetState(&game))
+				fmt.Println(s, e)
 			case "/minimax":
 				predictAiMove(game)
 			case "/aivsai":
