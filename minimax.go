@@ -197,26 +197,7 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	var bestStates States
 
 	for _, state := range states {
-		if maxNode {
-			if state.eval < s.alpha {
-				fmt.Println("Alpha")
-				return state, nil
-			} else {
-				if state.eval < s.beta {
-					state.beta = state.eval
-				}
-			}
-		}
-		if !maxNode {
-			if state.eval > s.beta {
-				fmt.Println("BETA")
-				return state, nil
-			} else {
-				if state.eval > s.alpha {
-					state.alpha = state.eval
-				}
-			}
-		}
+
 		bestState, err = MiniMax(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
@@ -233,7 +214,26 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		// If we are considering Min,
 		// and state's value <= alpha, then return NOW
 		// otherwise, set beta = Min(beta, state's value)
-
+		if !maxNode {
+			if state.eval < s.alpha {
+				fmt.Println("Alpha")
+				return state, nil
+			} else {
+				if state.eval < s.beta {
+					state.beta = state.eval
+				}
+			}
+		}
+		if maxNode {
+			if state.eval > s.beta {
+				fmt.Println("BETA")
+				return state, nil
+			} else {
+				if state.eval > s.alpha {
+					state.alpha = state.eval
+				}
+			}
+		}
 	}
 	if len(bestStates) < 1 {
 		return s, nil
