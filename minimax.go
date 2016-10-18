@@ -162,11 +162,7 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		//fmt.Println("Depth ", depth, s)
 		return s, nil
 	}
-	fmt.Println("Pruning", s.alpha, s.beta, "Depth", depth)
-	// Determine which node this is
-	// TODO: Why is this so complicated?
-	// Because when minimax from perspective black,
-	// things are totally different
+
 	even := (depth % 2) == 0
 	var maxNode bool
 	if even {
@@ -199,54 +195,56 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	for _, state := range states {
 		state.alpha = s.alpha
 		state.beta = s.beta
-
-		/*		if maxNode {
-					if state.eval > s.beta {
-						fmt.Println("Bingo Alpha", state.eval)
-						//fmt.Println("Alpha")
-						return state, nil
-					} else {
-						state.beta = s.beta
-						state.alpha = max(s.alpha, state.eval)
-					}
+		/*
+			if maxNode {
+				if state.eval > s.beta {
+					fmt.Println("Bingo Alpha", state.eval)
+					//fmt.Println("Alpha")
+					return state, nil
+				} else {
+					state.beta = s.beta
+					state.alpha = max(s.alpha, state.eval)
 				}
-				if !maxNode {
-					if state.eval < s.alpha {
-						fmt.Println("Bingo Beta", state.eval)
-						//fmt.Println("BETA")
-						return state, nil
-					} else {
-						state.alpha = s.alpha
-						state.beta = min(s.beta, state.eval)
+			}
+			if !maxNode {
+				if state.eval < s.alpha {
+					fmt.Println("Bingo Beta", state.eval)
+					//fmt.Println("BETA")
+					return state, nil
+				} else {
+					state.alpha = s.alpha
+					state.beta = min(s.beta, state.eval)
 
-					}
 				}
+			}
 		*/
 		bestState, err = MiniMaxPruning(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
 		}
-		/*
-			if maxNode {
-				if bestState.eval > s.beta {
-					fmt.Println("Bingo Alpha", bestState.eval)
-					return bestState, nil
-				} else {
-					bestState.beta = s.beta
-					bestState.alpha = max(s.alpha, bestState.eval)
-				}
+		// The trick is to update the root (for this branch)
+		// beta or alpha, which then will cut off further iterating in
+		// THIS VERY for loop.
+		if maxNode {
+			if bestState.eval > s.beta {
+				//fmt.Println("Bingo Alpha", bestState.eval)
+				return bestState, nil
+			} else {
+				bestState.beta = s.beta
+				s.alpha = max(s.alpha, bestState.eval)
 			}
-			if !maxNode {
-				if bestState.eval < s.alpha {
-					fmt.Println("Bingo Beta", bestState.eval)
-					return bestState, nil
-				} else {
-					bestState.alpha = s.alpha
-					bestState.beta = min(s.beta, bestState.eval)
+		}
+		if !maxNode {
+			if bestState.eval < s.alpha {
+				//fmt.Println("Bingo Beta", bestState.eval)
+				return bestState, nil
+			} else {
+				bestState.alpha = s.alpha
+				s.beta = min(s.beta, bestState.eval)
 
-				}
 			}
-		*/
+		}
+
 		// If the player is Max, I want to compare against beta
 		// otherwise against alpha.
 

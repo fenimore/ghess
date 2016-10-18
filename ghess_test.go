@@ -577,6 +577,7 @@ func ExampleBoard_SearchValid() {
 	// [11 12 31 23]
 }
 
+/*
 func TestPruning(t *testing.T) {
 	game := NewBoard()
 	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
@@ -594,14 +595,26 @@ func TestPruning(t *testing.T) {
 
 }
 
-func TestPruneMin(t *testing.T) {
+func TestPrunePos(t *testing.T) {
 	game := NewBoard()
 	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
 	_ = game.LoadFen(fen)
 	s := GetState(&game)
 	desired, _ := MiniMaxPruning(0, 3, s)
 	fmt.Println(desired.Init[0], desired.Init[1])
+        fmt.Println("This should be 13, 14")
 }
+
+func TestPrunPos_2(t *testing.T) {
+	game := NewBoard()
+	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
+	_ = game.LoadFen(fen)
+	s := GetState(&game)
+	desired, _ := MiniMaxPruning(0, 3, s)
+	fmt.Println(desired.Init[0], desired.Init[1])
+	desired, _ = MiniMax(0, 3, s)
+	fmt.Println(desired.Init[0], desired.Init[1])
+}*/
 
 /**********************************
 Benchmarks
