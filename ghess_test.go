@@ -369,6 +369,22 @@ func TestMoveIntoCheck(t *testing.T) {
 	// Cannot move into Check
 }
 
+func TestPruning(t *testing.T) {
+	game := NewBoard()
+	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
+	_ = game.LoadFen(fen)
+	s := GetState(&game)
+	state_prun, _ := MiniMaxPruning(0, 2, s)
+	state_mini, _ := MiniMax(0, 2, s)
+	if state_mini.Init[0] != state_prun.Init[0] {
+		t.Error("Unexpected")
+	}
+	if state_mini.Init[1] != state_prun.Init[1] {
+		t.Error("Unmatched")
+	}
+
+}
+
 /**********************************
 Examples
 ***********************************/
@@ -577,29 +593,12 @@ func ExampleBoard_SearchValid() {
 	// [11 12 31 23]
 }
 
-func TestPruning(t *testing.T) {
-	game := NewBoard()
-	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
-	_ = game.LoadFen(fen)
-	s := GetState(&game)
-	state_prun, _ := MiniMaxPruning(0, 3, s)
-	state_mini, _ := MiniMax(0, 3, s)
-	if state_mini.Init[0] != state_prun.Init[0] {
-		fmt.Println(state_mini, state_prun)
-		t.Error("Unexpected")
-	}
-	if state_mini.Init[1] != state_prun.Init[1] {
-		t.Error("Unmatched")
-	}
-
-}
-
 /**********************************
 Benchmarks
 ***********************************/
 
 func BenchmarkMidGamePruningDepth2(b *testing.B) {
-	// Seems to be about 42 seconds
+	// Very short time
 	game := NewBoard()
 	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
 	_ = game.LoadFen(fen)
@@ -617,7 +616,6 @@ func BenchmarkMidGamePruningDepth2(b *testing.B) {
 func BenchmarkOpeningPruningDepth2(b *testing.B) {
 	// Opening position doesn't count,
 	// cause of the dictionary attack
-	// Seems to be about 17 seconds
 	game := NewBoard()
 	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
 	_ = game.LoadFen(fen)
@@ -634,7 +632,7 @@ func BenchmarkOpeningPruningDepth2(b *testing.B) {
 func BenchmarkOpeningPruningDepth3(b *testing.B) {
 	// Opening position doesn't count,
 	// cause of the dictionary attack
-	// Seems to be about 17 seconds
+	// Seems to be about 14 seconds
 	game := NewBoard()
 	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
 	_ = game.LoadFen(fen)
@@ -649,7 +647,7 @@ func BenchmarkOpeningPruningDepth3(b *testing.B) {
 }
 
 func BenchmarkMidGamePruningDepth3(b *testing.B) {
-	// Seems to be about 42 seconds
+	// Seems to be about four seconds
 	game := NewBoard()
 	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
 	_ = game.LoadFen(fen)
@@ -663,71 +661,67 @@ func BenchmarkMidGamePruningDepth3(b *testing.B) {
 	}
 }
 
-// REGULARY
-
-func BenchmarkMidGameMinimaxDepth2(b *testing.B) {
-	// Seems to be about 42 seconds
-	game := NewBoard()
-	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
-	_ = game.LoadFen(fen)
-	s := GetState(&game)
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		_, err := MiniMax(0, 2, s)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-
-}
-
-func BenchmarkOpeningMinimaxDepth2(b *testing.B) {
+func BenchmarkOpeningPruningDepth4(b *testing.B) {
 	// Opening position doesn't count,
 	// cause of the dictionary attack
-	// Seems to be about 17 seconds
+	// Seems to be about one and a half  minute for depth four
 	game := NewBoard()
 	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
 	_ = game.LoadFen(fen)
 	s := GetState(&game)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_, err := MiniMax(0, 2, s)
+		_, err := MiniMaxPruning(0, 4, s)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
 }
 
-func BenchmarkOpeningMinimaxDepth3(b *testing.B) {
-	// Opening position doesn't count,
-	// cause of the dictionary attack
-	// Seems to be about 17 seconds
-	game := NewBoard()
-	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
-	_ = game.LoadFen(fen)
-	s := GetState(&game)
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		_, err := MiniMax(0, 3, s)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-}
-
-func BenchmarkMidGameMinimaxDepth3(b *testing.B) {
-	// Seems to be about 42 seconds
+func BenchmarkMidGamePruningDepth4(b *testing.B) {
+	// Seems to be about 75 seconds
 	game := NewBoard()
 	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
 	_ = game.LoadFen(fen)
 	s := GetState(&game)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_, err := MiniMax(0, 3, s)
+		_, err := MiniMaxPruning(0, 4, s)
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
 }
 
-// Depth Four, taking about four minutes for opening, crashes the benchmar
+// Woah going to five
+func BenchmarkOpeningPruningDepth5(b *testing.B) {
+	// Opening position doesn't count,
+	// cause of the dictionary attack
+	// Seems to be about one and a half  minute for depth four
+	game := NewBoard()
+	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
+	_ = game.LoadFen(fen)
+	s := GetState(&game)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		_, err := MiniMaxPruning(0, 5, s)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+func BenchmarkMidGamePruningDepth5(b *testing.B) {
+	// Seems to be about 75 seconds
+	game := NewBoard()
+	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
+	_ = game.LoadFen(fen)
+	s := GetState(&game)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		_, err := MiniMaxPruning(0, 5, s)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
