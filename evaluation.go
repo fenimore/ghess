@@ -177,14 +177,15 @@ func (b *Board) Evaluate() int {
 	tension := b.Tension()
 	var material int
 
-	// Find King
-	for idx, _ := range b.board {
-		// Only look for 64 squares
-		if idx%10 == 0 || (idx+1)%10 == 0 ||
-			idx > 88 || idx < 11 {
-			continue
+	/*	// Find King
+		for idx, _ := range b.board {
+			// Only look for 64 squares
+			if idx%10 == 0 || (idx+1)%10 == 0 ||
+				idx > 88 || idx < 11 {
+				continue
+			}
 		}
-	}
+	*/
 
 	if b.Check && b.toMove == "w" {
 		score -= 200
@@ -272,13 +273,14 @@ func (b *Board) Evaluate() int {
 			//wtf default?
 			score += 0
 		}
-		if b.queenThreaten(idx, piece, isWhitePiece) {
+		// If threatens queen, maybe not so snazzy
+		/*if b.queenThreaten(idx, piece, isWhitePiece) {
 			if isWhitePiece {
 				score += 200
 			} else {
 				score -= 200
 			}
-		}
+		}*/
 	}
 	// Take the material advantage
 	// and multiply by two for greater weight.
