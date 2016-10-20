@@ -444,13 +444,7 @@ func (b *Board) evalQueen(pos int, isWhite bool) int {
 func (b *Board) evalKing(pos int, isWhite bool) int {
 	var score int
 	score += 100
-	if b.isInCheck(pos) {
-		score -= 50
-	}
-	if !isWhite {
-		score = -score
-	}
-
+	// TODO check if castle
 	return score
 }
 
