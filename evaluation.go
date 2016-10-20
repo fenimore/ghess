@@ -216,13 +216,17 @@ func (b *Board) Evaluate() int {
 		if isWhitePiece {
 			if tension[idx] < 0 {
 				score -= 20
-			} else {
+				// Controlling a square doesn't mean much
+				// if it is attacked by pawns
+			} else if !b.pawnThreat(idx, isWhitePiece) {
 				score += (5 * tension[idx])
 			}
 		} else {
 			if tension[idx] > 0 {
 				score += 20
-			} else {
+				// Controlling a square doesn't mean much
+				// if it is attacked by pawns
+			} else if !b.pawnThreat(idx, !isWhitePiece) {
 				score -= (-5 * tension[idx])
 			}
 		}
