@@ -430,7 +430,7 @@ func (b *Board) evalRook(pos int, isWhite bool) int {
 // evalQueen evaluates the queen position.
 func (b *Board) evalQueen(pos int, isWhite bool) int {
 	var score int
-	score += 90
+	score += 150
 	if b.pawnThreat(pos, isWhite) {
 		score -= 200 // Because this is real dumb
 	}
