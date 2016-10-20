@@ -353,6 +353,10 @@ func (b *Board) evalKnight(pos int, isWhite bool) int {
 	if b.pawnThreat(pos, isWhite) {
 		score -= 30 // attacked by opponent
 	}
+	// is on edge, yuck
+	if (pos-1)%10 == 0 || (pos+2)%10 == 0 {
+		score -= 20
+	}
 	// The score is inverted for Black
 	if isWhite {
 		if pos == 33 || pos == 36 {
@@ -360,6 +364,7 @@ func (b *Board) evalKnight(pos int, isWhite bool) int {
 		} else if pos > 48 {
 			score += 30
 		}
+		// Outpost Knigth
 		if pos > 38 && b.pawnProtect(pos, isWhite) {
 			score += 3
 		}
@@ -370,6 +375,7 @@ func (b *Board) evalKnight(pos int, isWhite bool) int {
 		} else if pos < 58 {
 			score -= 30
 		}
+		// Outpost Knigth
 		if pos < 68 && b.pawnProtect(pos, isWhite) {
 			score -= 3
 		}
