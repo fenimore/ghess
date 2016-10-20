@@ -278,7 +278,7 @@ func (b *Board) Evaluate() int {
 	}
 	// Take the material advantage
 	// and multiply by two for greater weight.
-	score += (material * 2)
+	score += (material * 3)
 	return score
 
 }
