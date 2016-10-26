@@ -369,6 +369,13 @@ func TestMoveIntoCheck(t *testing.T) {
 	// Cannot move into Check
 }
 
+func TestEvaluateZero(t *testing.T) {
+	game := NewBoard()
+	if game.Evaluate() != 0 {
+		t.Error("Init Position should be egal")
+	}
+}
+
 func TestPruning(t *testing.T) {
 	game := NewBoard()
 	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
