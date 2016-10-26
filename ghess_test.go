@@ -385,6 +385,14 @@ func TestPruning(t *testing.T) {
 
 }
 
+func TestDictionaryAttack(t *testing.T) {
+	game := NewBoard()
+	s := GetState(&game)
+	fmt.Println(s.String())
+	//pruned_state, _ := MiniMaxPruning(0, 2, s)
+	//t.Error(pruned_state.board.String())
+}
+
 /**********************************
 Examples
 ***********************************/

@@ -459,7 +459,11 @@ func (b *Board) evalQueen(pos int, isWhite bool) int {
 // evalKing evaluates king Position. Checks if in Check.
 func (b *Board) evalKing(pos int, isWhite bool) int {
 	var score int
-	score += 100
+	if isWhite {
+		score += 100
+	} else {
+		score -= 100
+	}
 	// TODO check if castle
 	return score
 }
