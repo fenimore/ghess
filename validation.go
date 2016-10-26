@@ -271,7 +271,6 @@ func (b *Board) updateBoard(orig, dest int,
 
 	// TODO check for Check
 	// Update Game variables
-	fmt.Println(b.toMove)
 	if b.toMove == "w" {
 		b.toMove = "b"
 	} else {
