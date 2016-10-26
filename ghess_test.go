@@ -388,9 +388,11 @@ func TestPruning(t *testing.T) {
 func TestDictionaryAttack(t *testing.T) {
 	game := NewBoard()
 	s := GetState(&game)
-	fmt.Println(s.String())
-	//pruned_state, _ := MiniMaxPruning(0, 2, s)
-	//t.Error(pruned_state.board.String())
+	nextState, _ := MiniMaxPruning(0, 2, s)
+	if nextState.Init[0] != 24 && nextState.Init[1] != 44 {
+		t.Error(nextState, "Dictionary ERror")
+	}
+
 }
 
 /**********************************
