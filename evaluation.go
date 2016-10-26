@@ -215,20 +215,20 @@ func (b *Board) Evaluate() int {
 		// are black (etc). So if a piece moves to a 'controlled' square
 		// I'm giving 5 times the over protection.
 		if isWhitePiece {
-			if tension[idx] < 0 {
+			if tension[idx] < 1 {
 				score -= 20
 				// Controlling a square doesn't mean much
 				// if it is attacked by pawns
 			} else if !b.pawnThreat(idx, isWhitePiece) {
-				score += (5 * tension[idx])
+				score += (3 * tension[idx])
 			}
 		} else {
-			if tension[idx] > 0 {
+			if tension[idx] > -1 {
 				score += 20
 				// Controlling a square doesn't mean much
 				// if it is attacked by pawns
 			} else if !b.pawnThreat(idx, !isWhitePiece) {
-				score -= (-5 * tension[idx])
+				score -= (-3 * tension[idx])
 			}
 		}
 		switch piece {
