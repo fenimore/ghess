@@ -61,11 +61,7 @@ func Min(states States) State {
 	return states[minIdx]
 }
 
-// MiniMax Recursive, pass in state, search depth and terminal depth.
-// and depth is always 0 when passed in initially.
-// This is like a DFS algorithm which tries to Minimize maximun loss.
-// TODO: write tests somehow.
-// Pass bback error LOL
+// Depricated
 func MiniMax(depth, terminal int, s State) (State, error) {
 	if depth == 0 {
 		// set the Min or Max

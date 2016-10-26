@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"errors"
 	"math/rand"
+	"strings"
 	"time"
 	"unicode"
 )
@@ -65,7 +66,10 @@ func GetPossibleStates(state State) (States, error) {
 // DictionaryAttack looks up common openings
 // for less stupid opening moves.
 func DictionaryAttack(s State) (State, error) {
-	key := s.board.Position()
+	position := s.board.Position()
+	// I don't need castling empassant or move number
+	posits := strings.Split(position, " ")
+	key := posits[0] + " " + posits[1]
 	// Check if opening exists
 	if val, ok := dict[key]; ok {
 		state := State{Init: val}
