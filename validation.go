@@ -3,6 +3,7 @@ package ghess
 import (
 	"bytes"
 	"errors"
+	"fmt"
 )
 
 // Problem: 1nbq1knr/1rNpppb1/pp4pp/4N3/3P4/P6P/1PP1PPP1/R1BQKB1R w KQ-- - 0 9
@@ -270,6 +271,7 @@ func (b *Board) updateBoard(orig, dest int,
 
 	// TODO check for Check
 	// Update Game variables
+	fmt.Println(b.toMove)
 	if b.toMove == "w" {
 		b.toMove = "b"
 	} else {

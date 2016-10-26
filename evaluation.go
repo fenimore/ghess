@@ -75,6 +75,7 @@ func DictionaryAttack(s State) (State, error) {
 		state := State{Init: val}
 		return state, nil
 	}
+
 	return s, errors.New("No Dictionary Attack Found")
 }
 

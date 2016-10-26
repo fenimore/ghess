@@ -14,7 +14,7 @@ import (
 
 var welcome string = `
 =================
-         go-chess
+	 go-chess
 
     /~ |_ _  _ _
     \_|||(/__\_\
@@ -25,8 +25,8 @@ var welcome string = `
 `
 var manuel string = `
     ====================
-        /~ |_ _  _ _
-        \_|||(/__\_\
+	/~ |_ _  _ _
+	\_|||(/__\_\
     ====================
 
 go-chess command line client
@@ -396,30 +396,15 @@ ThinkLoop:
 }
 
 func makeAiMove(game ghess.Board) {
-	done := make(chan bool)
-	go func() {
-		state, err := ghess.MiniMax(0, 3, ghess.GetState(&game))
-		if err != nil {
-			fmt.Println(err)
-		}
-		game.Move(state.Init[0], state.Init[1])
-		fmt.Println(game.String())
-		fmt.Println(state)
-		done <- true
-	}()
 	now := time.Now()
-Think2Loop:
-	for {
-		select {
-		case <-done:
-			fmt.Printf("\nThis took me: %s\n", time.Since(now))
-			break Think2Loop
-		default:
-			think(true)
-		}
-
+	state, err := ghess.MiniMaxPruning(0, 3, ghess.GetState(&game))
+	if err != nil {
+		fmt.Println(err)
 	}
-
+	game.Move(state.Init[0], state.Init[1])
+	fmt.Println(game.String())
+	fmt.Println(state)
+	fmt.Printf("\nThis took me: %s\n", time.Since(now))
 }
 
 func getPanel(m map[string]string) string {
