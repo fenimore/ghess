@@ -71,6 +71,10 @@ func TestStandard(t *testing.T) {
 	}
 }
 
+func TestTurnChange(t *testing.T) {
+	t.Error("Write Turn Test")
+}
+
 func TestTension(t *testing.T) {
 	game := NewBoard()
 	fen := `rnbqkbnr/ppp2ppp/4p3/3p4/4P3/2N5/PPPP1PPP/R1BQKBNR w KQkq - 0 3`
