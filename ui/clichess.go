@@ -165,7 +165,7 @@ Loop:
 			case "/computer":
 				// Play as white against the computer
 			case "/ai":
-				makeAiMove(game)
+				makeAiMove(&game)
 			case "/prune":
 				s, e := ghess.MiniMaxPruning(0, 4, ghess.GetState(&game))
 				fmt.Println(s, e)
@@ -395,9 +395,9 @@ ThinkLoop:
 
 }
 
-func makeAiMove(game ghess.Board) {
+func makeAiMove(game *ghess.Board) {
 	now := time.Now()
-	state, err := ghess.MiniMaxPruning(0, 3, ghess.GetState(&game))
+	state, err := ghess.MiniMaxPruning(0, 3, ghess.GetState(game))
 	if err != nil {
 		fmt.Println(err)
 	}
