@@ -78,10 +78,12 @@ func TestTurnChange(t *testing.T) {
 	if game.toMove != "b" {
 		t.Error("Turn did not change")
 	}
-	//s, _ := game.MiniMaxPruning(0, 2, GetState(&game))
-	//if game.toMove != "b" {
-	t.Error("TODO: Test minimax")
-	//}
+	s, _ := MiniMaxPruning(0, 2, GetState(&game))
+	_ = game.Move(s.Init[0], s.Init[1])
+	if game.toMove != "w" {
+		t.Error("Minimax does not change turn?")
+	}
+	fmt.Println(game.String())
 }
 
 func TestTension(t *testing.T) {
