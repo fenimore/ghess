@@ -749,6 +749,7 @@ var (
 		"h8": 81,
 	}
 
-	//CoordToPgnMap = map[int]string
+	// TODO: CoordToPgnMap = map[int]string
+	// TODO: Black square Map
 
 )

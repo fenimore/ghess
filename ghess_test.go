@@ -83,7 +83,6 @@ func TestTurnChange(t *testing.T) {
 	if game.toMove != "w" {
 		t.Error("Minimax does not change turn?")
 	}
-	fmt.Println(game.String())
 }
 
 func TestTension(t *testing.T) {
