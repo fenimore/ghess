@@ -68,7 +68,7 @@ func (b *Board) ParseMove(move string) error {
 			if len(res[1]) > 1 {
 				i, err := strconv.Atoi(string(res[1][1]))
 				if err == nil && i != 0 {
-					row = b.rows[i]
+					row = pgnRowMap[i]
 				} else {
 					c := string(res[1][1])
 					column = columns[c]
@@ -105,7 +105,7 @@ func (b *Board) ParseMove(move string) error {
 			if len(res[1]) > 1 {
 				i, err := strconv.Atoi(string(res[1][1]))
 				if err == nil && i != 0 {
-					row = b.rows[i]
+					row = pgnRowMap[i]
 				} else {
 					c := string(res[1][1])
 					column = columns[c]

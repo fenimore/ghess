@@ -247,16 +247,36 @@ func (b *Board) Evaluate() int {
 			}*/
 		switch piece {
 		case 'P':
+			if isWhitePiece {
+				score += whitePawnMap[idx]
+			} else {
+				score -= blackPawnMap[idx]
+			}
 			//score += b.evalPawn(idx, isWhitePiece)
 		case 'N':
+			if isWhitePiece {
+				score += whiteKnightMap[idx]
+			} else {
+				score -= blackKnightMap[idx]
+			}
 			//score += b.evalKnight(idx, isWhitePiece)
 		case 'B':
+			if isWhitePiece {
+				score += whiteBishopMap[idx]
+			} else {
+				score -= blackBishopMap[idx]
+			}
 			//score += b.evalBishop(idx, isWhitePiece)
 		case 'R':
-			//			score += b.evalRook(idx, isWhitePiece)
+			if isWhitePiece {
+				score += whiteRookMap[idx]
+			} else {
+				score -= blackRookMap[idx]
+			}
+			//score += b.evalRook(idx, isWhitePiece)
 
 		case 'Q':
-			//			score += b.evalQueen(idx, isWhitePiece)
+			//score += b.evalQueen(idx, isWhitePiece)
 		case 'K':
 			//score += b.evalKing(idx, isWhitePiece)
 		default:

@@ -32,7 +32,6 @@ type Board struct {
 	pieceMap map[int]string    // coord to standard notation
 	PieceMap map[int]string    // exported cord to stand notation
 	pieces   map[string]string // the unicode fonts
-	rows     map[int][8]int    // rows for white/black squaring
 	// Game Positions
 	fen        string         // Game position
 	pgn        string         // Game history
@@ -69,25 +68,6 @@ func NewBoard() Board {
 	p[68], p[67], p[66], p[65], p[64], p[63], p[62], p[61] = "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6"
 	p[78], p[77], p[76], p[75], p[74], p[73], p[72], p[71] = "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"
 	p[88], p[87], p[86], p[85], p[84], p[83], p[82], p[81] = "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
-	// Map of unicode fonts
-	r := make(map[string]string)
-	r["p"], r["P"] = "\u2659", "\u265F"
-	r["b"], r["B"] = "\u2657", "\u265D"
-	r["n"], r["N"] = "\u2658", "\u265E"
-	r["r"], r["R"] = "\u2656", "\u265C"
-	r["q"], r["Q"] = "\u2655", "\u265B"
-	r["k"], r["K"] = "\u2654", "\u265A"
-	r["."] = "\u00B7"
-	// Rows for PGN parsing
-	rows := make(map[int][8]int)
-	rows[1] = [8]int{18, 17, 16, 15, 14, 13, 12, 11}
-	rows[2] = [8]int{28, 27, 26, 25, 24, 23, 22, 21}
-	rows[3] = [8]int{38, 37, 36, 35, 34, 33, 32, 31}
-	rows[4] = [8]int{48, 47, 46, 45, 44, 43, 42, 41}
-	rows[5] = [8]int{58, 57, 56, 55, 54, 53, 52, 51}
-	rows[6] = [8]int{68, 67, 66, 65, 64, 63, 62, 61}
-	rows[7] = [8]int{78, 77, 76, 75, 74, 73, 72, 71}
-	rows[8] = [8]int{88, 87, 86, 85, 84, 83, 82, 81}
 	// Regex Patterns
 	pgnPattern, _ := regexp.Compile(`([PNBRQK]?[a-h]?[1-8]?)x?([a-h][1-8])([\+\?\!]?)|O(-?O){1,2}`)
 	fenPattern, _ := regexp.Compile(`([PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8})\s(w|b)\s([KQkq-]{1,4})\s([a-h][36]|-)\s\d\s([1-9]?[1-9])`)
@@ -97,8 +77,6 @@ func NewBoard() Board {
 		pgnMap:     m,
 		pieceMap:   p,
 		PieceMap:   p,
-		pieces:     r,
-		rows:       rows,
 		toMove:     "w",
 		score:      "*",
 		moves:      1,
@@ -128,7 +106,7 @@ func (b *Board) StringWhite() string {
 	r := make(map[int]bool) // black squares
 	r[17], r[15], r[13], r[11], r[28], r[26], r[24], r[22], r[37], r[35], r[33], r[31], r[48], r[46], r[44], r[42], r[57], r[55], r[53], r[51], r[68], r[66], r[64], r[62], r[77], r[75], r[73], r[71], r[88], r[86], r[84], r[82] = false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
 	game := b.board
-	p := b.pieces
+	p := unicodeMap // slower but makes code more readable, and printing isn't slow anyway
 	var printBoard string
 	j := 7
 	for i := 89; i > 10; i-- {
@@ -163,7 +141,7 @@ func (b *Board) StringBlack() string {
 	r := make(map[int]bool) // black squares
 	r[17], r[15], r[13], r[11], r[28], r[26], r[24], r[22], r[37], r[35], r[33], r[31], r[48], r[46], r[44], r[42], r[57], r[55], r[53], r[51], r[68], r[66], r[64], r[62], r[77], r[75], r[73], r[71], r[88], r[86], r[84], r[82] = false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false
 	game := b.board
-	p := b.pieces
+	p := unicodeMap
 	var printBoard string
 	j := 0
 	for i := 11; i < 90; i++ {
