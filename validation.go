@@ -203,13 +203,13 @@ func (b *Board) updateBoard(orig, dest int,
 	switch {
 	case b.board[orig] == 'r' || b.board[orig] == 'R':
 		switch { // Castle
-		case orig == b.pgnMap["a1"]:
+		case orig == 18:
 			b.castle[1] = '-'
-		case orig == b.pgnMap["a8"]:
+		case orig == 11:
 			b.castle[3] = '-'
-		case orig == b.pgnMap["h1"]:
+		case orig == 88:
 			b.castle[0] = '-'
-		case orig == b.pgnMap["h8"]:
+		case orig == 81:
 			b.castle[2] = '-'
 		}
 	case isCastle:

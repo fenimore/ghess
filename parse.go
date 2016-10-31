@@ -12,7 +12,7 @@ import (
 // Pgn map takes standar notation and returns coordinate.
 // This method is useful for chessboardjs gui
 func (b *Board) ParseStand(orig, dest string) error {
-	e := b.Move(b.pgnMap[orig], b.pgnMap[dest])
+	e := b.Move(PgnToCoordMap[orig], PgnToCoordMap[dest])
 	if e != nil {
 		return e
 	}
@@ -28,7 +28,7 @@ func (b *Board) ParseMove(move string) error {
 	// Variables
 	var piece string    // find move piece
 	var orig int        // find origin coord of move
-	var square string   // find pgnMap key of move
+	var square string   // find PgnMap key of move
 	var attacker string // left of x
 	//var precise string // for multiple possibilities
 	var target byte // the piece to move, in proper case
@@ -50,7 +50,7 @@ func (b *Board) ParseMove(move string) error {
 	isWhite := b.toMove == "w"
 	isCapture, _ := regexp.MatchString(`x`, move)
 
-	res := b.pgnPattern.FindStringSubmatch(move)
+	res := PgnPattern.FindStringSubmatch(move)
 	if res == nil && move != "O-O" && move != "O-O-O" {
 		return errors.New("invalid input")
 	} else if move == "O-O" || move == "O-O-O" {
@@ -68,7 +68,7 @@ func (b *Board) ParseMove(move string) error {
 			if len(res[1]) > 1 {
 				i, err := strconv.Atoi(string(res[1][1]))
 				if err == nil && i != 0 {
-					row = pgnRowMap[i]
+					row = PgnRowMap[i]
 				} else {
 					c := string(res[1][1])
 					column = columns[c]
@@ -105,7 +105,7 @@ func (b *Board) ParseMove(move string) error {
 			if len(res[1]) > 1 {
 				i, err := strconv.Atoi(string(res[1][1]))
 				if err == nil && i != 0 {
-					row = pgnRowMap[i]
+					row = PgnRowMap[i]
 				} else {
 					c := string(res[1][1])
 					column = columns[c]
@@ -118,7 +118,7 @@ func (b *Board) ParseMove(move string) error {
 		}
 	}
 	// the presumed destination
-	dest := b.pgnMap[square]
+	dest := PgnToCoordMap[square]
 	// The piece will be saved as case sensitive byte
 	if b.toMove == "b" {
 		if piece != "" {
@@ -372,7 +372,7 @@ func (b *Board) ParseMove(move string) error {
 // TODO: ignore header strings eg [White].
 func (b *Board) LoadPgn(match string) error {
 	// Does this already ignore?
-	result := b.pgnPattern.FindAllString(match, -1)
+	result := PgnPattern.FindAllString(match, -1)
 	for _, val := range result {
 		err := b.ParseMove(val)
 		if err != nil {
@@ -386,11 +386,11 @@ func (b *Board) LoadPgn(match string) error {
 func (b *Board) LoadFen(fen string) error {
 	// Treat fen input
 	fen = strings.TrimRight(fen, "\r\n")
-	matches := b.fenPattern.MatchString(fen)
+	matches := FenPattern.MatchString(fen)
 	if !matches {
 		return errors.New("Invalid FEN")
 	}
-	res := b.fenPattern.FindStringSubmatch(fen)
+	res := FenPattern.FindStringSubmatch(fen)
 	posCount := 88 // First position to fill
 	//
 	for _, val := range res[1] { // res[1] {
@@ -435,7 +435,7 @@ func (b *Board) LoadFen(fen string) error {
 	}
 	// Empassant
 	if res[4] != "-" {
-		emp := b.pgnMap[res[4]]
+		emp := PgnToCoordMap[res[4]]
 		if emp < 40 {
 			// white pawn
 		} else if emp > 60 {
