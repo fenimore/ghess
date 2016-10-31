@@ -100,13 +100,7 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// Make sure new position doesn't put in check
 	isWhite := b.toMove == "w"
-	possible := *b                 // slices are  still pointing...
-	boardCopy := make([]byte, 120) // b.board is Pointer
-	castleCopy := make([]byte, 4)
-	copy(boardCopy, b.board)
-	copy(castleCopy, b.castle)
-	possible.board = boardCopy
-	possible.castle = castleCopy
+	possible := CopyBoard(b)
 	// Check possibilities
 	possible.updateBoard(orig, dest, val, isEmpassant, isCastle)
 	// find mover's king
@@ -121,6 +115,7 @@ func (b *Board) Move(orig, dest int) error {
 		}
 	}
 	isCheck := possible.isInCheck(king)
+	//isCheck := possible.isPlayerInCheck()
 	if isCheck {
 		return errors.New("Cannot move into Check")
 	}
@@ -213,16 +208,10 @@ func (b *Board) updateBoard(orig, dest int,
 			b.castle[2] = '-'
 		}
 	case isCastle:
-		kingSide := orig > dest
-		queenSide := orig < dest
 		switch {
-		case isWhite && kingSide:
+		case isWhite:
 			b.castle[0], b.castle[1] = '-', '-'
-		case isWhite && queenSide:
-			b.castle[0], b.castle[1] = '-', '-'
-		case !isWhite && kingSide:
-			b.castle[2], b.castle[3] = '-', '-'
-		case !isWhite && queenSide:
+		case !isWhite:
 			b.castle[2], b.castle[3] = '-', '-'
 		}
 	}
@@ -296,11 +285,11 @@ func (b *Board) updateBoard(orig, dest int,
 func (b *Board) isPlayerInCheck() bool {
 	isWhite := b.toMove == "w"
 	for idx, val := range b.board {
-		if val == 'K' && b.isUpper(idx) && isWhite {
+		if val == 'K' && isWhite {
 			//fmt.Println(b.board[idx])
 			return b.isInCheck(idx)
 		}
-		if val == 'k' && !b.isUpper(idx) && !isWhite {
+		if val == 'k' && !isWhite {
 			return b.isInCheck(idx)
 		}
 	}
