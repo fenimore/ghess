@@ -10,18 +10,6 @@ import (
 	"unicode"
 )
 
-var (
-	matMap = map[byte]int{
-		'P': 100,
-		'N': 320,
-		'B': 330,
-		'R': 500,
-		'Q': 900,
-		'K': 20000,
-	} // material map
-
-)
-
 /*
 State Functions ##################################3
 */
