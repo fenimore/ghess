@@ -104,7 +104,7 @@ func TestSearchValid(t *testing.T) {
 	game := NewBoard()
 	fen := "6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42"
 	_ = game.LoadFen(fen)
-	o, d := game.SearchValid()
+	o, d := game.SearchValidQuick()
 	exO := []int{21, 21, 21, 43}
 	exD := []int{11, 12, 31, 23}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
@@ -118,7 +118,7 @@ func TestSearchValid(t *testing.T) {
 	if err != nil {
 		t.Error("Fen error")
 	}
-	o, d = game.SearchValid()
+	o, d = game.SearchValidQuick()
 	exO = []int{85, 87}
 	exD = []int{75, 75}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
@@ -131,7 +131,7 @@ func TestSearchValid(t *testing.T) {
 	if err != nil {
 		t.Error("Fen error")
 	}
-	o, d = game.SearchValid()
+	o, d = game.SearchValidQuick()
 	exO = []int{85}
 	exD = []int{76}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
@@ -144,7 +144,7 @@ func TestSearchValid(t *testing.T) {
 	if err != nil {
 		t.Error("Fen error")
 	}
-	o, d = game.SearchValid()
+	o, d = game.SearchValidQuick()
 	exO = []int{11, 11, 14, 14, 14, 14, 14, 14, 14, 18, 18, 18, 21, 21, 28, 28}
 	exD = []int{12, 13, 13, 15, 23, 24, 25, 18, 11, 15, 16, 17, 31, 41, 38, 48}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
@@ -159,7 +159,7 @@ func TestSearchValid(t *testing.T) {
 
 		t.Error("Fen error")
 	}
-	o, d = game.SearchValid()
+	o, d = game.SearchValidQuick()
 	exO = []int{71, 71, 78, 78, 81, 81, 84, 84, 84, 84, 84, 84, 84, 88, 88, 88}
 	exD = []int{51, 61, 58, 68, 82, 83, 73, 74, 75, 83, 85, 88, 81, 85, 86, 87}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
@@ -174,7 +174,7 @@ func TestSearchValid(t *testing.T) {
 	if err != nil {
 		t.Error("Fen error")
 	}
-	o, d = game.SearchValid()
+	o, d = game.SearchValidQuick()
 	exO = []int{18, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28}
 	exD = []int{17, 31, 41, 32, 42, 33, 43, 34, 44, 35, 45, 36, 46, 37, 47, 38, 48}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
@@ -625,7 +625,39 @@ func ExampleBoard_SearchValid() {
 }
 
 /**********************************
-Benchmarks
+Benchmarks SearchValid
+***********************************/
+
+func BenchmarkSearchValid(b *testing.B) {
+	game := NewBoard()
+	fen := "r5k1/5ppp/1p5q/p1p5/8/1PP2PP1/1P1r4/R1Q2R1K b - - 0 20"
+	err := game.LoadFen(fen)
+	if err != nil {
+		fmt.Println(err)
+		b.Error("Can't load fen")
+	}
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		_, _ = game.SearchValid()
+	}
+}
+
+func BenchmarkSearchValidQuick(b *testing.B) {
+	game := NewBoard()
+	fen := "r5k1/5ppp/1p5q/p1p5/8/1PP2PP1/1P1r4/R1Q2R1K b - - 0 20"
+	err := game.LoadFen(fen)
+	if err != nil {
+		fmt.Println(err)
+		b.Error("Can't load fen")
+	}
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		_, _ = game.SearchValidQuick()
+	}
+}
+
+/**********************************
+Benchmarks MiniMax
 ***********************************/
 
 func BenchmarkMidGamePruningDepth2(b *testing.B) {
@@ -724,11 +756,12 @@ func BenchmarkMidGamePruningDepth4(b *testing.B) {
 	}
 }
 
+/*
 // Woah going to five
 func BenchmarkOpeningPruningDepth5(b *testing.B) {
 	// Opening position doesn't count,
 	// cause of the dictionary attack
-	// Seems to be about one and a half  minute for depth four
+
 	game := NewBoard()
 	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
 	_ = game.LoadFen(fen)
@@ -741,9 +774,10 @@ func BenchmarkOpeningPruningDepth5(b *testing.B) {
 		}
 	}
 }
-
+*/
+/*
 func BenchmarkMidGamePruningDepth5(b *testing.B) {
-	// Seems to be about 75 seconds
+
 	game := NewBoard()
 	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
 	_ = game.LoadFen(fen)
@@ -755,4 +789,4 @@ func BenchmarkMidGamePruningDepth5(b *testing.B) {
 			fmt.Println(err)
 		}
 	}
-}
+}*/
