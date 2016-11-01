@@ -265,6 +265,135 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	}
 }
 
+// MinimaxOrdered prunes an ordered list of states
+func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
+	if depth == 0 {
+		s.alpha = -1000000000
+		s.beta = 1000000000
+		// set the Min or Max
+		if s.board.toMove == "w" {
+			s.isMax = true
+		} else {
+			s.isMax = false
+		}
+		//fmt.Println("SHHH, I'm thinking")
+		// DICT attack
+		openState, err := DictionaryAttack(s)
+		if err == nil {
+			return openState, nil
+		}
+	}
+	if depth == terminal { // that is, 2 ply
+		//fmt.Println("Depth ", depth, s)
+		return s, nil
+	}
+
+	even := (depth % 2) == 0
+	var maxNode bool
+	if even {
+		// If White Player Return Maximum
+		if s.isMax {
+			maxNode = true
+			//return Max(bestStates), nil
+		} else {
+			maxNode = false
+			//return Min(bestStates), nil
+		}
+	} else { // Otherwise Return Minimum... Yup that's the idea.
+		if s.isMax {
+			maxNode = false
+			//return Min(bestStates), nil
+		} else {
+			maxNode = true
+			//return Max(bestStates), nil
+		}
+	}
+
+	states, err := GetPossibleOrderedStates(s)
+	if err != nil {
+		return s, err
+	}
+
+	// Recursive Call
+	var bestState State
+	var bestStates States
+	for _, state := range states {
+		state.alpha = s.alpha
+		state.beta = s.beta
+		/*
+			if maxNode {
+				if state.eval > s.beta {
+					fmt.Println("Bingo Alpha", state.eval)
+					//fmt.Println("Alpha")
+					return state, nil
+				} else {
+					state.beta = s.beta
+					state.alpha = max(s.alpha, state.eval)
+				}
+			}
+			if !maxNode {
+				if state.eval < s.alpha {
+					fmt.Println("Bingo Beta", state.eval)
+					//fmt.Println("BETA")
+					return state, nil
+				} else {
+					state.alpha = s.alpha
+					state.beta = min(s.beta, state.eval)
+
+				}
+			}
+		*/
+		bestState, err = MiniMaxPruning(depth+1, terminal, state)
+		if err != nil {
+			return bestState, err
+		}
+		// The trick is to update the root (for this branch)
+		// beta or alpha, which then will cut off further iterating in
+		// THIS VERY for loop.
+		if maxNode {
+			if bestState.eval > s.beta {
+				//fmt.Println("Bingo Alpha", bestState.eval)
+				return bestState, nil
+			} else {
+				bestState.beta = s.beta
+				s.alpha = max(s.alpha, bestState.eval)
+			}
+		}
+		if !maxNode {
+			if bestState.eval < s.alpha {
+				//fmt.Println("Bingo Beta", bestState.eval)
+				return bestState, nil
+			} else {
+				bestState.alpha = s.alpha
+				s.beta = min(s.beta, bestState.eval)
+
+			}
+		}
+
+		// If the player is Max, I want to compare against beta
+		// otherwise against alpha.
+
+		// If we are considering Max,
+		//and state's value >= beta, then return NOW
+		// otherwise, set alpha = Max(alpha, state's value)
+
+		// If we are considering Min,
+		// and state's value <= alpha, then return NOW
+		// otherwise, set beta = Min(beta, state's value)
+
+		bestStates = append(bestStates, bestState)
+	}
+	if len(bestStates) < 1 {
+		return s, nil
+	}
+
+	if maxNode {
+		return Max(bestStates), nil
+	} else {
+		return Min(bestStates), nil
+	}
+}
+
 // small min, doesn't take state,
 // but it takes numbers
 func min(a, b int) int {

@@ -63,6 +63,27 @@ func GetPossibleStates(state State) (States, error) {
 	return states, nil
 }
 
+// GetPossibleStates returns a slice of State structs
+// Each with a score and the move that got there.
+func GetPossibleOrderedStates(state State) (States, error) {
+	states := make(States, 0)
+	origs, dests := state.board.SearchValidOrdered()
+	for i := 0; i < len(origs); i++ {
+		s, err := TryState(state.board, origs[i], dests[i])
+		if err != nil {
+			return states, err
+		}
+		if state.Init[0] == 0 {
+			s.Init[0], s.Init[1] = origs[i], dests[i]
+		} else {
+			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
+		}
+		s.isMax = state.isMax // Basically is White
+		states = append(states, s)
+	}
+	return states, nil
+}
+
 // DictionaryAttack looks up common openings
 // for less stupid opening moves.
 func DictionaryAttack(s State) (State, error) {
