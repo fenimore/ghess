@@ -11,7 +11,7 @@ import (
 // destinations and origins. These are int coordinates
 // which point to the index of the byte slice Board.board
 // TODO: Castling is not quite working.
-func (b *Board) SearchValid() ([]int, []int) {
+func (b *Board) SearchValidSlow() ([]int, []int) {
 	movers := make([]int, 0, 16)
 	targets := make([]int, 0, 64)
 	origs := make([]int, 0, 16)
@@ -132,7 +132,7 @@ func (b *Board) SearchValid() ([]int, []int) {
 	return validO, validD
 }
 
-func (b *Board) SearchValidQuick() ([]int, []int) {
+func (b *Board) SearchValid() ([]int, []int) {
 	movers := make([]int, 0, 16)
 	targets := make([]int, 0, 64)
 	origs := make([]int, 0, 16)

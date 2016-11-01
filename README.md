@@ -16,7 +16,7 @@ A Golang chess engine and user interfaces
     2: |♟||♟||♟|| ||░||♟||♟||♟|
     1: |♜||♞||♝||♛||♚||♝|| ||♜|
        :a::b::c::d::e::f::g::h:
-    Black to move: 
+    Black to move:
 
 
 # Instructions
@@ -37,7 +37,7 @@ A Golang chess engine and user interfaces
 - To evaluate a board position, with positive numbers as a White advantage and negative as Black advantage:
 
     `> /eval`
-	
+
 
 # Basic Features and Functionality
 - *Most* rules are implemented:
@@ -100,7 +100,7 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 
 ----
 
-## TODO General 
+## TODO General
 
 1. More tests.
 4. Export `Board` fields.
@@ -124,7 +124,7 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
   * Save game history to board (not automatic)?
   * Save as two coordinates, with piece specifier
 
----- 
+----
 
 # User Interfaces
 
@@ -148,7 +148,23 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 - A server api for playing a game and saving it to a sqlite database.
 
 
----- 
+----
+
+# Benchmarks:
+
+(These are for my testing purposes). As of Nov 1, using the suped up `SearchValid()`, Minimax Benchmarks look like this:
+
+
+    BenchmarkSearchValid-4                    50      25884559 ns/op
+    BenchmarkSearchValidSlow-4                50      27821677 ns/op
+    BenchmarkMidGamePruningDepth2-4           10     138513378 ns/op
+    BenchmarkOpeningPruningDepth2-4           20      94688395 ns/op
+    BenchmarkOpeningPruningDepth3-4            1	1441998152 ns/op
+    BenchmarkMidGamePruningDepth3-4            1	2177541792 ns/op
+    BenchmarkOpeningPruningDepth4-4            1	16566151366 ns/op
+    BenchmarkMidGamePruningDepth4-4            1	16079072907 ns/op
+
+
 
 ### Bugs
 
@@ -167,4 +183,3 @@ Copyright (C) 2016 Fenimore Love
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
