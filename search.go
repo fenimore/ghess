@@ -10,128 +10,6 @@ import (
 // SearchValid finds two arrays, of all valid possible
 // destinations and origins. These are int coordinates
 // which point to the index of the byte slice Board.board
-// TODO: Castling is not quite working.
-func (b *Board) SearchValidSlow() ([]int, []int) {
-	movers := make([]int, 0, 16)
-	targets := make([]int, 0, 64)
-	origs := make([]int, 0, 16)
-	dests := make([]int, 0, 64)
-	validO := make([]int, 0, 16)
-	validD := make([]int, 0, 64)
-	isWhite := b.toMove == "w"
-	var king int
-
-	// Find and sort pieces:
-	for idx, val := range b.board {
-		// Only look for 64 squares
-		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
-			continue
-		}
-
-		if val == 'K' || val == 'k' {
-			if isWhite && val == 'K' {
-				king = idx
-			} else if !isWhite && val == 'k' {
-				king = idx
-			}
-		}
-
-		if b.toMove == "w" && b.isUpper(idx) && val != '.' {
-			movers = append(movers, idx)
-		} else if b.toMove == "b" && !b.isUpper(idx) && val != '.' {
-			movers = append(movers, idx)
-
-		} else {
-			targets = append(targets, idx)
-
-		}
-
-	}
-
-	// Add Castle to targets
-	if b.toMove == "w" {
-		if b.castle[1] == 'Q' {
-			targets = append(targets, 18)
-		}
-		if b.castle[0] == 'K' {
-			targets = append(targets, 11)
-		}
-	}
-	if b.toMove == "b" {
-		if b.castle[3] == 'q' {
-			targets = append(targets, 88)
-		}
-		if b.castle[2] == 'k' {
-			targets = append(targets, 81)
-		}
-	}
-
-	// Check for Valid attacks
-	for _, idx := range movers {
-		p := bytes.ToUpper(b.board[idx : idx+1])[0]
-		for _, target := range targets {
-			var e error
-			switch p {
-			case 'P':
-				// why am I not looking at pawns?
-				//e = b.validPawn(idx, target)
-			case 'N':
-				e = b.validKnight(idx, target)
-			case 'B':
-				e = b.validBishop(idx, target)
-			case 'R':
-				e = b.validRook(idx, target)
-			case 'Q':
-				e = b.validQueen(idx, target)
-			case 'K':
-
-				e = b.validKing(idx, target, false)
-				if e == nil {
-					origs = append(origs, idx)
-					dests = append(dests, target)
-					continue
-				}
-				err := b.validKing(idx, target, true)
-				if err == nil {
-					origs = append(origs, idx)
-					dests = append(dests, target)
-					continue
-				}
-			}
-			if e == nil {
-				origs = append(origs, idx)
-				dests = append(dests, target)
-			}
-		}
-	}
-
-	// Check if it moves into Check
-	//for i := 0; i < len(origs); i++ {
-	for i, v := range origs {
-		var k int
-		// Check if King is the piece moved
-		if b.board[v] == 'k' || b.board[v] == 'K' {
-			k = dests[i]
-		} else {
-			k = king
-		}
-		// Copy board to "make move" as the move must be made
-		// in order to test for check
-		possible := CopyBoard(b)
-		err := possible.Move(origs[i], dests[i])
-		isCheck := possible.isInCheck(k)
-		//if dests[i] == 75 && isCheck {
-		//fmt.Println(origs[i], "What?", king)
-		//}
-		if err == nil && !isCheck {
-			validO = append(validO, origs[i])
-			validD = append(validD, dests[i])
-		}
-	}
-
-	return validO, validD
-}
-
 func (b *Board) SearchValid() ([]int, []int) {
 	movers := make([]int, 0, 16)
 	targets := make([]int, 0, 64)
@@ -352,4 +230,126 @@ func (b *Board) StringTension() string {
 	printBoard += string(nums[j]) + ": " + "\n"
 	printBoard += ": a:: b:: c:: d:: e:: f:: g:: h:\n"
 	return printBoard
+}
+
+// Deprecated:
+func (b *Board) SearchValidSlow() ([]int, []int) {
+	movers := make([]int, 0, 16)
+	targets := make([]int, 0, 64)
+	origs := make([]int, 0, 16)
+	dests := make([]int, 0, 64)
+	validO := make([]int, 0, 16)
+	validD := make([]int, 0, 64)
+	isWhite := b.toMove == "w"
+	var king int
+
+	// Find and sort pieces:
+	for idx, val := range b.board {
+		// Only look for 64 squares
+		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
+			continue
+		}
+
+		if val == 'K' || val == 'k' {
+			if isWhite && val == 'K' {
+				king = idx
+			} else if !isWhite && val == 'k' {
+				king = idx
+			}
+		}
+
+		if b.toMove == "w" && b.isUpper(idx) && val != '.' {
+			movers = append(movers, idx)
+		} else if b.toMove == "b" && !b.isUpper(idx) && val != '.' {
+			movers = append(movers, idx)
+
+		} else {
+			targets = append(targets, idx)
+
+		}
+
+	}
+
+	// Add Castle to targets
+	if b.toMove == "w" {
+		if b.castle[1] == 'Q' {
+			targets = append(targets, 18)
+		}
+		if b.castle[0] == 'K' {
+			targets = append(targets, 11)
+		}
+	}
+	if b.toMove == "b" {
+		if b.castle[3] == 'q' {
+			targets = append(targets, 88)
+		}
+		if b.castle[2] == 'k' {
+			targets = append(targets, 81)
+		}
+	}
+
+	// Check for Valid attacks
+	for _, idx := range movers {
+		p := bytes.ToUpper(b.board[idx : idx+1])[0]
+		for _, target := range targets {
+			var e error
+			switch p {
+			case 'P':
+				// why am I not looking at pawns?
+				//e = b.validPawn(idx, target)
+			case 'N':
+				e = b.validKnight(idx, target)
+			case 'B':
+				e = b.validBishop(idx, target)
+			case 'R':
+				e = b.validRook(idx, target)
+			case 'Q':
+				e = b.validQueen(idx, target)
+			case 'K':
+
+				e = b.validKing(idx, target, false)
+				if e == nil {
+					origs = append(origs, idx)
+					dests = append(dests, target)
+					continue
+				}
+				err := b.validKing(idx, target, true)
+				if err == nil {
+					origs = append(origs, idx)
+					dests = append(dests, target)
+					continue
+				}
+			}
+			if e == nil {
+				origs = append(origs, idx)
+				dests = append(dests, target)
+			}
+		}
+	}
+
+	// Check if it moves into Check
+	//for i := 0; i < len(origs); i++ {
+	for i, v := range origs {
+		var k int
+		// Check if King is the piece moved
+		if b.board[v] == 'k' || b.board[v] == 'K' {
+			k = dests[i]
+		} else {
+			k = king
+		}
+		// Copy board to "make move" as the move must be made
+		// in order to test for check
+		possible := CopyBoard(b)
+		err := possible.Move(origs[i], dests[i])
+		isCheck := possible.isInCheck(k)
+		//if dests[i] == 75 && isCheck {
+		//fmt.Println(origs[i], "What?", king)
+		//}
+		if err == nil && !isCheck {
+			validO = append(validO, origs[i])
+			validD = append(validD, dests[i])
+		}
+	}
+
+	return validO, validD
 }

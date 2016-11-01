@@ -163,9 +163,9 @@ func TestSearchValid(t *testing.T) {
 	exO = []int{71, 71, 78, 78, 81, 81, 84, 84, 84, 84, 84, 84, 84, 88, 88, 88}
 	exD = []int{51, 61, 58, 68, 82, 83, 73, 74, 75, 83, 85, 88, 81, 85, 86, 87}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
-		//fmt.Println(o)
-		//fmt.Println(d)
-		//t.Error("Search doesn't find Black castle")
+		fmt.Println(o)
+		fmt.Println(d)
+		t.Error("Search doesn't find Black castle")
 		// Doesn't find both black castles...
 	}
 	// Search for Pawn:
