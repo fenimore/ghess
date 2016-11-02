@@ -1,6 +1,10 @@
 package ghess
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"strings"
+)
 
 /*
 MiniMax implementation ###########################################
@@ -31,6 +35,92 @@ func (s States) Len() int           { return len(s) }
 func (s States) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s States) Less(i, j int) bool { return s[i].eval < s[j].eval }
 
+// GetState turns a Board into a copy and it's state.
+// The Init value is nil.
+func GetState(b *Board) State {
+	c := *b                        // dereference the pointer
+	boardCopy := make([]byte, 120) // []bytes are slices
+	castleCopy := make([]byte, 4)
+	copy(boardCopy, b.board)
+	copy(castleCopy, b.castle)
+	c.board = boardCopy
+	c.castle = castleCopy
+	s := State{board: &c, eval: c.Evaluate()}
+	return s
+}
+
+// TryState takes in a *Board and valid move and returns
+// a State struct.
+func TryState(b *Board, o, d int) (State, error) {
+	state := State{}
+	possible := CopyBoard(b)
+	err := possible.Move(o, d)
+	if err != nil {
+		return state, err
+	}
+	state.board = possible
+	state.eval = possible.Evaluate()
+	return state, nil
+}
+
+// GetPossibleStates returns a slice of State structs
+// Each with a score and the move that got there.
+func GetPossibleStates(state State) (States, error) {
+	states := make(States, 0)
+	origs, dests := state.board.SearchValid()
+	for i := 0; i < len(origs); i++ {
+		s, err := TryState(state.board, origs[i], dests[i])
+		if err != nil {
+			return states, err
+		}
+		if state.Init[0] == 0 {
+			s.Init[0], s.Init[1] = origs[i], dests[i]
+		} else {
+			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
+		}
+		s.isMax = state.isMax // Basically is White
+		states = append(states, s)
+	}
+	return states, nil
+}
+
+// GetPossibleStates returns a slice of State structs
+// Each with a score and the move that got there.
+func GetPossibleOrderedStates(state State) (States, error) {
+	states := make(States, 0)
+	origs, dests := state.board.SearchValidOrdered()
+	for i := 0; i < len(origs); i++ {
+		s, err := TryState(state.board, origs[i], dests[i])
+		if err != nil {
+			return states, err
+		}
+		if state.Init[0] == 0 {
+			s.Init[0], s.Init[1] = origs[i], dests[i]
+		} else {
+			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
+		}
+		s.isMax = state.isMax // Basically is White
+		states = append(states, s)
+	}
+	return states, nil
+}
+
+// DictionaryAttack looks up common openings
+// for less stupid opening moves.
+func DictionaryAttack(s State) (State, error) {
+	position := s.board.Position()
+	// I don't need castling empassant or move number
+	posits := strings.Split(position, " ")
+	key := posits[0] + " " + posits[1]
+	// Check if opening exists
+	if val, ok := dict[key]; ok {
+		state := State{Init: val}
+		return state, nil
+	}
+
+	return s, errors.New("No Dictionary Attack Found")
+}
+
 // The Max and Mini functions are O(n)
 
 // Max returns the state from States with
@@ -59,77 +149,6 @@ func Min(states States) State {
 		}
 	}
 	return states[minIdx]
-}
-
-// Depricated
-func MiniMax(depth, terminal int, s State) (State, error) {
-	if depth == 0 {
-		// set the Min or Max
-		if s.board.toMove == "w" {
-			s.isMax = true
-		} else {
-			s.isMax = false
-		}
-		//fmt.Println("SHHH, I'm thinking")
-		// DICT attack
-		openState, err := DictionaryAttack(s)
-		if err == nil {
-			return openState, nil
-		}
-	}
-	if depth == terminal { // that is, 2 ply
-		//fmt.Println("Depth ", depth, s)
-		return s, nil
-	}
-	// Determine which node this is
-	// TODO: Why is this so complicated?
-	// Because when minimax from perspective black,
-	// things are totally different
-	even := (depth % 2) == 0
-	var maxNode bool
-	if even {
-		// If White Player Return Maximum
-		if s.isMax {
-			maxNode = true
-			//return Max(bestStates), nil
-		} else {
-			maxNode = false
-			//return Min(bestStates), nil
-		}
-	} else { // Otherwise Return Minimum... Yup that's the idea.
-		if s.isMax {
-			maxNode = false
-			//return Min(bestStates), nil
-		} else {
-			maxNode = true
-			//return Max(bestStates), nil
-		}
-	}
-
-	states, err := GetPossibleStates(s)
-	if err != nil {
-		return s, err
-	}
-
-	// Recursive Call
-	var bestState State
-	var bestStates States
-	for _, state := range states {
-		bestState, err = MiniMax(depth+1, terminal, state)
-		if err != nil {
-			return bestState, err
-		}
-		bestStates = append(bestStates, bestState)
-	}
-	if len(bestStates) < 1 {
-		return s, nil
-	}
-
-	if maxNode {
-		return Max(bestStates), nil
-	} else {
-		return Min(bestStates), nil
-	}
 }
 
 // MiniMax Recursive, pass in state, search depth and terminal depth.
@@ -409,5 +428,78 @@ func max(a, b int) int {
 		return a
 	} else {
 		return b
+	}
+}
+
+// DEPRECATED
+
+// Depricated
+func MiniMax(depth, terminal int, s State) (State, error) {
+	if depth == 0 {
+		// set the Min or Max
+		if s.board.toMove == "w" {
+			s.isMax = true
+		} else {
+			s.isMax = false
+		}
+		//fmt.Println("SHHH, I'm thinking")
+		// DICT attack
+		openState, err := DictionaryAttack(s)
+		if err == nil {
+			return openState, nil
+		}
+	}
+	if depth == terminal { // that is, 2 ply
+		//fmt.Println("Depth ", depth, s)
+		return s, nil
+	}
+	// Determine which node this is
+	// TODO: Why is this so complicated?
+	// Because when minimax from perspective black,
+	// things are totally different
+	even := (depth % 2) == 0
+	var maxNode bool
+	if even {
+		// If White Player Return Maximum
+		if s.isMax {
+			maxNode = true
+			//return Max(bestStates), nil
+		} else {
+			maxNode = false
+			//return Min(bestStates), nil
+		}
+	} else { // Otherwise Return Minimum... Yup that's the idea.
+		if s.isMax {
+			maxNode = false
+			//return Min(bestStates), nil
+		} else {
+			maxNode = true
+			//return Max(bestStates), nil
+		}
+	}
+
+	states, err := GetPossibleStates(s)
+	if err != nil {
+		return s, err
+	}
+
+	// Recursive Call
+	var bestState State
+	var bestStates States
+	for _, state := range states {
+		bestState, err = MiniMax(depth+1, terminal, state)
+		if err != nil {
+			return bestState, err
+		}
+		bestStates = append(bestStates, bestState)
+	}
+	if len(bestStates) < 1 {
+		return s, nil
+	}
+
+	if maxNode {
+		return Max(bestStates), nil
+	} else {
+		return Min(bestStates), nil
 	}
 }

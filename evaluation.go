@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"errors"
 	"math/rand"
-	"strings"
 	"time"
 	"unicode"
 )
@@ -13,92 +12,6 @@ import (
 /*
 State Functions ##################################3
 */
-
-// GetState turns a Board into a copy and it's state.
-// The Init value is nil.
-func GetState(b *Board) State {
-	c := *b                        // dereference the pointer
-	boardCopy := make([]byte, 120) // []bytes are slices
-	castleCopy := make([]byte, 4)
-	copy(boardCopy, b.board)
-	copy(castleCopy, b.castle)
-	c.board = boardCopy
-	c.castle = castleCopy
-	s := State{board: &c, eval: c.Evaluate()}
-	return s
-}
-
-// TryState takes in a *Board and valid move and returns
-// a State struct.
-func TryState(b *Board, o, d int) (State, error) {
-	state := State{}
-	possible := CopyBoard(b)
-	err := possible.Move(o, d)
-	if err != nil {
-		return state, err
-	}
-	state.board = possible
-	state.eval = possible.Evaluate()
-	return state, nil
-}
-
-// GetPossibleStates returns a slice of State structs
-// Each with a score and the move that got there.
-func GetPossibleStates(state State) (States, error) {
-	states := make(States, 0)
-	origs, dests := state.board.SearchValid()
-	for i := 0; i < len(origs); i++ {
-		s, err := TryState(state.board, origs[i], dests[i])
-		if err != nil {
-			return states, err
-		}
-		if state.Init[0] == 0 {
-			s.Init[0], s.Init[1] = origs[i], dests[i]
-		} else {
-			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
-		}
-		s.isMax = state.isMax // Basically is White
-		states = append(states, s)
-	}
-	return states, nil
-}
-
-// GetPossibleStates returns a slice of State structs
-// Each with a score and the move that got there.
-func GetPossibleOrderedStates(state State) (States, error) {
-	states := make(States, 0)
-	origs, dests := state.board.SearchValidOrdered()
-	for i := 0; i < len(origs); i++ {
-		s, err := TryState(state.board, origs[i], dests[i])
-		if err != nil {
-			return states, err
-		}
-		if state.Init[0] == 0 {
-			s.Init[0], s.Init[1] = origs[i], dests[i]
-		} else {
-			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
-		}
-		s.isMax = state.isMax // Basically is White
-		states = append(states, s)
-	}
-	return states, nil
-}
-
-// DictionaryAttack looks up common openings
-// for less stupid opening moves.
-func DictionaryAttack(s State) (State, error) {
-	position := s.board.Position()
-	// I don't need castling empassant or move number
-	posits := strings.Split(position, " ")
-	key := posits[0] + " " + posits[1]
-	// Check if opening exists
-	if val, ok := dict[key]; ok {
-		state := State{Init: val}
-		return state, nil
-	}
-
-	return s, errors.New("No Dictionary Attack Found")
-}
 
 /*
  Evaluation is HERE: #######################################
