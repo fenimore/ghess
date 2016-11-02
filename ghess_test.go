@@ -624,6 +624,52 @@ func ExampleBoard_SearchValid() {
 	// [11 12 31 23]
 }
 
+func TestPv(t *testing.T) {
+	// Opening position doesn't count,
+	// cause of the dictionary attack
+	// Seems to be about 14 seconds
+	game := NewBoard()
+	fen := "r1bqk1nr/ppp2ppp/2np4/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5"
+	err := game.LoadFen(fen)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// First Minimax, makes best move
+	state, err := MiniMaxOrdered(0, 3, GetState(&game))
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.Move(state.Init[0], state.Init[1])
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Second Move, made by human
+	err = game.Move(82, 63)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Third Move made by that computer
+	state, err = MiniMaxOrdered(0, 3, GetState(&game))
+	pv, ok := pvHash[state.board.board]
+	if ok {
+		fmt.Println("Hash exists", pv)
+		fmt.Println("Returned eval", state.eval)
+		fmt.Println(game.String())
+		fmt.Println(state.board.StringWhite())
+	}
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = game.Move(state.Init[0], state.Init[1])
+	fmt.Println(game.StringWhite())
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 /**********************************
 Benchmarks SearchValid
 ***********************************/
@@ -780,46 +826,6 @@ func BenchmarkMidGameTwoOrderedDepth3(b *testing.B) {
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		_, err := MiniMaxOrdered(0, 3, s)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}
-}
-
-func BenchmarkOpeningOrderedPVSearchDepth3(b *testing.B) {
-	// Opening position doesn't count,
-	// cause of the dictionary attack
-	// Seems to be about 14 seconds
-	game := NewBoard()
-	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
-	_ = game.LoadFen(fen)
-	s := GetState(&game)
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		state, err := MiniMaxOrdered(0, 3, s)
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = game.Move(state.Init[0], state.Init[1])
-		fmt.Println(state.eval)
-		if err != nil {
-			fmt.Println(err)
-		}
-		state, err = MiniMaxOrdered(0, 3, GetState(&game))
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = game.Move(state.Init[0], state.Init[1])
-		fmt.Println(state.eval)
-		if err != nil {
-			fmt.Println(err)
-		}
-		state, err = MiniMaxOrdered(0, 3, GetState(&game))
-		if err != nil {
-			fmt.Println(err)
-		}
-		err = game.Move(state.Init[0], state.Init[1])
-		fmt.Println(state.eval)
 		if err != nil {
 			fmt.Println(err)
 		}

@@ -85,6 +85,10 @@ func GetPossibleStates(state State) (States, error) {
 // GetPossibleStates returns a slice of State structs
 // Each with a score and the move that got there.
 func GetPossibleOrderedStates(state State) (States, error) {
+	pv, ok := pvHash[state.board.board]
+	if ok {
+		fmt.Println(pv)
+	}
 	states := make(States, 0)
 	origs, dests := state.board.SearchValid() //.SearchValidOrdered()
 	for i := 0; i < len(origs); i++ {
@@ -98,7 +102,7 @@ func GetPossibleOrderedStates(state State) (States, error) {
 			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
 		s.isMax = state.isMax // Basically is whitePlayer or !whitePlayer
-		pvHash[s.board.board] = s.eval
+		//pvHash[s.board.board] = s.eval
 		states = append(states, s)
 	}
 	return states, nil
@@ -271,12 +275,7 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 			return openState, nil
 		}
 	}
-	pvScore, ok := pvHash[s.board.board]
-	if ok {
-		fmt.Println(pvScore)
-	}
 	if depth == terminal { // that is, 2 ply
-		//fmt.Println("Depth ", depth, s)
 		return s, nil
 	}
 
@@ -310,31 +309,13 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 	var bestState State
 	var bestStates States
 	for _, state := range states {
+		pv, ok := pvHash[s.board.board]
+		if ok {
+			fmt.Println("This Should exist", pv)
+		}
 		state.alpha = s.alpha
 		state.beta = s.beta
-		/*
-			if maxNode {
-				if state.eval > s.beta {
-					fmt.Println("Bingo Alpha", state.eval)
-					//fmt.Println("Alpha")
-					return state, nil
-				} else {
-					state.beta = s.beta
-					state.alpha = max(s.alpha, state.eval)
-				}
-			}
-			if !maxNode {
-				if state.eval < s.alpha {
-					fmt.Println("Bingo Beta", state.eval)
-					//fmt.Println("BETA")
-					return state, nil
-				} else {
-					state.alpha = s.alpha
-					state.beta = min(s.beta, state.eval)
 
-				}
-			}
-		*/
 		bestState, err = MiniMaxPruning(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
@@ -342,20 +323,24 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 		// The trick is to update the root (for this branch)
 		// beta or alpha, which then will cut off further iterating in
 		// THIS VERY for loop.
+		// s is root
 		if maxNode {
 			if bestState.eval > s.beta {
 				//fmt.Println("Bingo Alpha", bestState.eval)
 				return bestState, nil
 			} else {
 				bestState.beta = s.beta
+				pvHash[bestState.board.board] = bestState.eval
 				s.alpha = max(s.alpha, bestState.eval)
 			}
 		}
 		if !maxNode {
 			if bestState.eval < s.alpha {
 				//fmt.Println("Bingo Beta", bestState.eval)
+				//pvHash[bestState.board.board] = bestState.eval
 				return bestState, nil
 			} else {
+				pvHash[bestState.board.board] = bestState.eval
 				bestState.alpha = s.alpha
 				s.beta = min(s.beta, bestState.eval)
 
