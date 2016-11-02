@@ -337,6 +337,25 @@ func TestCannotCastleThroughCheck(t *testing.T) {
 	}
 }
 
+func TestCannotCastleInCheck(t *testing.T) {
+	game := NewBoard()
+	fen := `rnb1kbnr/pppppppp/8/2q5/3P4/4P3/PPP2PPP/RNBQK2R b KQkq - 0 20`
+	err := game.LoadFen(fen)
+	if err != nil {
+		t.Error("Unexpected error", err)
+	}
+	err = game.Move(56, 47)
+	if err != nil {
+		t.Error("Unexpected error", err)
+	}
+	// Now I should be in check
+	// Unable to castle
+	err = game.Move(14, 11)
+	if err == nil {
+		t.Error("No castling in Check")
+	}
+}
+
 func TestCheckWithPawn(t *testing.T) {
 	game := NewBoard()
 	hist := "1. e4 e5 2. Ke2 Qf6 3. Kd3 Nh6 4. Kc4"
@@ -624,6 +643,7 @@ func ExampleBoard_SearchValid() {
 	// [11 12 31 23]
 }
 
+/*
 func TestPv(t *testing.T) {
 	// Opening position doesn't count,
 	// cause of the dictionary attack
@@ -669,7 +689,7 @@ func TestPv(t *testing.T) {
 		fmt.Println(err)
 	}
 }
-
+*/
 /**********************************
 Benchmarks SearchValid
 ***********************************/

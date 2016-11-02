@@ -108,6 +108,10 @@ func (b *Board) Move(orig, dest int) error {
 		return errors.New("Cannot move into Check")
 	}
 	if isCastle {
+		isCheck = b.isPlayerInCheck()
+		if isCheck {
+			return errors.New("Cannot Castle in Check")
+		}
 		possible = CopyBoard(b)
 		switch {
 		case isWhite && dest < orig:
