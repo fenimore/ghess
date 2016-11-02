@@ -15,6 +15,17 @@ State Functions ##################################3
 
 /*
  Evaluation is HERE: #######################################
+
+### Ideas for Evaluation:
+
+- tension
+- mobility (possible moves)
+- Double/isolated pawns
+- Open file Rook
+- Outpost knight
+- Center control
+
+
 */
 
 // pawnProtect returns true if piece is protected by a pawn.

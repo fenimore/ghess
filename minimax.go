@@ -88,7 +88,7 @@ func GetPossibleStates(state State) (States, error) {
 // Each with a score and the move that got there.
 func GetPossibleOrderedStates(state State) (States, error) {
 	states := make(States, 0)
-	origs, dests := state.board.SearchValidOrdered()
+	origs, dests := state.board.SearchValid() //.SearchValidOrdered()
 	for i := 0; i < len(origs); i++ {
 		s, err := TryState(state.board, origs[i], dests[i])
 		if err != nil {
@@ -99,7 +99,7 @@ func GetPossibleOrderedStates(state State) (States, error) {
 		} else {
 			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
-		s.isMax = state.isMax // Basically is White
+		s.isMax = state.isMax // Basically is whitePlayer or !whitePlayer
 		states = append(states, s)
 	}
 	return states, nil
