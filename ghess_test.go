@@ -439,7 +439,7 @@ func TestDictionaryAttack(t *testing.T) {
 Examples
 ***********************************/
 
-func ExampleNewBoard() {
+func Example_NewBoard() {
 	game := NewBoard()
 	fmt.Print(game.Position())
 	// Output:
