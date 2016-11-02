@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+// Principal Variation Search
+
+var pvHash map[[120]byte]int
+
 /*
 MiniMax implementation ###########################################
 */
@@ -14,10 +18,10 @@ MiniMax implementation ###########################################
 // the move that got there, and the evaluation.
 // Init is the move which began a certain branch of the tree.
 type State struct {
-	board *Board
-	eval  int
-	Init  [2]int
-	isMax bool // find for maximun player ie. White player
+	board *Board // the Board object
+	eval  int    // score
+	Init  [2]int // the moves which got to that position at root
+	isMax bool   // is White Player
 	alpha int
 	beta  int
 }
@@ -38,13 +42,7 @@ func (s States) Less(i, j int) bool { return s[i].eval < s[j].eval }
 // GetState turns a Board into a copy and it's state.
 // The Init value is nil.
 func GetState(b *Board) State {
-	c := *b                        // dereference the pointer
-	boardCopy := make([]byte, 120) // []bytes are slices
-	castleCopy := make([]byte, 4)
-	copy(boardCopy, b.board)
-	copy(castleCopy, b.castle)
-	c.board = boardCopy
-	c.castle = castleCopy
+	c := *b // dereference the pointer
 	s := State{board: &c, eval: c.Evaluate()}
 	return s
 }
@@ -79,6 +77,7 @@ func GetPossibleStates(state State) (States, error) {
 			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
 		s.isMax = state.isMax // Basically is White
+		//pvHash[[120]byte{s.board.board}] = s.eval
 		states = append(states, s)
 	}
 	return states, nil

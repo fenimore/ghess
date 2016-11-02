@@ -18,10 +18,10 @@ import (
 // Board is a chessboard type.
 // TODO: Make Upper Case? M-c for upper case
 type Board struct {
-	board []byte // piece position
+	board [120]byte // piece position
 	// Game Variables
-	castle    []byte // castle possibility KQkq or ----
-	empassant int    // square vulnerable to empassant
+	castle    [4]byte // castle possibility KQkq or ----
+	empassant int     // square vulnerable to empassant
 	score     string
 	toMove    string // Next move is w or b
 	moves     int    // the count of moves
@@ -39,10 +39,11 @@ type Board struct {
 
 // NewBoard returns pointer to new Board in the starting position.
 func NewBoard() Board {
+	arr := [120]byte{}
 	b := make([]byte, 120)
 	// starting position
 	b = []byte(`           RNBKQBNR  PPPPPPPP  ........  ........  ........  ........  pppppppp  rnbkqbnr                                `)
-
+	copy(arr[:], b)
 	// pieceMap
 	// TODO: Put this somewhere it makes sense
 	p := make(map[int]string)
@@ -56,8 +57,8 @@ func NewBoard() Board {
 	p[88], p[87], p[86], p[85], p[84], p[83], p[82], p[81] = "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
 
 	return Board{
-		board:    b,
-		castle:   []byte(`KQkq`),
+		board:    arr,
+		castle:   [4]byte{'K', 'Q', 'k', 'q'},
 		pieceMap: p,
 		PieceMap: p,
 		toMove:   "w",
@@ -208,7 +209,7 @@ func (b *Board) Stats() map[string]string {
 	m := make(map[string]string)
 	m["turn"] = b.toMove
 	m["move"] = strconv.Itoa(b.moves)
-	m["castling"] = string(b.castle)
+	m["castling"] = string(b.castle[:])
 	m["position"] = b.fen
 	m["history"] = b.pgn
 	m["check"] = strconv.FormatBool(b.Check)
@@ -349,13 +350,14 @@ func (b *Board) cycleHistory(o, d int) {
 // keeping the originals state intact. One must be careful because
 // the values of Board are []byte slices, and these are themselves
 // pointers.
+// FIXME: This isn't really useful anymore now that the slices are arrays.
 func CopyBoard(b *Board) *Board {
-	c := *b                        // dereference the pointer
-	boardCopy := make([]byte, 120) // []bytes are slices
-	castleCopy := make([]byte, 4)
-	copy(boardCopy, b.board)
-	copy(castleCopy, b.castle)
-	c.board = boardCopy
-	c.castle = castleCopy
+	c := *b // dereference the pointer
+	//boardCopy := make([]byte, 120) // []bytes are slices
+	//castleCopy := make([]byte, 4)
+	//copy(boardCopy, b.board)
+	//copy(castleCopy, b.castle)
+	//c.board = boardCopy
+	//c.castle = castleCopy
 	return &c
 }

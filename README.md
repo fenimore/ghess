@@ -165,6 +165,24 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
     BenchmarkMidGamePruningDepth4-4            1	16079072907 ns/op
 
 
+After I change the []byte slice board to a [120]byte array, and don't copy it:
+
+    BenchmarkSearchValid-4                       100      22877600 ns/op
+    BenchmarkSearchValidSlow-4                    50      29033893 ns/op
+    BenchmarkMidGamePruningDepth2-4               10     136505438 ns/op
+    BenchmarkOpeningPruningDepth2-4               20      77758483 ns/op
+    BenchmarkOpeningPruningDepth3-4                1	1257017288 ns/op
+    BenchmarkMidGamePruningDepth3-4                1	2254520731 ns/op
+    BenchmarkMidGameTwoPruningDepth3-4        300000          6268 ns/op
+    BenchmarkOpeningOrderedDepth3-4                1	1341534583 ns/op
+    BenchmarkMidGameOrderedDepth3-4                1	2325314282 ns/op
+    BenchmarkMidGameTwoOrderedDepth3-4        200000          6107 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	15881901832 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	18561026485 ns/op
+PASS
+
+
+
 
 ### Bugs
 

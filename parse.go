@@ -416,7 +416,7 @@ func (b *Board) LoadFen(fen string) error {
 	}
 	// Update Board value
 	// Castle
-	b.castle = []byte("----")
+	b.castle = [4]byte{'-', '-', '-', '-'}
 	for _, v := range res[3] {
 		switch {
 		case v == 'K':
