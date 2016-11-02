@@ -786,6 +786,46 @@ func BenchmarkMidGameTwoOrderedDepth3(b *testing.B) {
 	}
 }
 
+func BenchmarkOpeningOrderedPVSearchDepth3(b *testing.B) {
+	// Opening position doesn't count,
+	// cause of the dictionary attack
+	// Seems to be about 14 seconds
+	game := NewBoard()
+	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
+	_ = game.LoadFen(fen)
+	s := GetState(&game)
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		state, err := MiniMaxOrdered(0, 3, s)
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = game.Move(state.Init[0], state.Init[1])
+		fmt.Println(state.eval)
+		if err != nil {
+			fmt.Println(err)
+		}
+		state, err = MiniMaxOrdered(0, 3, GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = game.Move(state.Init[0], state.Init[1])
+		fmt.Println(state.eval)
+		if err != nil {
+			fmt.Println(err)
+		}
+		state, err = MiniMaxOrdered(0, 3, GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = game.Move(state.Init[0], state.Init[1])
+		fmt.Println(state.eval)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
 func BenchmarkOpeningPruningDepth4(b *testing.B) {
 	// Opening position doesn't count,
 	// cause of the dictionary attack

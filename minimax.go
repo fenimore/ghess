@@ -8,7 +8,7 @@ import (
 
 // Principal Variation Search
 
-var pvHash map[[120]byte]int
+var pvHash map[[120]byte]int = make(map[[120]byte]int)
 
 /*
 MiniMax implementation ###########################################
@@ -77,7 +77,6 @@ func GetPossibleStates(state State) (States, error) {
 			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
 		s.isMax = state.isMax // Basically is White
-		//pvHash[[120]byte{s.board.board}] = s.eval
 		states = append(states, s)
 	}
 	return states, nil
@@ -99,6 +98,7 @@ func GetPossibleOrderedStates(state State) (States, error) {
 			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
 		s.isMax = state.isMax // Basically is whitePlayer or !whitePlayer
+		pvHash[s.board.board] = s.eval
 		states = append(states, s)
 	}
 	return states, nil
@@ -165,15 +165,12 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		} else {
 			s.isMax = false
 		}
-		//fmt.Println("SHHH, I'm thinking")
-		// DICT attack
 		openState, err := DictionaryAttack(s)
 		if err == nil {
 			return openState, nil
 		}
 	}
-	if depth == terminal { // that is, 2 ply
-		//fmt.Println("Depth ", depth, s)
+	if depth == terminal {
 		return s, nil
 	}
 
@@ -183,18 +180,14 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		// If White Player Return Maximum
 		if s.isMax {
 			maxNode = true
-			//return Max(bestStates), nil
 		} else {
 			maxNode = false
-			//return Min(bestStates), nil
 		}
 	} else { // Otherwise Return Minimum... Yup that's the idea.
 		if s.isMax {
 			maxNode = false
-			//return Min(bestStates), nil
 		} else {
 			maxNode = true
-			//return Max(bestStates), nil
 		}
 	}
 
@@ -209,29 +202,6 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	for _, state := range states {
 		state.alpha = s.alpha
 		state.beta = s.beta
-		/*
-			if maxNode {
-				if state.eval > s.beta {
-					fmt.Println("Bingo Alpha", state.eval)
-					//fmt.Println("Alpha")
-					return state, nil
-				} else {
-					state.beta = s.beta
-					state.alpha = max(s.alpha, state.eval)
-				}
-			}
-			if !maxNode {
-				if state.eval < s.alpha {
-					fmt.Println("Bingo Beta", state.eval)
-					//fmt.Println("BETA")
-					return state, nil
-				} else {
-					state.alpha = s.alpha
-					state.beta = min(s.beta, state.eval)
-
-				}
-			}
-		*/
 		bestState, err = MiniMaxPruning(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
@@ -300,6 +270,10 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 		if err == nil {
 			return openState, nil
 		}
+	}
+	pvScore, ok := pvHash[s.board.board]
+	if ok {
+		fmt.Println(pvScore)
 	}
 	if depth == terminal { // that is, 2 ply
 		//fmt.Println("Depth ", depth, s)
