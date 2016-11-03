@@ -687,51 +687,142 @@ func TestPv(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(len(pvHash))
 }
 
-func TestPv2(t *testing.T) {
-	game := NewBoard()
-	fen := "r1bqk1nr/ppp2ppp/2np4/1Bb1p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b KQkq - 0 6"
-	err := game.LoadFen(fen)
-	if err != nil {
-		fmt.Println(err)
-	}
+// func TestPv2(t *testing.T) {
+//	game := NewBoard()
+//	fen := "r1bqk1nr/ppp2ppp/2np4/1Bb1p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b KQkq - 0 6"
+//	err := game.LoadFen(fen)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
 
-	// First Minimax, makes best move
-	state, err := MiniMaxOrdered(0, 3, GetState(&game))
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = game.Move(state.Init[0], state.Init[1])
-	if err != nil {
-		fmt.Println(err)
-	}
+//	// First Minimax, makes best move
+//	state, err := MiniMaxOrdered(0, 3, GetState(&game))
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	err = game.Move(state.Init[0], state.Init[1])
+//	if err != nil {
+//		fmt.Println(err)
+//	}
 
-	// Second Move, made by human
-	err = game.Move(13, 14)
-	if err != nil {
-		fmt.Println(err)
-	}
+//	// Second Move, made by human
+//	err = game.Move(13, 14)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
 
-	// Third Move made by that computer
-	state, err = MiniMaxOrdered(0, 3, GetState(&game))
-	fmt.Println(state.eval)
-	pv, ok := pvHash[state.board.board]
-	if ok {
-		fmt.Println("Hash exists", pv)
-		fmt.Println("Returned eval", state.eval)
-		fmt.Println(game.String())
-		fmt.Println(state.board.StringWhite())
-	}
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = game.Move(state.Init[0], state.Init[1])
-	fmt.Println(game.StringWhite())
-	if err != nil {
-		fmt.Println(err)
-	}
-}
+//	// Third Move made by that computer
+//	state, err = MiniMaxOrdered(0, 3, GetState(&game))
+//	fmt.Println(state.eval)
+//	pv, ok := pvHash[state.board.board]
+//	if ok {
+//		fmt.Println("Hash exists", pv)
+//		fmt.Println("Returned eval", state.eval)
+//		fmt.Println(game.String())
+//		fmt.Println(state.board.StringWhite())
+//	}
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	err = game.Move(state.Init[0], state.Init[1])
+//	fmt.Println(game.StringWhite())
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+// }
+
+// func TestNotPv(t *testing.T) {
+//	// Opening position doesn't count,
+//	// cause of the dictionary attack
+//	// Seems to be about 14 seconds
+//	game := NewBoard()
+//	fen := "r1bqk1nr/ppp2ppp/2np4/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5"
+//	err := game.LoadFen(fen)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+
+//	// First Minimax, makes best move
+//	state, err := MiniMaxPruning(0, 3, GetState(&game))
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	err = game.Move(state.Init[0], state.Init[1])
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+
+//	// Second Move, made by human
+//	err = game.Move(82, 63)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+
+//	// Third Move made by that computer
+//	state, err = MiniMaxPruning(0, 3, GetState(&game))
+//	pv, ok := pvHash[state.board.board]
+//	if ok {
+//		fmt.Println("Hash exists", pv)
+//		fmt.Println("Returned eval", state.eval)
+//		fmt.Println(game.String())
+//		fmt.Println(state.board.StringWhite())
+//	}
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	err = game.Move(state.Init[0], state.Init[1])
+//	fmt.Println(game.StringWhite())
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+// }
+
+// func TestNotPv2(t *testing.T) {
+//	game := NewBoard()
+//	fen := "r1bqk1nr/ppp2ppp/2np4/1Bb1p3/4P3/5N2/PPPP1PPP/RNBQ1RK1 b KQkq - 0 6"
+//	err := game.LoadFen(fen)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+
+//	// First Minimax, makes best move
+//	state, err := MiniMaxPruning(0, 3, GetState(&game))
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	err = game.Move(state.Init[0], state.Init[1])
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+
+//	// Second Move, made by human
+//	err = game.Move(13, 14)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+
+//	// Third Move made by that computer
+//	state, err = MiniMaxPruning(0, 3, GetState(&game))
+//	fmt.Println(state.eval)
+//	pv, ok := pvHash[state.board.board]
+//	if ok {
+//		fmt.Println("Hash exists", pv)
+//		fmt.Println("Returned eval", state.eval)
+//		fmt.Println(game.String())
+//		fmt.Println(state.board.StringWhite())
+//	}
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	err = game.Move(state.Init[0], state.Init[1])
+//	fmt.Println(game.StringWhite())
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+// }
 
 /**********************************
 Benchmarks SearchValid

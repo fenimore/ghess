@@ -102,10 +102,11 @@ func GetPossibleOrderedStates(state State) (States, error) {
 		_, ok := pvHash[s.board.board]
 		if ok {
 			states = append(States{s}, states...)
-			//fmt.Println("Get Possible", pv)
+			//fmt.Println("              Get Possible", pv)
 		} else {
 			states = append(states, s)
 		}
+		states = append(states, s)
 
 	}
 	return states, nil
@@ -335,25 +336,28 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 		// s is root
 		if maxNode {
 			if bestState.eval > s.beta {
+				pvHash[state.board.board] = state.eval
 
-				//pvHash[bestState.board.board] = bestState.eval
 				//pvHash[bestState.board.board] = bestState.eval
 				return bestState, nil
 			} else {
 				bestState.beta = s.beta
+				//pvHash[bestState.board.board] = bestState.eval
 				//pvHash[state.board.board] = state.eval
-				pvHash[bestState.board.board] = bestState.eval
+				//pvHash[bestState.board.board] = bestState.eval
 				s.alpha = max(s.alpha, bestState.eval)
 			}
 		}
 		if !maxNode {
 			if bestState.eval < s.alpha {
-				//pvHash[state.board.board] = state.eval
+				//pvHash[bestState.board.board] = bestState.eval
+				pvHash[state.board.board] = state.eval
 				return bestState, nil
 			} else {
 				bestState.alpha = s.alpha
-				//				pvHash[state.board.board] = state.eval
-				pvHash[bestState.board.board] = bestState.eval
+
+				//pvHash[state.board.board] = state.eval
+				//pvHash[bestState.board.board] = bestState.eval
 				s.beta = min(s.beta, bestState.eval)
 
 			}
