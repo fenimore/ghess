@@ -643,52 +643,60 @@ func ExampleBoard_SearchValid() {
 	// [11 12 31 23]
 }
 
-func TestPv(t *testing.T) {
-	// Opening position doesn't count,
-	// cause of the dictionary attack
-	// Seems to be about 14 seconds
-	game := NewBoard()
-	fen := "r1bqk1nr/ppp2ppp/2np4/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5"
-	err := game.LoadFen(fen)
-	if err != nil {
-		fmt.Println(err)
-	}
+// func TestPv(t *testing.T) {
+//	// Opening position doesn't count,
+//	// cause of the dictionary attack
+//	// Seems to be about 14 seconds
+//	game := NewBoard()
+//	fen := "r1bqk1nr/ppp2ppp/2np4/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq - 0 5"
+//	err := game.LoadFen(fen)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
 
-	// First Minimax, makes best move
-	state, err := MiniMaxOrdered(0, 3, GetState(&game))
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = game.Move(state.Init[0], state.Init[1])
-	if err != nil {
-		fmt.Println(err)
-	}
+//	// First Minimax, makes best move
+//	state, err := MiniMaxOrdered(0, 3, GetState(&game))
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	err = game.Move(state.Init[0], state.Init[1])
+//	if err != nil {
+//		fmt.Println(err)
+//	}
 
-	// Second Move, made by human
-	err = game.Move(82, 63)
-	if err != nil {
-		fmt.Println(err)
-	}
+//	// Second Move, made by human
+//	err = game.Move(82, 63)
+//	if err != nil {
+//		fmt.Println(err)
+//	}
 
-	// Third Move made by that computer
-	state, err = MiniMaxOrdered(0, 3, GetState(&game))
-	pv, ok := pvHash[state.board.board]
-	if ok {
-		fmt.Println("Hash exists", pv)
-		fmt.Println("Returned eval", state.eval)
-		fmt.Println(game.String())
-		fmt.Println(state.board.StringWhite())
-	}
-	if err != nil {
-		fmt.Println(err)
-	}
-	err = game.Move(state.Init[0], state.Init[1])
-	fmt.Println(game.StringWhite())
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(len(pvHash))
-}
+//	// Third Move made by that computer
+//	state, err = MiniMaxOrdered(0, 3, GetState(&game))
+
+//	pv, ok := pvHash[GetState(&game).board.board]
+//	if ok {
+//		fmt.Println("Hash exists for games", pv)
+//		fmt.Println("Returned eval", state.eval)
+//		fmt.Println(game.String())
+//		fmt.Println(state.board.StringWhite())
+//	}
+//	pv, ok = pvHash[state.board.board]
+//	if ok {
+//		fmt.Println("Hash exists", pv)
+//		fmt.Println("Returned eval", state.eval)
+//		fmt.Println(game.String())
+//		fmt.Println(state.board.StringWhite())
+//	}
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	err = game.Move(state.Init[0], state.Init[1])
+//	fmt.Println(game.StringWhite())
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//	fmt.Println(len(pvHash))
+// }
 
 // func TestPv2(t *testing.T) {
 //	game := NewBoard()
@@ -927,12 +935,32 @@ func BenchmarkMidGamePruningDepth3(b *testing.B) {
 func BenchmarkMidGameTwoPruningDepth3(b *testing.B) {
 	// Seems to be about four seconds
 	game := NewBoard()
-	fen := "rn1qkb1r/1p3ppp/p2pbn2/4p3/4P3/1NN1BP2/PPP3PP/R2QKB1R b KQkq 0 7"
+	fen := "rn1qkb1r/1p3ppp/p2pbn2/4p3/4P3/1NN1BP2/PPP3PP/R2QKB1R b KQkq - 0 7"
 	_ = game.LoadFen(fen)
-	s := GetState(&game)
+	//s :=
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_, err := MiniMaxPruning(0, 3, s)
+		state, err := MiniMaxPruning(0, 2, GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = game.Move(state.Init[0], state.Init[1])
+		if err != nil {
+			fmt.Println("First", err)
+		}
+		state, err = MiniMaxPruning(0, 2, GetState(&game))
+		if err != nil {
+			fmt.Println("Second", err)
+		}
+		err = game.Move(state.Init[0], state.Init[1])
+		if err != nil {
+			fmt.Println("Third", err)
+		}
+		state, err = MiniMaxPruning(0, 2, GetState(&game))
+		if err != nil {
+			fmt.Println("Fourth", err)
+		}
+		err = game.Move(state.Init[0], state.Init[1])
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -974,12 +1002,32 @@ func BenchmarkMidGameOrderedDepth3(b *testing.B) {
 func BenchmarkMidGameTwoOrderedDepth3(b *testing.B) {
 	// Seems to be about four seconds
 	game := NewBoard()
-	fen := "rn1qkb1r/1p3ppp/p2pbn2/4p3/4P3/1NN1BP2/PPP3PP/R2QKB1R b KQkq 0 7"
+	fen := "rn1qkb1r/1p3ppp/p2pbn2/4p3/4P3/1NN1BP2/PPP3PP/R2QKB1R b KQkq - 0 7"
 	_ = game.LoadFen(fen)
-	s := GetState(&game)
+	//	s := GetState(&game)
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		_, err := MiniMaxOrdered(0, 3, s)
+		state, err := MiniMaxOrdered(0, 2, GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+		}
+		err = game.Move(state.Init[0], state.Init[1])
+		if err != nil {
+			fmt.Println("First", err)
+		}
+		state, err = MiniMaxOrdered(0, 2, GetState(&game))
+		if err != nil {
+			fmt.Println("Second", err)
+		}
+		err = game.Move(state.Init[0], state.Init[1])
+		if err != nil {
+			fmt.Println("Third", err)
+		}
+		state, err = MiniMaxOrdered(0, 2, GetState(&game))
+		if err != nil {
+			fmt.Println("Fourth", err)
+		}
+		err = game.Move(state.Init[0], state.Init[1])
 		if err != nil {
 			fmt.Println(err)
 		}

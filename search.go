@@ -132,8 +132,13 @@ func (b *Board) SearchValidOrdered() ([]int, []int) {
 				isCheck = possible.isOpponentInCheck()
 			}
 			if e == nil && !isCheck {
-				origs = append(origs, idx)
-				dests = append(dests, target)
+				if b.board[target] != '.' {
+					origs = append([]int{idx}, origs...)
+					dests = append([]int{target}, dests...)
+				} else {
+					origs = append(origs, idx)
+					dests = append(dests, target)
+				}
 			}
 		}
 	}

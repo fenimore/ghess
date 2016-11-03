@@ -57,6 +57,7 @@ func TryState(b *Board, o, d int) (State, error) {
 		return state, err
 	}
 	state.board = possible
+
 	state.eval = possible.Evaluate()
 	return state, nil
 }
@@ -85,8 +86,9 @@ func GetPossibleStates(state State) (States, error) {
 // GetPossibleStates returns a slice of State structs
 // Each with a score and the move that got there.
 func GetPossibleOrderedStates(state State) (States, error) {
+	//COUNT := 0
 	states := make(States, 0)
-	origs, dests := state.board.SearchValid() //.SearchValidOrdered()
+	origs, dests := state.board.SearchValidOrdered()
 	for i := 0; i < len(origs); i++ {
 		s, err := TryState(state.board, origs[i], dests[i])
 		if err != nil {
@@ -98,16 +100,9 @@ func GetPossibleOrderedStates(state State) (States, error) {
 			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
 		}
 		s.isMax = state.isMax // Basically is whitePlayer or !whitePlayer
-		//pvHash[s.board.board] = s.eval
-		_, ok := pvHash[s.board.board]
-		if ok {
-			states = append(States{s}, states...)
-			//fmt.Println("              Get Possible", pv)
-		} else {
-			states = append(states, s)
-		}
+		//_, ok := pvHash[s.board.board]
+		//states = append(States{s}, states...)
 		states = append(states, s)
-
 	}
 	return states, nil
 }
@@ -272,8 +267,6 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 		} else {
 			s.isMax = false
 		}
-		//fmt.Println("SHHH, I'm thinking")
-		// DICT attack
 		openState, err := DictionaryAttack(s)
 		if err == nil {
 			return openState, nil
@@ -282,25 +275,19 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 	if depth == terminal { // that is, 2 ply
 		return s, nil
 	}
-
 	even := (depth % 2) == 0
 	var maxNode bool
-	if even {
-		// If White Player Return Maximum
+	if even { // If White Player Return Maximum
 		if s.isMax {
 			maxNode = true
-			//return Max(bestStates), nil
 		} else {
 			maxNode = false
-			//return Min(bestStates), nil
 		}
 	} else { // Otherwise Return Minimum... Yup that's the idea.
 		if s.isMax {
 			maxNode = false
-			//return Min(bestStates), nil
 		} else {
 			maxNode = true
-			//return Max(bestStates), nil
 		}
 	}
 
@@ -313,16 +300,6 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 	var bestState State
 	var bestStates States
 	for _, state := range states {
-		// pv, ok := pvHash[state.board.board]
-		// if ok {
-		//	fmt.Println("State exits", pv)
-		// }
-
-		// pv, ok = pvHash[s.board.board]
-		// if ok {
-		//	fmt.Println("Root State exist", pv)
-		// }
-
 		state.alpha = s.alpha
 		state.beta = s.beta
 
@@ -330,50 +307,28 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 		if err != nil {
 			return bestState, err
 		}
-		// The trick is to update the root (for this branch)
-		// beta or alpha, which then will cut off further iterating in
-		// THIS VERY for loop.
-		// s is root
 		if maxNode {
 			if bestState.eval > s.beta {
-				pvHash[state.board.board] = state.eval
 
-				//pvHash[bestState.board.board] = bestState.eval
+				//pvHash[state.board.board] = state.eval
 				return bestState, nil
 			} else {
 				bestState.beta = s.beta
 				//pvHash[bestState.board.board] = bestState.eval
 				//pvHash[state.board.board] = state.eval
-				//pvHash[bestState.board.board] = bestState.eval
 				s.alpha = max(s.alpha, bestState.eval)
 			}
 		}
 		if !maxNode {
 			if bestState.eval < s.alpha {
-				//pvHash[bestState.board.board] = bestState.eval
-				pvHash[state.board.board] = state.eval
 				return bestState, nil
 			} else {
 				bestState.alpha = s.alpha
-
 				//pvHash[state.board.board] = state.eval
 				//pvHash[bestState.board.board] = bestState.eval
 				s.beta = min(s.beta, bestState.eval)
-
 			}
 		}
-
-		// If the player is Max, I want to compare against beta
-		// otherwise against alpha.
-
-		// If we are considering Max,
-		//and state's value >= beta, then return NOW
-		// otherwise, set alpha = Max(alpha, state's value)
-
-		// If we are considering Min,
-		// and state's value <= alpha, then return NOW
-		// otherwise, set beta = Min(beta, state's value)
-
 		bestStates = append(bestStates, bestState)
 	}
 	if len(bestStates) < 1 {
