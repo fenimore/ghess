@@ -45,9 +45,9 @@ func (b *Board) Move(orig, dest int) error {
 		return err
 	}
 
-	p := string(bytes.ToUpper(b.board[orig : orig+1]))
-	switch {
-	case p == "P":
+	p := b.board[orig]
+	switch p {
+	case 'p', 'P':
 		e := b.validPawn(orig, dest)
 		if e != nil {
 			return e
@@ -57,27 +57,27 @@ func (b *Board) Move(orig, dest int) error {
 			isEmpassant = true
 		}
 
-	case p == "N":
+	case 'n', 'N':
 		e := b.validKnight(orig, dest)
 		if e != nil {
 			return e
 		}
-	case p == "B":
+	case 'b', 'B':
 		e := b.validBishop(orig, dest)
 		if e != nil {
 			return e
 		}
-	case p == "R":
+	case 'R', 'r':
 		e := b.validRook(orig, dest)
 		if e != nil {
 			return e
 		}
-	case p == "Q":
+	case 'Q', 'q':
 		e := b.validQueen(orig, dest)
 		if e != nil {
 			return e
 		}
-	case p == "K": // is castle?
+	case 'k', 'K': // is castle?
 		if !isCastle {
 			e := b.validKing(orig, dest, false)
 			if e != nil {
