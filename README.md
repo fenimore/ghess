@@ -237,6 +237,22 @@ Benchmarks with pawn validation in Check reduced...
     PASS
     ok      github.com/polypmer/ghess	30.632s
 
+Benchmark After certain profiling:
+
+    BenchmarkSearchValid-4                       100      12357042 ns/op
+    BenchmarkSearchValidSlow-4                   100      14710691 ns/op
+    BenchmarkMidGamePruningDepth2-4               20      78253547 ns/op
+    BenchmarkOpeningPruningDepth2-4               30      44239677 ns/op
+    BenchmarkOpeningPruningDepth3-4                2     617343700 ns/op
+    BenchmarkMidGamePruningDepth3-4                1	1478115205 ns/op
+    BenchmarkMidGameTwoPruningDepth3-4             3     342789913 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	9527661212 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	10551483526 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	30.863s
+
+
+
 ### Bugs
 
 - See issues.

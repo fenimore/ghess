@@ -218,7 +218,7 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		//and state's value >= beta, then return NOW
 		// otherwise, set alpha = Max(alpha, state's value)
 
-		// If we are considering Min,
+		// If we are considyering Min,
 		// and state's value <= alpha, then return NOW
 		// otherwise, set beta = Min(beta, state's value)
 
