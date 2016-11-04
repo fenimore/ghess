@@ -27,14 +27,24 @@ type Board struct {
 	moves     int    // the count of moves
 	Check     bool
 	Checkmate bool // start Capitalizing
-	// Map for display grid
-	pieceMap map[int]string // coord to standard notation
-	PieceMap map[int]string // exported cord to stand notation
 	// Game Positions
 	fen     string // Game position
 	pgn     string // Game history
 	headers string // Pgn format
 	history [8]int // For Draws, last six coordinates
+}
+
+func initPieceMap() {
+	p := make(map[int]string)
+	p[18], p[17], p[16], p[15], p[14], p[13], p[12], p[11] = "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
+	p[28], p[27], p[26], p[25], p[24], p[23], p[22], p[21] = "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"
+	p[38], p[37], p[36], p[35], p[34], p[33], p[32], p[31] = "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3"
+	p[48], p[47], p[46], p[45], p[44], p[43], p[42], p[41] = "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4"
+	p[58], p[57], p[56], p[55], p[54], p[53], p[52], p[51] = "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5"
+	p[68], p[67], p[66], p[65], p[64], p[63], p[62], p[61] = "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6"
+	p[78], p[77], p[76], p[75], p[74], p[73], p[72], p[71] = "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"
+	p[88], p[87], p[86], p[85], p[84], p[83], p[82], p[81] = "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
+	PieceMap = p
 }
 
 // NewBoard returns pointer to new Board in the starting position.
@@ -46,24 +56,13 @@ func NewBoard() Board {
 	copy(arr[:], b)
 	// pieceMap
 	// TODO: Put this somewhere it makes sense
-	p := make(map[int]string)
-	p[18], p[17], p[16], p[15], p[14], p[13], p[12], p[11] = "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1"
-	p[28], p[27], p[26], p[25], p[24], p[23], p[22], p[21] = "a2", "b2", "c2", "d2", "e2", "f2", "g2", "h2"
-	p[38], p[37], p[36], p[35], p[34], p[33], p[32], p[31] = "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3"
-	p[48], p[47], p[46], p[45], p[44], p[43], p[42], p[41] = "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4"
-	p[58], p[57], p[56], p[55], p[54], p[53], p[52], p[51] = "a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5"
-	p[68], p[67], p[66], p[65], p[64], p[63], p[62], p[61] = "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6"
-	p[78], p[77], p[76], p[75], p[74], p[73], p[72], p[71] = "a7", "b7", "c7", "d7", "e7", "f7", "g7", "h7"
-	p[88], p[87], p[86], p[85], p[84], p[83], p[82], p[81] = "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"
-
+	initPieceMap()
 	return Board{
-		board:    arr,
-		castle:   [4]byte{'K', 'Q', 'k', 'q'},
-		pieceMap: p,
-		PieceMap: p,
-		toMove:   "w",
-		score:    "*",
-		moves:    1,
+		board:  arr,
+		castle: [4]byte{'K', 'Q', 'k', 'q'},
+		toMove: "w",
+		score:  "*",
+		moves:  1,
 	}
 }
 
@@ -192,9 +191,9 @@ func (b *Board) Position() string {
 
 	if b.empassant != 0 {
 		if b.toMove == "w" {
-			emp = b.pieceMap[b.empassant+10]
+			emp = PieceMap[b.empassant+10]
 		} else {
-			emp = b.pieceMap[b.empassant-10]
+			emp = PieceMap[b.empassant-10]
 		}
 	}
 	b.fen = pos + " " + b.toMove + " " + string(b.castle[:4]) + " " + emp + " 0 " + strconv.Itoa(b.moves)

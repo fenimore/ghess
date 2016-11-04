@@ -749,6 +749,21 @@ var (
 		"h8": 81,
 	}
 
+	PieceMap map[int]string //{
+	//	11: ,
+	//	12: ,
+	//	13: ,
+	//	14:,
+	//	15: ,
+	//	16: ,
+	//	17: ,
+	//	18: ,
+	//	21: ,
+	//	22: ,
+	//	23: ,
+
+	// }
+
 	// TODO: CoordToPgnMap = map[int]string
 	// TODO: Black square Map
 

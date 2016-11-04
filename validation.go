@@ -318,36 +318,36 @@ func (b *Board) isInCheck(target int) bool {
 	//fmt.Println("white ", isWhite, "attackers ", attackers, "king", k)
 	// check for valid attacks
 	for _, val := range attackers {
-		p := string(bytes.ToUpper(b.board[val : val+1]))
+		p := b.board[val]
 		switch p {
-		case "P":
+		case 'P', 'p':
 			e := b.validPawn(val, target)
 			if e == nil {
 				return true
 			}
-		case "N":
+		case 'N', 'n':
 			e := b.validKnight(val, target)
 			if e == nil {
 				//fmt.Println("Knight check")
 				return true
 			}
-		case "B":
+		case 'B', 'b':
 			e := b.validBishop(val, target)
 			if e == nil {
 				return true
 			}
-		case "R":
+		case 'R', 'r':
 			e := b.validRook(val, target)
 			if e == nil {
 				//fmt.Println("Rook check")
 				return true
 			}
-		case "Q":
+		case 'Q', 'q':
 			e := b.validQueen(val, target)
 			if e == nil {
 				return true
 			}
-		case "K":
+		case 'K', 'k':
 			e := b.validKing(val, target, false)
 			if e == nil {
 				return true

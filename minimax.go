@@ -9,6 +9,7 @@ import (
 // Principal Variation Search
 
 var pvHash map[[120]byte]int = make(map[[120]byte]int)
+var pvMap map[Board][2]int = make(map[Board][2]int)
 
 /*
 MiniMax implementation ###########################################
@@ -18,12 +19,13 @@ MiniMax implementation ###########################################
 // the move that got there, and the evaluation.
 // Init is the move which began a certain branch of the tree.
 type State struct {
-	board *Board // the Board object
-	eval  int    // score
-	Init  [2]int // the moves which got to that position at root
-	isMax bool   // is White Player
-	alpha int
-	beta  int
+	board  *Board // the Board object
+	eval   int    // score
+	Init   [2]int // the moves which got to that position at root
+	isMax  bool   // is White Player
+	alpha  int
+	beta   int
+	parent *State
 }
 
 // String returns some basic info of a State.
@@ -94,6 +96,7 @@ func GetPossibleOrderedStates(state State) (States, error) {
 		if err != nil {
 			return states, err
 		}
+		s.parent = &state
 		if state.Init[0] == 0 {
 			s.Init[0], s.Init[1] = origs[i], dests[i]
 		} else {
@@ -101,6 +104,7 @@ func GetPossibleOrderedStates(state State) (States, error) {
 		}
 		s.isMax = state.isMax // Basically is whitePlayer or !whitePlayer
 		//_, ok := pvHash[s.board.board]
+
 		//states = append(States{s}, states...)
 		states = append(states, s)
 	}
@@ -178,21 +182,22 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	}
 
 	even := (depth % 2) == 0
-	var maxNode bool
-	if even {
-		// If White Player Return Maximum
-		if s.isMax {
-			maxNode = true
-		} else {
-			maxNode = false
-		}
-	} else { // Otherwise Return Minimum... Yup that's the idea.
-		if s.isMax {
-			maxNode = false
-		} else {
-			maxNode = true
-		}
-	}
+	// var maxNode bool
+	// if even {
+	//	// If White Player Return Maximum
+	//	if s.isMax {
+	//		maxNode = true
+	//	} else {
+	//		maxNode = false
+	//	}
+	// } else { // Otherwise Return Minimum... Yup that's the idea.
+	//	if s.isMax {
+	//		maxNode = false
+	//	} else {
+	//		maxNode = true
+	//	}
+	// }
+	maxNode := even == s.isMax
 
 	states, err := GetPossibleStates(s)
 	if err != nil {
@@ -276,20 +281,7 @@ func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
 		return s, nil
 	}
 	even := (depth % 2) == 0
-	var maxNode bool
-	if even { // If White Player Return Maximum
-		if s.isMax {
-			maxNode = true
-		} else {
-			maxNode = false
-		}
-	} else { // Otherwise Return Minimum... Yup that's the idea.
-		if s.isMax {
-			maxNode = false
-		} else {
-			maxNode = true
-		}
-	}
+	maxNode := even == s.isMax
 
 	states, err := GetPossibleOrderedStates(s)
 	if err != nil {
