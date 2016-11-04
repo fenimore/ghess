@@ -200,7 +200,7 @@ Giving up with PV:
     BenchmarkOpeningPruningDepth2-4               20      94373512 ns/op
     BenchmarkOpeningPruningDepth3-4                1	1350511232 ns/op
     BenchmarkMidGamePruningDepth3-4                1	2508213115 ns/op
-    BenchmarkMidGameTwoPruningDepth3-4        200000          6455 ns/op
+    BenchmarkMidGameTwoPruningDepth3-4        200000          6455 ns/op // Flawed
     BenchmarkOpeningOrderedDepth3-4                1	1287404076 ns/op
     BenchmarkMidGameOrderedDepth3-4                1	2292292483 ns/op
     BenchmarkMidGameTwoOrderedDepth3-4        200000          7241 ns/op
@@ -208,6 +208,20 @@ Giving up with PV:
     BenchmarkMidGamePruningDepth4-4                1	15570438668 ns/op
     PASS
     ok      github.com/polypmer/ghess	50.129s
+
+After Using profiling
+
+    BenchmarkSearchValid-4                       100      15393451 ns/op
+    BenchmarkSearchValidSlow-4                   100      15275635 ns/op
+    BenchmarkMidGamePruningDepth2-4               20      93899457 ns/op
+    BenchmarkOpeningPruningDepth2-4               20      56920214 ns/op
+    BenchmarkOpeningPruningDepth3-4                2     784527542 ns/op
+    BenchmarkMidGamePruningDepth3-4                1	1518414649 ns/op
+    BenchmarkMidGameTwoPruningDepth3-4             3     361195704 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	10112804027 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	9730502681 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	31.456s
 
 
 

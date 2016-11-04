@@ -85,32 +85,6 @@ func GetPossibleStates(state State) (States, error) {
 	return states, nil
 }
 
-// GetPossibleStates returns a slice of State structs
-// Each with a score and the move that got there.
-func GetPossibleOrderedStates(state State) (States, error) {
-	//COUNT := 0
-	states := make(States, 0)
-	origs, dests := state.board.SearchValidOrdered()
-	for i := 0; i < len(origs); i++ {
-		s, err := TryState(state.board, origs[i], dests[i])
-		if err != nil {
-			return states, err
-		}
-		s.parent = &state
-		if state.Init[0] == 0 {
-			s.Init[0], s.Init[1] = origs[i], dests[i]
-		} else {
-			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
-		}
-		s.isMax = state.isMax // Basically is whitePlayer or !whitePlayer
-		//_, ok := pvHash[s.board.board]
-
-		//states = append(States{s}, states...)
-		states = append(states, s)
-	}
-	return states, nil
-}
-
 // DictionaryAttack looks up common openings
 // for less stupid opening moves.
 func DictionaryAttack(s State) (State, error) {
@@ -248,79 +222,6 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		// and state's value <= alpha, then return NOW
 		// otherwise, set beta = Min(beta, state's value)
 
-		bestStates = append(bestStates, bestState)
-	}
-	if len(bestStates) < 1 {
-		return s, nil
-	}
-
-	if maxNode {
-		return Max(bestStates), nil
-	} else {
-		return Min(bestStates), nil
-	}
-}
-
-// MinimaxOrdered prunes an ordered list of states
-func MiniMaxOrdered(depth, terminal int, s State) (State, error) {
-	if depth == 0 {
-		s.alpha = -1000000000
-		s.beta = 1000000000
-		// set the Min or Max
-		if s.board.toMove == "w" {
-			s.isMax = true
-		} else {
-			s.isMax = false
-		}
-		openState, err := DictionaryAttack(s)
-		if err == nil {
-			return openState, nil
-		}
-	}
-	if depth == terminal { // that is, 2 ply
-		return s, nil
-	}
-	even := (depth % 2) == 0
-	maxNode := even == s.isMax
-
-	states, err := GetPossibleOrderedStates(s)
-	if err != nil {
-		return s, err
-	}
-
-	// Recursive Call
-	var bestState State
-	var bestStates States
-	for _, state := range states {
-		state.alpha = s.alpha
-		state.beta = s.beta
-
-		bestState, err = MiniMaxOrdered(depth+1, terminal, state)
-		if err != nil {
-			return bestState, err
-		}
-		if maxNode {
-			if bestState.eval > s.beta {
-
-				//pvHash[state.board.board] = state.eval
-				return bestState, nil
-			} else {
-				bestState.beta = s.beta
-				//pvHash[bestState.board.board] = bestState.eval
-				//pvHash[state.board.board] = state.eval
-				s.alpha = max(s.alpha, bestState.eval)
-			}
-		}
-		if !maxNode {
-			if bestState.eval < s.alpha {
-				return bestState, nil
-			} else {
-				bestState.alpha = s.alpha
-				//pvHash[state.board.board] = state.eval
-				//pvHash[bestState.board.board] = bestState.eval
-				s.beta = min(s.beta, bestState.eval)
-			}
-		}
 		bestStates = append(bestStates, bestState)
 	}
 	if len(bestStates) < 1 {

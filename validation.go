@@ -395,12 +395,12 @@ func (b *Board) validPawn(orig int, dest int) error {
 		empTarget = 'P'
 	}
 	// What sort of move
-	switch {
-	case remainder == 10:
+	switch remainder {
+	case 10:
 		if b.board[dest] != '.' {
 			return err
 		}
-	case remainder == 20:
+	case 20:
 		if b.board[dest] != '.' {
 			return err
 		}
@@ -414,7 +414,7 @@ func (b *Board) validPawn(orig int, dest int) error {
 		} else if orig < 70 && b.toMove == "b" {
 			return err
 		}
-	case remainder == 9 || remainder == 11:
+	case 9, 11:
 		if b.board[dest] == '.' && dest+empOffset == b.empassant {
 			// Empassant attack
 			if b.board[dest+empOffset] != empTarget {
