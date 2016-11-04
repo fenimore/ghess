@@ -310,13 +310,23 @@ func (b *Board) isInCheck(target int) bool {
 	for idx := range b.board {
 		whitePiece := b.isUpper(idx)
 		if isWhite && !whitePiece {
+			if b.board[idx] == 'p' {
+				if (idx - target) > 11 {
+					continue
+				}
+			}
 			attackers = append(attackers, idx)
 		} else if !isWhite && whitePiece { // black
+			if b.board[idx] == 'P' {
+				if (target - idx) > 11 {
+					continue
+				}
+			}
 			attackers = append(attackers, idx)
 		}
 	}
-	//fmt.Println("white ", isWhite, "attackers ", attackers, "king", k)
-	// check for valid attacks
+	// Check for Attackers
+	// and only add the oproprate ones.
 	for _, val := range attackers {
 		p := b.board[val]
 		switch p {

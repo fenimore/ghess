@@ -102,6 +102,9 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 
 ## TODO General
 
+2. Tweak evaluation a bit
+4. Undo the ToUpper and ToLower cause that's not good
+6. Tweak the vectors in isInCheck
 1. More tests.
 4. Export `Board` fields.
 6. Change `Board` to `Game`, as that makes more sense...
@@ -200,10 +203,6 @@ Giving up with PV:
     BenchmarkOpeningPruningDepth2-4               20      94373512 ns/op
     BenchmarkOpeningPruningDepth3-4                1	1350511232 ns/op
     BenchmarkMidGamePruningDepth3-4                1	2508213115 ns/op
-    BenchmarkMidGameTwoPruningDepth3-4        200000          6455 ns/op // Flawed
-    BenchmarkOpeningOrderedDepth3-4                1	1287404076 ns/op
-    BenchmarkMidGameOrderedDepth3-4                1	2292292483 ns/op
-    BenchmarkMidGameTwoOrderedDepth3-4        200000          7241 ns/op
     BenchmarkOpeningPruningDepth4-4                1	16827821614 ns/op
     BenchmarkMidGamePruningDepth4-4                1	15570438668 ns/op
     PASS
@@ -224,6 +223,19 @@ After Using profiling
     ok      github.com/polypmer/ghess	31.456s
 
 
+Benchmarks with pawn validation in Check reduced...
+
+    BenchmarkSearchValid-4                       100      15480015 ns/op
+    BenchmarkSearchValidSlow-4                   100      15150476 ns/op
+    BenchmarkMidGamePruningDepth2-4               20      91290571 ns/op
+    BenchmarkOpeningPruningDepth2-4               30      50329151 ns/op
+    BenchmarkOpeningPruningDepth3-4                2     686627412 ns/op
+    BenchmarkMidGamePruningDepth3-4                1	1249006486 ns/op
+    BenchmarkMidGameTwoPruningDepth3-4             5     342692638 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	8347604470 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	8536214158 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	30.632s
 
 ### Bugs
 

@@ -596,33 +596,33 @@ var (
 	   ***************************************************  */
 	dict = map[string][2]int{
 		// e4 e5 Bc4
-		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w":     [2]int{24, 44},
-		"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b":   [2]int{74, 54},
-		"rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w": [2]int{13, 46},
+		"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w":     {24, 44},
+		"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b":   {74, 54},
+		"rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w": {13, 46},
 		//2. Bc4 Nf6
-		"rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b": [2]int{82, 63},
+		"rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b": {82, 63},
 		// 3. Nc3
-		"rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w": [2]int{17, 36},
+		"rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR w": {17, 36},
 		// 3. Nc3 Nc6
-		"rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/2N5/PPPP1PPP/R1BQK1NR b": [2]int{87, 66},
+		"rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/2N5/PPPP1PPP/R1BQK1NR b": {87, 66},
 
 		// alternative white move 2. Nf3
 		// 2 Nf3 Nc6
-		"rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b": [2]int{87, 66},
+		"rnbqkbnr/pppp1ppp/8/4p3/4P3/5N2/PPPP1PPP/RNBQKB1R b": {87, 66},
 		// 3 Bc4
-		"r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b": [2]int{83, 56},
+		"r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R b": {83, 56},
 
 		/* d4 d5 */
 		//1 d4 d5
-		"rnbqkbnr/pppppppp/8/8/4P3/8/PPP1PPPP/RNBQKBNR b": [2]int{75, 55},
+		"rnbqkbnr/pppppppp/8/8/4P3/8/PPP1PPPP/RNBQKBNR b": {75, 55},
 		//2 Nf3
-		"rnbqkbnr/pppppppp/8/8/4P3/8/PPP1PPPP/RNBQKBNR w": [2]int{12, 33},
+		"rnbqkbnr/pppppppp/8/8/4P3/8/PPP1PPPP/RNBQKBNR w": {12, 33},
 
 		/*  Nf3 */
 		//1 Nf3 d5
-		"rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b": [2]int{75, 55},
+		"rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b": {75, 55},
 		// 2. d4
-		"rnbqkbnr/ppp1pppp/8/3p4/8/5N2/PPPPPPPP/RNBQKB1R w": [2]int{25, 45},
+		"rnbqkbnr/ppp1pppp/8/3p4/8/5N2/PPPPPPPP/RNBQKB1R w": {25, 45},
 		/* Sicilian
 
 
@@ -635,17 +635,17 @@ var (
 		7.   f3 O-O
 		*/
 		// after c5 -> Nf3
-		"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w": [2]int{12, 33},
+		"rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w": {12, 33},
 		// 2. Nf3 -> d6
-		"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b": [2]int{75, 65},
+		"rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b": {75, 65},
 		// 3. -> d4
-		"rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w": [2]int{25, 45},
+		"rnbqkbnr/pp2pppp/3p4/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R w": {25, 45},
 		// 3. d4 -> cxd4
-		"rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b": [2]int{56, 45},
+		"rnbqkbnr/pp2pppp/3p4/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R b": {56, 45},
 		// 4. -> Nxd4
-		"rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w": [2]int{33, 45},
+		"rnbqkbnr/pp2pppp/3p4/8/3pP3/5N2/PPP2PPP/RNBQKB1R w": {33, 45},
 		// 4. Nxd4 -> g6
-		"rnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b": [2]int{72, 62},
+		"rnbqkbnr/pp2pppp/3p4/8/3NP3/8/PPP2PPP/RNBQKB1R b": {72, 62},
 	}
 
 	/* ***************************************************
@@ -656,14 +656,14 @@ var (
 	FenPattern = /* const */ regexp.MustCompile(`([PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8}/[PNBRQKpnbrqk\d]{1,8})\s(w|b)\s([KQkq-]{1,4})\s([a-h][36]|-)\s\d\s([1-9]?[1-9])`)
 	// TODO: Enter the map values in NewBoard here
 	PgnRowMap = map[int][8]int{
-		1: [8]int{18, 17, 16, 15, 14, 13, 12, 11},
-		2: [8]int{28, 27, 26, 25, 24, 23, 22, 21},
-		3: [8]int{38, 37, 36, 35, 34, 33, 32, 31},
-		4: [8]int{48, 47, 46, 45, 44, 43, 42, 41},
-		5: [8]int{58, 57, 56, 55, 54, 53, 52, 51},
-		6: [8]int{68, 67, 66, 65, 64, 63, 62, 61},
-		7: [8]int{78, 77, 76, 75, 74, 73, 72, 71},
-		8: [8]int{88, 87, 86, 85, 84, 83, 82, 81},
+		1: {18, 17, 16, 15, 14, 13, 12, 11},
+		2: {28, 27, 26, 25, 24, 23, 22, 21},
+		3: {38, 37, 36, 35, 34, 33, 32, 31},
+		4: {48, 47, 46, 45, 44, 43, 42, 41},
+		5: {58, 57, 56, 55, 54, 53, 52, 51},
+		6: {68, 67, 66, 65, 64, 63, 62, 61},
+		7: {78, 77, 76, 75, 74, 73, 72, 71},
+		8: {88, 87, 86, 85, 84, 83, 82, 81},
 	}
 
 	UnicodeMap = map[string]string{
