@@ -276,8 +276,22 @@ Before New Check Method:
     BenchmarkMidGameTwoPruningDepth3-4            20     133189782 ns/op
     BenchmarkOpeningPruningDepth4-4                1	4016534087 ns/op
     BenchmarkMidGamePruningDepth4-4                1	3511034720 ns/op
-PASS
+    PASS
     ok      github.com/polypmer/ghess	24.323s
+
+After new check method
+
+    BenchmarkSearchValid-4                     10000        290186 ns/op
+    BenchmarkSearchValidSlow-4                 10000        305094 ns/op
+    BenchmarkMidGamePruningDepth2-4               50      21060368 ns/op
+    BenchmarkOpeningPruningDepth2-4              100      16300874 ns/op
+    BenchmarkOpeningPruningDepth3-4               10     156043108 ns/op
+    BenchmarkMidGamePruningDepth3-4               20     146742071 ns/op
+    BenchmarkMidGameTwoPruningDepth3-4            20      60358058 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	2920717586 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	2233602005 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	19.966s
 
 
 ### Bugs

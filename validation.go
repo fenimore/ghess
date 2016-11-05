@@ -809,14 +809,14 @@ a1h8Loop:
 		switch b.board[i] {
 		case 'b', 'q':
 			if isWhite {
-				break a1h8Loop
+				return true
 			}
-			return true
+			break a1h8Loop
 		case 'B', 'Q':
 			if !isWhite {
-				break a1h8Loop
+				return true
 			}
-			return true
+			break a1h8Loop
 		case '.':
 			continue a1h8Loop
 		default:

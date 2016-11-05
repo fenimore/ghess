@@ -332,6 +332,7 @@ func TestCannotCastleThroughCheck(t *testing.T) {
 	if err != nil {
 		t.Error("But that's a legal FEN")
 	}
+	//_ = game.PlayerCheck()
 	err = game.ParseMove("O-O-O")
 	if err == nil {
 		fmt.Println(game.StringWhite())
