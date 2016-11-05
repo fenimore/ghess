@@ -146,23 +146,6 @@ func (b *Board) Move(orig, dest int) error {
 	b.cycleHistory(orig, dest)
 	// Look for Checkmate
 	// Check all possibl moves after a check?
-	isCheck = b.isPlayerInCheck()
-	//isCheck = b.isInCheck(king)
-	if isCheck {
-		isCheckMate := false
-		origs, _ := b.SearchValid()
-		if len(origs) < 1 {
-			isCheckMate = true
-		}
-		if isCheckMate {
-			b.Checkmate = true
-			if b.toMove == "w" {
-				b.score = "0-1"
-			} else {
-				b.score = "1-0"
-			}
-		}
-	}
 
 	return nil
 }
@@ -260,6 +243,8 @@ func (b *Board) updateBoard(orig, dest int,
 
 }
 
+// PlayerCheck Method checks if Current player is in Check
+// and updates score accordingly
 func (b *Board) PlayerCheck() bool {
 	isCheck := b.isPlayerInCheck()
 	if isCheck {
@@ -269,6 +254,30 @@ func (b *Board) PlayerCheck() bool {
 	}
 
 	return isCheck
+}
+
+// PlayerCheckMate checks if current player is checkmated
+// and updates score accordingly.
+func (b *Board) PlayerCheckMate() bool {
+	isCheck := b.isPlayerInCheck()
+	var isCheckMate bool
+	if isCheck {
+		origs, _ := b.SearchValid()
+		if len(origs) < 1 {
+			isCheckMate = true
+		}
+		if isCheckMate {
+			b.Checkmate = true
+			if b.toMove == "w" {
+				b.score = "0-1"
+				return true
+			} else {
+				b.score = "1-0"
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // isPlayerInCheck, current player is in Check.
