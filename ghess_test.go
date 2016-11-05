@@ -39,6 +39,8 @@ func TestPgnLoad(t *testing.T) {
 17. Rxe6 Nf6 18. Ne5 c5 19. Bxh6+ Kxh6 20. Nxf7+ 1-0`
 	// 6k1/5p2/7p/1R1r4/P2P1R2/6P1/2r4K/8 w ---- - 0 42
 	var err error
+	// TODO: Something is werid here in Bc1 move wtf
+	// FIXME
 	game := NewBoard()
 	err = game.LoadPgn(hist)
 	if err != nil {
@@ -332,6 +334,7 @@ func TestCannotCastleThroughCheck(t *testing.T) {
 	}
 	err = game.ParseMove("O-O-O")
 	if err == nil {
+		fmt.Println(game.StringWhite())
 		t.Error("Shouldn't be allowed to castle")
 	}
 }

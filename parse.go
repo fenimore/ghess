@@ -376,6 +376,9 @@ func (b *Board) LoadPgn(match string) error {
 	for _, val := range result {
 		err := b.ParseMove(val)
 		if err != nil {
+			//fmt.Println(b.StringWhite())
+			//fmt.Println(val)
+			//fmt.Println(err)
 			return err
 		}
 	}

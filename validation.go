@@ -3,7 +3,6 @@ package ghess
 import (
 	"bytes"
 	"errors"
-	"fmt"
 )
 
 // Problem: 1nbq1knr/1rNpppb1/pp4pp/4N3/3P4/P6P/1PP1PPP1/R1BQKB1R w KQ-- - 0 9
@@ -322,19 +321,14 @@ func (b *Board) isInCheck(target int) bool {
 
 	switch {
 	case b.checkVerticalAxis(target, isWhite):
-		fmt.Println("Vertical")
 		return true
 	case b.checkHorizontalAsix(target, isWhite):
-		fmt.Println("Horisontal")
 		return true
 	case b.checkA1Diagonal(target, isWhite):
-		fmt.Println("Dia")
 		return true
 	case b.checkH1Diagonal(target, isWhite):
-		fmt.Println("Dia")
 		return true
 	case b.checkProximity(target, isWhite):
-		fmt.Println("Prox")
 		return true
 	default:
 		return false
@@ -771,14 +765,14 @@ UpVerLoop:
 		switch b.board[i] {
 		case 'r', 'q':
 			if isWhite {
-				break UpVerLoop
+				return true
 			}
-			return true
+			break UpVerLoop
 		case 'R', 'Q':
 			if !isWhite {
-				break UpVerLoop
+				return true
 			}
-			return true
+			break UpVerLoop
 		case '.':
 			continue UpVerLoop
 		default:
@@ -791,14 +785,14 @@ DownVerLoop:
 		switch b.board[i] {
 		case 'r', 'q':
 			if isWhite {
-				break DownVerLoop
+				return true
 			}
-			return true
+			break DownVerLoop
 		case 'R', 'Q':
 			if !isWhite {
-				break DownVerLoop
+				return true
 			}
-			return true
+			break DownVerLoop
 		case '.':
 			continue DownVerLoop
 		default:
@@ -835,14 +829,14 @@ h8a1Loop:
 		switch b.board[i] {
 		case 'b', 'q':
 			if isWhite {
-				break h8a1Loop
+				return true
 			}
-			return true
+			break h8a1Loop
 		case 'B', 'Q':
 			if !isWhite {
-				break h8a1Loop
+				return true
 			}
-			return true
+			break h8a1Loop
 		case '.':
 			continue h8a1Loop
 		default:
@@ -859,14 +853,14 @@ h1a8Loop:
 		switch b.board[i] {
 		case 'b', 'q':
 			if isWhite {
-				break h1a8Loop
+				return true
 			}
-			return true
+			break h1a8Loop
 		case 'B', 'Q':
 			if !isWhite {
-				break h1a8Loop
+				return true
 			}
-			return true
+			break h1a8Loop
 		case '.':
 			continue h1a8Loop
 		default:
@@ -879,14 +873,14 @@ a8h1Loop:
 		switch b.board[i] {
 		case 'b', 'q':
 			if isWhite {
-				break a8h1Loop
+				return true
 			}
-			return true
+			break a8h1Loop
 		case 'B', 'Q':
 			if !isWhite {
-				break a8h1Loop
+				return true
 			}
-			return true
+			break a8h1Loop
 		case '.':
 			continue a8h1Loop
 		default:
@@ -909,27 +903,29 @@ func (b *Board) checkProximity(target int, isWhite bool) bool {
 	G := b.board[target-10]
 	H := b.board[target+10]
 
-	var N, M, O, P byte
+	var N, M, O, P, S, T byte
 	// Possible Knight Positions
-	if target > 21 {
+	if target > 18 {
 		O = b.board[target-21]
 		P = b.board[target-19]
+		T = b.board[target-12]
 	} else {
 		O = '.'
 		P = '.'
+		T = '.'
 	}
 
 	if target < 80 {
 		N = b.board[target+21]
 		M = b.board[target+19]
+		S = b.board[target+12]
 	} else {
 		N = '.'
 		M = '.'
+		S = '.'
 	}
 	Q := b.board[target+8]
 	R := b.board[target-8]
-	S := b.board[target+12]
-	T := b.board[target-12]
 
 	if isWhite {
 		// for white player
