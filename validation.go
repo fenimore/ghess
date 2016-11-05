@@ -314,6 +314,27 @@ func (b *Board) isOpponentInCheck() bool {
 	return false
 }
 
+// TODO: Break these into functions
+func (b *Board) efficientCheck(target int) bool {
+
+	isWhite := b.isUpper(target)
+
+	//check vertical & horizontal axis for R or Q
+	if b.checkVerticalAxis(target, isWhite) {
+		return true
+	}
+	switch {
+	case b.checkVerticalAxis(target, isWhite):
+		return true
+	case b.checkHorizontalAsix(target, isWhite):
+		return true
+		// Diagonal
+		// proximity
+	default:
+		return false
+	}
+}
+
 // isInCheck checks if target King is in Check.
 // Automaticaly checks for turn by the target King.
 func (b *Board) isInCheck(target int) bool {
@@ -690,5 +711,137 @@ func (b *Board) validKing(orig int, dest int, castle bool) error {
 	} else {
 		return errors.New("Illegal King Move")
 	}
-	return nil
+	//return nil
+}
+
+// Check if King is in Check on Horizontal axis
+func (b *Board) checkHorizontalAsix(target int, isWhite bool) bool {
+RightLoop:
+	for i := target + 1; !((i+1)%10 == 0); i = i + 1 {
+		switch b.board[i] {
+		case 'r', 'q':
+			if isWhite {
+				break RightLoop
+			}
+			return true
+		case 'R', 'Q':
+			if !isWhite {
+				break RightLoop
+			}
+			return true
+		case '.':
+			continue RightLoop
+		default:
+			break RightLoop
+		}
+	}
+LeftLoop:
+	for i := target - 1; !(i%10 == 0); i = i - 1 {
+		switch b.board[i] {
+		case 'r', 'q':
+			if isWhite {
+				break LeftLoop
+			}
+			return true
+		case 'R', 'Q':
+			if !isWhite {
+				break LeftLoop
+			}
+			return true
+		case '.':
+			continue LeftLoop
+		default:
+			break LeftLoop
+		}
+	}
+	return false
+}
+
+// Check if King (piece) is in check on Vertical Axis
+func (b *Board) checkVerticalAxis(target int, isWhite bool) bool {
+UpVerLoop:
+	for i := target + 10; i < 88; i = i + 10 {
+
+		switch b.board[i] {
+		case 'r', 'q':
+			if isWhite {
+				break UpVerLoop
+			}
+			return true
+		case 'R', 'Q':
+			if !isWhite {
+				break UpVerLoop
+			}
+			return true
+		case '.':
+			continue UpVerLoop
+		default:
+			break UpVerLoop
+		}
+	}
+DownVerLoop:
+	for i := target - 10; i > 10; i = i - 10 {
+		// Should stop when off the board
+		switch b.board[i] {
+		case 'r', 'q':
+			if isWhite {
+				break DownVerLoop
+			}
+			return true
+		case 'R', 'Q':
+			if !isWhite {
+				break DownVerLoop
+			}
+			return true
+		case '.':
+			continue DownVerLoop
+		default:
+			break DownVerLoop
+		}
+	}
+	return false
+}
+
+func (b *Board) checkDiagnolAxis(target int, isWhite bool) bool {
+a1h8Loop:
+	for i := target + 9; i < 89; i = i + 9 {
+		// Should stop when off the board
+		switch b.board[i] {
+		case 'b', 'q':
+			if isWhite {
+				break a1h8Loop
+			}
+			return true
+		case 'B', 'Q':
+			if !isWhite {
+				break a1h8Loop
+			}
+			return true
+		case '.':
+			continue a1h8Loop
+		default:
+			break a1h8Loop
+		}
+	}
+h8a1Loop:
+	for i := target - 9; i > 10; i = i - 9 {
+		// Should stop when off the board
+		switch b.board[i] {
+		case 'b', 'q':
+			if isWhite {
+				break h8a1Loop
+			}
+			return true
+		case 'B', 'Q':
+			if !isWhite {
+				break h8a1Loop
+			}
+			return true
+		case '.':
+			continue h8a1Loop
+		default:
+			break h8a1Loop
+		}
+	}
+	return false
 }
