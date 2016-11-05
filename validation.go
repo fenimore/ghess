@@ -328,11 +328,11 @@ func (b *Board) efficientCheck(target int) bool {
 		return true
 	case b.checkHorizontalAsix(target, isWhite):
 		return true
-		// Diagonal
-		// proximity
 	case b.checkA1Diagonal(target, isWhite):
 		return true
 	case b.checkH1Diagonal(target, isWhite):
+		return true
+	case b.checkProximity(target, isWhite):
 		return true
 	default:
 		return false
@@ -891,5 +891,51 @@ a8h1Loop:
 			break a8h1Loop
 		}
 	}
+	return false
+}
+
+func (b *Board) checkProximity(target int, isWhite bool) bool {
+
+	A := b.board[target-1]
+	B := b.board[target+1]
+	C := b.board[target-11]
+	D := b.board[target+11]
+	E := b.board[target-9]
+	F := b.board[target+9]
+	G := b.board[target-10]
+	H := b.board[target+10]
+
+	switch 'K' {
+	case A:
+		return true
+	}
+	// Check for Pawns
+	if isWhite {
+		if b.board[target+9] == 'p' ||
+			b.board[target+11] == 'p' {
+			return true
+		}
+	} else {
+		if b.board[target-9] == 'P' ||
+			b.board[target-11] == 'P' {
+			return true
+		}
+	}
+
+	// Check for King
+	if isWhite {
+		switch byte('k') {
+		case b.board[target-1]:
+			return true
+		case b.board[target+1]:
+			return true
+		case b.board[target-1]:
+			return true
+		case b.board[target-1]:
+			return true
+
+		}
+	}
+
 	return false
 }
