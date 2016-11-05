@@ -3,6 +3,7 @@ package ghess
 import (
 	"bytes"
 	"errors"
+	"fmt"
 )
 
 // Problem: 1nbq1knr/1rNpppb1/pp4pp/4N3/3P4/P6P/1PP1PPP1/R1BQKB1R w KQ-- - 0 9
@@ -315,24 +316,25 @@ func (b *Board) isOpponentInCheck() bool {
 }
 
 // TODO: Break these into functions
-func (b *Board) efficientCheck(target int) bool {
+func (b *Board) isInCheck(target int) bool {
 
 	isWhite := b.isUpper(target)
 
-	//check vertical & horizontal axis for R or Q
-	if b.checkVerticalAxis(target, isWhite) {
-		return true
-	}
 	switch {
 	case b.checkVerticalAxis(target, isWhite):
+		fmt.Println("Vertical")
 		return true
 	case b.checkHorizontalAsix(target, isWhite):
+		fmt.Println("Horisontal")
 		return true
 	case b.checkA1Diagonal(target, isWhite):
+		fmt.Println("Dia")
 		return true
 	case b.checkH1Diagonal(target, isWhite):
+		fmt.Println("Dia")
 		return true
 	case b.checkProximity(target, isWhite):
+		fmt.Println("Prox")
 		return true
 	default:
 		return false
@@ -341,7 +343,7 @@ func (b *Board) efficientCheck(target int) bool {
 
 // isInCheck checks if target King is in Check.
 // Automaticaly checks for turn by the target King.
-func (b *Board) isInCheck(target int) bool {
+func (b *Board) isInCheckDep(target int) bool {
 	isWhite := b.isUpper(target)
 	//k := b.board[target]
 
@@ -725,14 +727,14 @@ RightLoop:
 		switch b.board[i] {
 		case 'r', 'q':
 			if isWhite {
-				break RightLoop
+				return true
 			}
-			return true
+			break RightLoop
 		case 'R', 'Q':
 			if !isWhite {
-				break RightLoop
+				return true
 			}
-			return true
+			break RightLoop
 		case '.':
 			continue RightLoop
 		default:
@@ -744,14 +746,14 @@ LeftLoop:
 		switch b.board[i] {
 		case 'r', 'q':
 			if isWhite {
-				break LeftLoop
+				return true
 			}
-			return true
+			break LeftLoop
 		case 'R', 'Q':
 			if !isWhite {
-				break LeftLoop
+				return true
 			}
-			return true
+			break LeftLoop
 		case '.':
 			continue LeftLoop
 		default:
@@ -894,8 +896,10 @@ a8h1Loop:
 	return false
 }
 
+// Check for Knight, Kings or Pawns in Proximity of Piece
 func (b *Board) checkProximity(target int, isWhite bool) bool {
 
+	// The immediate Proximity
 	A := b.board[target-1]
 	B := b.board[target+1]
 	C := b.board[target-11]
@@ -905,37 +909,58 @@ func (b *Board) checkProximity(target int, isWhite bool) bool {
 	G := b.board[target-10]
 	H := b.board[target+10]
 
-	switch 'K' {
-	case A:
-		return true
+	var N, M, O, P byte
+	// Possible Knight Positions
+	if target > 21 {
+		O = b.board[target-21]
+		P = b.board[target-19]
+	} else {
+		O = '.'
+		P = '.'
 	}
-	// Check for Pawns
+
+	if target < 80 {
+		N = b.board[target+21]
+		M = b.board[target+19]
+	} else {
+		N = '.'
+		M = '.'
+	}
+	Q := b.board[target+8]
+	R := b.board[target-8]
+	S := b.board[target+12]
+	T := b.board[target-12]
+
 	if isWhite {
-		if b.board[target+9] == 'p' ||
-			b.board[target+11] == 'p' {
+		// for white player
+		switch byte('k') {
+		case A, B, C, D, E, F, G, H:
+			return true
+		}
+
+		switch byte('p') {
+		case D, F:
+			return true
+		}
+		switch byte('n') {
+		case N, M, O, P, Q, R, S, T:
 			return true
 		}
 	} else {
-		if b.board[target-9] == 'P' ||
-			b.board[target-11] == 'P' {
+		// for white player
+		switch byte('K') {
+		case A, B, C, D, E, F, G, H:
+			return true
+		}
+
+		switch byte('P') {
+		case D, F:
+			return true
+		}
+		switch byte('N') {
+		case N, M, O, P, Q, R, S, T:
 			return true
 		}
 	}
-
-	// Check for King
-	if isWhite {
-		switch byte('k') {
-		case b.board[target-1]:
-			return true
-		case b.board[target+1]:
-			return true
-		case b.board[target-1]:
-			return true
-		case b.board[target-1]:
-			return true
-
-		}
-	}
-
 	return false
 }

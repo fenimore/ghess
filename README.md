@@ -265,6 +265,21 @@ Without Updating Check within the Move method
     PASS
     ok      github.com/polypmer/ghess	22.101s
 
+Before New Check Method:
+
+    BenchmarkSearchValid-4                      5000        470955 ns/op
+    BenchmarkSearchValidSlow-4                  1000       1380257 ns/op
+    BenchmarkMidGamePruningDepth2-4               50      42497511 ns/op
+    BenchmarkOpeningPruningDepth2-4              100      26641277 ns/op
+    BenchmarkOpeningPruningDepth3-4               10     246942839 ns/op
+    BenchmarkMidGamePruningDepth3-4                5     279948987 ns/op
+    BenchmarkMidGameTwoPruningDepth3-4            20     133189782 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	4016534087 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	3511034720 ns/op
+PASS
+    ok      github.com/polypmer/ghess	24.323s
+
+
 ### Bugs
 
 - See issues.
