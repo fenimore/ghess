@@ -25,11 +25,16 @@ func (b *Board) Move(orig, dest int) error {
 	if b.toMove == "w" {
 		// check that orig is Upper
 		// and dest is Enemy or Empty
+		// Use hash map TODO
+		//		o = ByteToUpper[b.board[orig]]
+		//		d = ByteToLower[b.board[dest]]
 		o = []byte(bytes.ToUpper(b.board[orig : orig+1]))[0]
 		d = []byte(bytes.ToLower(b.board[dest : dest+1]))[0]
 	} else if b.toMove == "b" {
 		// check if orig is Lower
 		// and dest is Enemy or Empty
+		//		o = ByteToLower[b.board[orig]]
+		//		d = ByteToUpper[b.board[dest]]
 		o = []byte(bytes.ToLower(b.board[orig : orig+1]))[0]
 		d = []byte(bytes.ToUpper(b.board[dest : dest+1]))[0]
 	}
@@ -136,17 +141,15 @@ func (b *Board) Move(orig, dest int) error {
 	// If all goes well:
 	// update real board
 	b.updateBoard(orig, dest, val, isEmpassant, isCastle)
-	// Check if it is draw// If not TODO
+	// Check if it is draw
 	if orig == b.history[6] && orig == b.history[3] && b.history[0] == b.history[5] {
 		// origins all match upppp... suspicious
 		if dest == b.history[7] && dest == b.history[2] && b.history[1] == b.history[4] {
 			b.score = "1/2 - 1/2"
 		}
 	}
+	// For draw
 	b.cycleHistory(orig, dest)
-	// Look for Checkmate
-	// Check all possibl moves after a check?
-
 	return nil
 }
 

@@ -764,6 +764,36 @@ var (
 
 	// }
 
+	ByteToLower = map[byte]byte{
+		'P': 'p',
+		'p': 'p',
+		'N': 'n',
+		'n': 'n',
+		'B': 'b',
+		'b': 'b',
+		'R': 'r',
+		'r': 'r',
+		'q': 'q',
+		'Q': 'q',
+		'K': 'k',
+		'k': 'k',
+	}
+
+	ByteToUpper = map[byte]byte{
+		'P': 'P',
+		'p': 'P',
+		'N': 'N',
+		'n': 'N',
+		'B': 'B',
+		'b': 'B',
+		'R': 'R',
+		'r': 'R',
+		'q': 'Q',
+		'Q': 'Q',
+		'K': 'K',
+		'k': 'K',
+	}
+
 	// TODO: CoordToPgnMap = map[int]string
 	// TODO: Black square Map
 
