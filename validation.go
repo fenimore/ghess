@@ -330,6 +330,10 @@ func (b *Board) efficientCheck(target int) bool {
 		return true
 		// Diagonal
 		// proximity
+	case b.checkA1Diagonal(target, isWhite):
+		return true
+	case b.checkH1Diagonal(target, isWhite):
+		return true
 	default:
 		return false
 	}
@@ -802,7 +806,7 @@ DownVerLoop:
 	return false
 }
 
-func (b *Board) checkDiagnolAxis(target int, isWhite bool) bool {
+func (b *Board) checkA1Diagonal(target int, isWhite bool) bool {
 a1h8Loop:
 	for i := target + 9; i < 89; i = i + 9 {
 		// Should stop when off the board
@@ -841,6 +845,50 @@ h8a1Loop:
 			continue h8a1Loop
 		default:
 			break h8a1Loop
+		}
+	}
+	return false
+}
+
+func (b *Board) checkH1Diagonal(target int, isWhite bool) bool {
+h1a8Loop:
+	for i := target + 11; i < 89; i = i + 11 {
+		// Should stop when off the board
+		switch b.board[i] {
+		case 'b', 'q':
+			if isWhite {
+				break h1a8Loop
+			}
+			return true
+		case 'B', 'Q':
+			if !isWhite {
+				break h1a8Loop
+			}
+			return true
+		case '.':
+			continue h1a8Loop
+		default:
+			break h1a8Loop
+		}
+	}
+a8h1Loop:
+	for i := target - 11; i > 10; i = i - 11 {
+		// Should stop when off the board
+		switch b.board[i] {
+		case 'b', 'q':
+			if isWhite {
+				break a8h1Loop
+			}
+			return true
+		case 'B', 'Q':
+			if !isWhite {
+				break a8h1Loop
+			}
+			return true
+		case '.':
+			continue a8h1Loop
+		default:
+			break a8h1Loop
 		}
 	}
 	return false
