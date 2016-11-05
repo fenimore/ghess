@@ -3,7 +3,6 @@ package ghess
 import (
 	"fmt"
 	"reflect"
-	"strconv"
 	"testing"
 	//"github.com/polypmer/ghess"
 )
@@ -314,7 +313,7 @@ func TestLoadPgnAndCheck(t *testing.T) {
 		t.Error("But that's a legal PGN")
 	}
 	info := game.Stats()
-	ch, _ := strconv.ParseBool(info["check"])
+	ch := game.PlayerCheck()
 	if !ch {
 		t.Error("But that's should be check")
 	}
@@ -368,8 +367,7 @@ func TestCheckWithPawn(t *testing.T) {
 	if err != nil {
 		t.Error("Shouldn't be error")
 	}
-	info := game.Stats()
-	ch, _ := strconv.ParseBool(info["check"])
+	ch := game.PlayerCheck()
 	if !ch {
 		t.Error("Should be check")
 	}

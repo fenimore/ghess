@@ -258,13 +258,17 @@ func (b *Board) updateBoard(orig, dest int,
 		b.empassant = 0
 	}
 
-	// Check if move put other player in Check
+}
+
+func (b *Board) PlayerCheck() bool {
 	isCheck := b.isPlayerInCheck()
 	if isCheck {
 		b.Check = true
 	} else {
 		b.Check = false
 	}
+
+	return isCheck
 }
 
 // isPlayerInCheck, current player is in Check.

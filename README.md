@@ -251,7 +251,19 @@ Benchmark After certain profiling:
     PASS
     ok      github.com/polypmer/ghess	30.863s
 
+Without Updating Check within the Move method
 
+    BenchmarkSearchValid-4                       100      10165640 ns/op
+    BenchmarkSearchValidSlow-4                   100      10950169 ns/op
+    BenchmarkMidGamePruningDepth2-4               20      55903070 ns/op
+    BenchmarkOpeningPruningDepth2-4               50      36001671 ns/op
+    BenchmarkOpeningPruningDepth3-4                2     500474578 ns/op
+    BenchmarkMidGamePruningDepth3-4                1	1110722333 ns/op
+    BenchmarkMidGameTwoPruningDepth3-4             5     239901689 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	6221718962 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	6580892546 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	22.101s
 
 ### Bugs
 
