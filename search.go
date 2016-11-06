@@ -15,26 +15,22 @@ func (b *Board) SearchValid() ([]int, []int) {
 	targets := make([]int, 0, 64)
 	origs := make([]int, 0, 16)
 	dests := make([]int, 0, 64)
-	//isWhite := b.toMove == "w"
-	//var king int
 
 	// Find and sort pieces:
 	for idx, val := range b.board {
 		// Only look for 64 squares
-		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
+		if idx%10 == 0 || (idx+1)%10 == 0 ||
+			idx > 88 || idx < 11 {
 			continue
 		}
-
 		if b.toMove == "w" && b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
-		} else if b.toMove == "b" && !b.isUpper(idx) && val != '.' {
+		} else if b.toMove == "b" &&
+			!b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
-
 		} else {
 			targets = append(targets, idx)
-
 		}
-
 	}
 
 	// Add Castle (edge squares to targets
@@ -54,7 +50,6 @@ func (b *Board) SearchValid() ([]int, []int) {
 			targets = append(targets, 81)
 		}
 	}
-
 	// Check for Valid attacks
 	for _, idx := range movers {
 		for _, target := range targets {
@@ -63,82 +58,12 @@ func (b *Board) SearchValid() ([]int, []int) {
 			possible := CopyBoard(b)
 			e = possible.Move(idx, target)
 			if e == nil {
+				// Can't move into check
 				isCheck = possible.isOpponentInCheck()
 			}
 			if e == nil && !isCheck {
 				origs = append(origs, idx)
 				dests = append(dests, target)
-			}
-		}
-	}
-	return origs, dests
-}
-
-func (b *Board) SearchValidOrdered() ([]int, []int) {
-	movers := make([]int, 0, 16)
-	targets := make([]int, 0, 64)
-	origs := make([]int, 0, 16)
-	dests := make([]int, 0, 64)
-	//isWhite := b.toMove == "w"
-	//var king int
-
-	// Find and sort pieces:
-	for idx, val := range b.board {
-		// Only look for 64 squares
-		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 || idx < 11 {
-			continue
-		}
-
-		if b.toMove == "w" && b.isUpper(idx) && val != '.' {
-			movers = append(movers, idx)
-		} else if b.toMove == "b" && !b.isUpper(idx) && val != '.' {
-			movers = append(movers, idx)
-
-		} else if val == '.' {
-			targets = append(targets, idx)
-		} else {
-			// Is a possible attack
-			targets = append([]int{idx}, targets...) // prepend
-		}
-
-	}
-
-	// Add Castle (edge squares to targets
-	if b.toMove == "w" {
-		if b.castle[1] == 'Q' {
-			targets = append(targets, 18)
-		}
-		if b.castle[0] == 'K' {
-			targets = append(targets, 11)
-		}
-	}
-	if b.toMove == "b" {
-		if b.castle[3] == 'q' {
-			targets = append(targets, 88)
-		}
-		if b.castle[2] == 'k' {
-			targets = append(targets, 81)
-		}
-	}
-
-	// Check for Valid attacks
-	for _, idx := range movers {
-		for _, target := range targets {
-			var e error
-			var isCheck bool
-			possible := CopyBoard(b)
-			e = possible.Move(idx, target)
-			if e == nil {
-				isCheck = possible.isOpponentInCheck()
-			}
-			if e == nil && !isCheck {
-				if b.board[target] != '.' {
-					origs = append([]int{idx}, origs...)
-					dests = append([]int{target}, dests...)
-				} else {
-					origs = append(origs, idx)
-					dests = append(dests, target)
-				}
 			}
 		}
 	}
@@ -254,7 +179,6 @@ func (b *Board) Tension() map[int]int {
 			}
 		}
 	}
-
 	return tension
 }
 

@@ -59,7 +59,6 @@ func TryState(b *Board, o, d int) (State, error) {
 		return state, err
 	}
 	state.board = possible
-
 	state.eval = possible.Evaluate()
 	return state, nil
 }
@@ -77,9 +76,11 @@ func GetPossibleStates(state State) (States, error) {
 		if state.Init[0] == 0 {
 			s.Init[0], s.Init[1] = origs[i], dests[i]
 		} else {
-			s.Init[0], s.Init[1] = state.Init[0], state.Init[1]
+			s.Init[0], s.Init[1] =
+				state.Init[0], state.Init[1]
 		}
 		s.isMax = state.isMax // Basically is White
+		// Add parent state?
 		states = append(states, s)
 	}
 	return states, nil
@@ -156,21 +157,6 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	}
 
 	even := (depth % 2) == 0
-	// var maxNode bool
-	// if even {
-	//	// If White Player Return Maximum
-	//	if s.isMax {
-	//		maxNode = true
-	//	} else {
-	//		maxNode = false
-	//	}
-	// } else { // Otherwise Return Minimum... Yup that's the idea.
-	//	if s.isMax {
-	//		maxNode = false
-	//	} else {
-	//		maxNode = true
-	//	}
-	// }
 	maxNode := even == s.isMax
 
 	states, err := GetPossibleStates(s)
@@ -188,12 +174,12 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		if err != nil {
 			return bestState, err
 		}
+		/* Alpha Beta Pruning */
 		// The trick is to update the root (for this branch)
-		// beta or alpha, which then will cut off further iterating in
-		// THIS VERY for loop.
+		// beta or alpha, which then will cut off further
+		// iterating in	THIS VERY for loop.
 		if maxNode {
 			if bestState.eval > s.beta {
-				//fmt.Println("Bingo Alpha", bestState.eval)
 				return bestState, nil
 			} else {
 				bestState.beta = s.beta
@@ -202,7 +188,6 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		}
 		if !maxNode {
 			if bestState.eval < s.alpha {
-				//fmt.Println("Bingo Beta", bestState.eval)
 				return bestState, nil
 			} else {
 				bestState.alpha = s.alpha
@@ -210,10 +195,6 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 
 			}
 		}
-
-		// If the player is Max, I want to compare against beta
-		// otherwise against alpha.
-
 		// If we are considering Max,
 		//and state's value >= beta, then return NOW
 		// otherwise, set alpha = Max(alpha, state's value)
@@ -221,7 +202,6 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		// If we are considyering Min,
 		// and state's value <= alpha, then return NOW
 		// otherwise, set beta = Min(beta, state's value)
-
 		bestStates = append(bestStates, bestState)
 	}
 	if len(bestStates) < 1 {
