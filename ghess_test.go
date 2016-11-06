@@ -811,6 +811,7 @@ func BenchmarkMidGamePruningDepth5(b *testing.B) {
 	}
 }
 
+/*
 func BenchmarkMidGamePruningDepth5v2(b *testing.B) {
 	// Seems to be about four seconds
 	game := NewBoard()
@@ -825,3 +826,4 @@ func BenchmarkMidGamePruningDepth5v2(b *testing.B) {
 		}
 	}
 }
+*/

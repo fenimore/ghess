@@ -46,7 +46,7 @@ A Golang chess engine and user interfaces
 - PGN import-export via `Board.LoadPgn()` and `Board.PgnString()`
 - FEN import-export via `Board.LoadFen()` and `Board.Position()`
 - Command Line interface.
-- Simple AI
+- Web interface
 
 # Search and Evaluate Features
 
@@ -103,8 +103,10 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 ## TODO General
 
 2. Tweak evaluation a bit
+5. Add Difficulties to AI UI
+4. Keep track of capture state to combat horizon effect
 4. Undo the ToUpper and ToLower cause that's not good
-6. Tweak the vectors in isInCheck
+6. Make piece map global
 1. More tests.
 4. Export `Board` fields.
 6. Change `Board` to `Game`, as that makes more sense...
@@ -132,7 +134,7 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 # User Interfaces
 
 ## Clichess
-- A commandline chess program for debugging and watching random games.
+- A commandline chess program, it can output and parse PGN and FEN notation.
 - Type `> /help` to list options.
 
 ![clichess](http://polypmer.github.io/img/clichess.png "clichess screenshot")
@@ -141,15 +143,9 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 ## Growser
 - A server api using `gorilla/websocket` for live network chess playing!
 - Dependency: gorilla/websocket (BSD) and Chessboard.js (MIT)
-  * TODO: Add watch random
-  * TODO: Add play AI
-  * TODO: context and game index...
-  * TODO: everything user
-- Castling is only when King steps on Rook, not like normals.
-
-## browser-sql
-- A server api for playing a game and saving it to a sqlite database.
-
+- NB. Castling is only when King steps on Rook, not like normals.
+- Games are stored with a BoltDB keystore database
+- See the repository: [Shallow-Green](https://github.com/polypmer/shallow-green)
 
 ----
 
@@ -292,6 +288,21 @@ After new check method
     BenchmarkMidGamePruningDepth4-4                1	2233602005 ns/op
     PASS
     ok      github.com/polypmer/ghess	19.966s
+
+After Clean Up Tests:
+
+    BenchmarkMidGamePruningDepth2-4              100      25309438 ns/op
+    BenchmarkOpeningPruningDepth2-4              100      17696422 ns/op
+    BenchmarkOpeningPruningDepth3-4               10     183471772 ns/op
+    BenchmarkMidGamePruningDepth3-4               10     147649582 ns/op
+    BenchmarkMidGamePruningDepth3v2-4              2     623692681 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	2224223811 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	1748469646 ns/op
+    BenchmarkMidGamePruningDepth4v2-4              1	5833172254 ns/op
+    BenchmarkOpeningPruningDepth5-4                1	25067368045 ns/op
+    BenchmarkMidGamePruningDepth5-4                1	12097247498 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	56.751s
 
 
 ### Bugs
