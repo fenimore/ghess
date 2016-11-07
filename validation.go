@@ -108,12 +108,13 @@ func (b *Board) Move(orig, dest int) error {
 	possible := CopyBoard(b)
 	// Check possibilities
 	possible.updateBoard(orig, dest, val, isEmpassant, isCastle)
-	//x, y := possible.checkCheck(isWhite)
-	isCheck := possible.isOpponentInCheck()
+	putIntoCheck, isCheck := possible.checkCheck(isWhite) // because turn updateso
+	//isCheck := possible.isOpponentInCheck()
 	if isCheck {
 		return errors.New("Cannot move into Check")
 	}
 	if isCastle {
+		// FIXME, reuse this value?
 		isCheck = b.isPlayerInCheck()
 		if isCheck {
 			return errors.New("Cannot Castle in Check")
@@ -142,6 +143,14 @@ func (b *Board) Move(orig, dest int) error {
 	// If all goes well:
 	// update real board
 	b.updateBoard(orig, dest, val, isEmpassant, isCastle)
+
+	if putIntoCheck {
+		b.Check = true
+		_ = b.PlayerCheckMate()
+	} else {
+		b.Check = false
+	}
+
 	// Check if it is draw
 	if orig == b.history[6] && orig == b.history[3] && b.history[0] == b.history[5] {
 		// origins all match upppp... suspicious
@@ -319,9 +328,39 @@ func (b *Board) isOpponentInCheck() bool {
 	return false
 }
 
-func (b *Board) checkCheck() (bool, bool) {
-
-	return false, false
+func (b *Board) checkCheck(isBlack bool) (bool, bool) {
+	// This checks who is in check. IsWhite is the inverse of
+	// the validation check. So that means that if isWhite, these
+	// black player CANNOT be in check, and if isBlack,
+	// the white player cannot be in check
+	var moveIntoCheck bool
+	var putIntoCheck bool
+CheckLoop:
+	for idx, val := range b.board {
+		switch val {
+		case 'K': // white player
+			check := b.isInCheck(idx)
+			if isBlack && check {
+				moveIntoCheck = true
+			} else if !isBlack && check {
+				putIntoCheck = true
+			} else {
+				continue CheckLoop
+			}
+		case 'k':
+			check := b.isInCheck(idx)
+			if !isBlack && check {
+				moveIntoCheck = true
+			} else if isBlack && check {
+				putIntoCheck = true
+			} else {
+				continue CheckLoop
+			}
+		default:
+			continue CheckLoop
+		}
+	}
+	return putIntoCheck, moveIntoCheck
 }
 
 // TODO: Break these into functions
