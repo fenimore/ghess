@@ -305,6 +305,22 @@ After Clean Up Tests:
     ok      github.com/polypmer/ghess	56.751s
 
 
+After Checking for Checkmate in Move Function:
+
+    BenchmarkMidGamePruningDepth2-4              100      22388385 ns/op
+    BenchmarkOpeningPruningDepth2-4              100      16043151 ns/op
+    BenchmarkOpeningPruningDepth3-4                5     243147499 ns/op
+    BenchmarkMidGamePruningDepth3-4                3     480370920 ns/op
+    BenchmarkMidGamePruningDepth3v2-4              2     940100309 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	2995183075 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	2833983087 ns/op
+    BenchmarkMidGamePruningDepth4v2-4              1	11650210041 ns/op
+    BenchmarkOpeningPruningDepth5-4                1	45387620618 ns/op
+    BenchmarkMidGamePruningDepth5-4                1	41308541742 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	116.066s
+
+
 ### Bugs
 
 - See issues.

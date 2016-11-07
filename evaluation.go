@@ -125,6 +125,7 @@ func (b *Board) queenThreaten(pos int, piece byte, isWhite bool) bool {
 func (b *Board) Evaluate() int {
 	// For position, if piece,
 	var score int
+
 	if b.Checkmate {
 		if b.score == "0-1" {
 			score -= 90000

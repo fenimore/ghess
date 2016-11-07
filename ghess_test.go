@@ -437,6 +437,28 @@ func TestDictionaryAttack(t *testing.T) {
 
 }
 
+func TestCheckMateMiniMax(t *testing.T) {
+	game := NewBoard()
+	// One more to checkmate
+	fen := `4k3/8/8/8/8/7r/6r1/1K6 b - - 0 2`
+	err := game.LoadFen(fen)
+	if err != nil {
+		t.Error(err)
+	}
+	s := GetState(&game)
+	nxt, err := MiniMaxPruning(0, 2, s)
+	if err != nil {
+		t.Error(err)
+	}
+	err = game.Move(nxt.Init[0], nxt.Init[1])
+	if err != nil {
+		t.Error(err)
+	}
+	if !game.Checkmate {
+		t.Error("Not Checkmate, Come ON")
+	}
+}
+
 /**********************************
 Examples
 ***********************************/

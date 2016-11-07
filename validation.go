@@ -108,6 +108,7 @@ func (b *Board) Move(orig, dest int) error {
 	possible := CopyBoard(b)
 	// Check possibilities
 	possible.updateBoard(orig, dest, val, isEmpassant, isCastle)
+	//x, y := possible.checkCheck(isWhite)
 	isCheck := possible.isOpponentInCheck()
 	if isCheck {
 		return errors.New("Cannot move into Check")
@@ -150,6 +151,11 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// For draw
 	b.cycleHistory(orig, dest)
+	/*	isCheck = b.PlayerCheck()
+		if isCheck {
+			_ = b.PlayerCheckMate()
+		}
+	*/
 	return nil
 }
 
@@ -259,25 +265,24 @@ func (b *Board) PlayerCheck() bool {
 	return isCheck
 }
 
+func (b *Board) GameOver() bool {
+	origs, _ := b.SearchValid()
+	return len(origs) < 1
+}
+
 // PlayerCheckMate checks if current player is checkmated
-// and updates score accordingly.
+// and updates score accordingly. Only call after setting
+// the Check field in Board.
 func (b *Board) PlayerCheckMate() bool {
-	isCheck := b.isPlayerInCheck()
-	var isCheckMate bool
-	if isCheck {
-		origs, _ := b.SearchValid()
-		if len(origs) < 1 {
-			isCheckMate = true
-		}
-		if isCheckMate {
-			b.Checkmate = true
-			if b.toMove == "w" {
-				b.score = "0-1"
-				return true
-			} else {
-				b.score = "1-0"
-				return true
-			}
+	origs, _ := b.SearchValid()
+	if len(origs) < 1 {
+		b.Checkmate = true
+		if b.toMove == "w" {
+			b.score = "0-1"
+			return true
+		} else {
+			b.score = "1-0"
+			return true
 		}
 	}
 	return false
@@ -312,6 +317,11 @@ func (b *Board) isOpponentInCheck() bool {
 		}
 	}
 	return false
+}
+
+func (b *Board) checkCheck() (bool, bool) {
+
+	return false, false
 }
 
 // TODO: Break these into functions
