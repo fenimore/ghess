@@ -321,6 +321,10 @@ After Checking for Checkmate in Move Function:
     ok      github.com/polypmer/ghess	116.066s
 
 
+With new checkCheck method:
+
+
+
 ### Bugs
 
 - See issues.

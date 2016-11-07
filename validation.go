@@ -333,7 +333,7 @@ func (b *Board) checkCheck(isBlack bool) (bool, bool) {
 	// the validation check. So that means that if isWhite, these
 	// black player CANNOT be in check, and if isBlack,
 	// the white player cannot be in check
-	var moveIntoCheck bool
+	//var moveIntoCheck bool
 	var putIntoCheck bool
 CheckLoop:
 	for idx, val := range b.board {
@@ -341,7 +341,8 @@ CheckLoop:
 		case 'K': // white player
 			check := b.isInCheck(idx)
 			if isBlack && check {
-				moveIntoCheck = true
+				//moveIntoCheck = true
+				return false, true
 			} else if !isBlack && check {
 				putIntoCheck = true
 			} else {
@@ -350,7 +351,8 @@ CheckLoop:
 		case 'k':
 			check := b.isInCheck(idx)
 			if !isBlack && check {
-				moveIntoCheck = true
+				//moveIntoCheck = true
+				return false, true
 			} else if isBlack && check {
 				putIntoCheck = true
 			} else {
@@ -360,7 +362,7 @@ CheckLoop:
 			continue CheckLoop
 		}
 	}
-	return putIntoCheck, moveIntoCheck
+	return putIntoCheck, false //moveIntoCheck
 }
 
 // TODO: Break these into functions
