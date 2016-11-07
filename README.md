@@ -103,6 +103,7 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 ## TODO General
 
 2. Tweak evaluation a bit
+4. Deal with Horizon Effect
 4. Invalid fen when first number is not zero
 5. Add Difficulties to AI UI
 4. Keep track of capture state to combat horizon effect
@@ -353,6 +354,20 @@ Removing bytes to Upper in Favor of unicode ToLower (woah big gain)
     PASS
     ok      github.com/polypmer/ghess	93.830s
 
+Solving Mate in Three Puzzles
+
+    BenchmarkMidGamePruningDepth2-4              100      17760837 ns/op
+    BenchmarkOpeningPruningDepth2-4              100      11871520 ns/op
+    BenchmarkOpeningPruningDepth3-4               10     189677602 ns/op
+    BenchmarkMidGamePruningDepth3-4                3     423109193 ns/op
+    BenchmarkMidGamePruningDepth3v2-4              2     763345004 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	2255497458 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	2156571491 ns/op
+    BenchmarkMidGamePruningDepth4v2-4              1	8961648726 ns/op
+    BenchmarkOpeningPruningDepth5-4                1	37199162918 ns/op
+    BenchmarkMidGamePruningDepth5-4                1	39992108638 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	100.381s
 
 
 ### Bugs

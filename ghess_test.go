@@ -513,77 +513,77 @@ Chess Problems!!!
 //		t.Error("Engine didn't solve problem")
 //	}
 // }
-func TestChessProblemsMateInThree(t *testing.T) {
-	game := NewBoard()
-	// Mate in Three
-	// Needs 5 ply
-	// Alekhine vs Freeman
-	fen := `4Rnk1/pr3ppp/1p3q2/5NQ1/2p5/8/P4PPP/6K1 w - - 1 1`
-	// Solution:
+// func TestChessProblemsMateInThree(t *testing.T) {
+//	game := NewBoard()
+//	// Mate in Three
+//	// Needs 5 ply
+//	// Alekhine vs Freeman
+//	fen := `4Rnk1/pr3ppp/1p3q2/5NQ1/2p5/8/P4PPP/6K1 w - - 1 1`
+//	// Solution:
 
-	err := game.LoadFen(fen)
-	if err != nil {
-		t.Error(err)
-	}
-	fmt.Println(game.StringWhite())
+//	err := game.LoadFen(fen)
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	fmt.Println(game.StringWhite())
 
-	nxt, err := MiniMaxPruning(0, 5, GetState(&game))
-	if err != nil {
-		t.Error(err)
-	}
-	err = game.Move(nxt.Init[0], nxt.Init[1])
-	if err != nil {
-		t.Error(err)
-	}
-	fmt.Println(game.StringWhite())
-	// White Response
-	nxt, err = MiniMaxPruning(0, 5, GetState(&game))
-	if err != nil {
-		t.Error(err)
-	}
+//	nxt, err := MiniMaxPruning(0, 5, GetState(&game))
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	err = game.Move(nxt.Init[0], nxt.Init[1])
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	fmt.Println(game.StringWhite())
+//	// White Response
+//	nxt, err = MiniMaxPruning(0, 5, GetState(&game))
+//	if err != nil {
+//		t.Error(err)
+//	}
 
-	err = game.Move(nxt.Init[0], nxt.Init[1])
-	if err != nil {
-		t.Error(err)
-	}
-	fmt.Println(game.StringWhite())
-	// Mate?
-	nxt, err = MiniMaxPruning(0, 5, GetState(&game))
-	if err != nil {
-		t.Error(err)
-	}
-	err = game.Move(nxt.Init[0], nxt.Init[1])
-	if err != nil {
-		t.Error(err)
-	}
+//	err = game.Move(nxt.Init[0], nxt.Init[1])
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	fmt.Println(game.StringWhite())
+//	// Mate?
+//	nxt, err = MiniMaxPruning(0, 5, GetState(&game))
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	err = game.Move(nxt.Init[0], nxt.Init[1])
+//	if err != nil {
+//		t.Error(err)
+//	}
 
-	fmt.Println(game.StringWhite())
-	// White Response
-	nxt, err = MiniMaxPruning(0, 5, GetState(&game))
-	if err != nil {
-		t.Error(err)
-	}
+//	fmt.Println(game.StringWhite())
+//	// White Response
+//	nxt, err = MiniMaxPruning(0, 5, GetState(&game))
+//	if err != nil {
+//		t.Error(err)
+//	}
 
-	err = game.Move(nxt.Init[0], nxt.Init[1])
-	if err != nil {
-		t.Error(err)
-	}
-	fmt.Println(game.StringWhite())
-	// Mate?
-	nxt, err = MiniMaxPruning(0, 5, GetState(&game))
-	if err != nil {
-		t.Error(err)
-	}
-	err = game.Move(nxt.Init[0], nxt.Init[1])
-	if err != nil {
-		t.Error(err)
-	}
-	fmt.Println(game.StringWhite())
+//	err = game.Move(nxt.Init[0], nxt.Init[1])
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	fmt.Println(game.StringWhite())
+//	// Mate?
+//	nxt, err = MiniMaxPruning(0, 5, GetState(&game))
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	err = game.Move(nxt.Init[0], nxt.Init[1])
+//	if err != nil {
+//		t.Error(err)
+//	}
+//	fmt.Println(game.StringWhite())
 
-	if !game.Checkmate {
-		t.Error("Engine didn't solve problem")
-	}
-}
+//	if !game.Checkmate {
+//		t.Error("Engine didn't solve problem")
+//	}
+// }
 
 /**********************************
 Examples
