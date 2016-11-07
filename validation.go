@@ -160,11 +160,6 @@ func (b *Board) Move(orig, dest int) error {
 	}
 	// For draw
 	b.cycleHistory(orig, dest)
-	/*	isCheck = b.PlayerCheck()
-		if isCheck {
-			_ = b.PlayerCheckMate()
-		}
-	*/
 	return nil
 }
 

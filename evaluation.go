@@ -143,13 +143,13 @@ func (b *Board) Evaluate() int {
 			continue
 		}
 		isWhitePiece := b.isUpper(idx)
-		piece := b.board[idx]
+		//piece := b.board[idx]
 		if isWhitePiece {
-			score += matMap[piece]
+			score += matMap[val]
 		} else {
-			score -= matMap[piece]
+			score -= matMap[val]
 		}
-		switch piece {
+		switch val {
 		case 'P', 'p':
 			if isWhitePiece {
 				score += whitePawnMap[idx]

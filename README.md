@@ -323,6 +323,18 @@ After Checking for Checkmate in Move Function:
 
 With new checkCheck method:
 
+    BenchmarkMidGamePruningDepth2-4              100      22448028 ns/op
+    BenchmarkOpeningPruningDepth2-4              100      15045846 ns/op
+    BenchmarkOpeningPruningDepth3-4                5     249524429 ns/op
+    BenchmarkMidGamePruningDepth3-4                3     508006507 ns/op
+    BenchmarkMidGamePruningDepth3v2-4              2     919852959 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	2828037344 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	2467769132 ns/op
+    BenchmarkMidGamePruningDepth4v2-4              1	10528120071 ns/op
+    BenchmarkOpeningPruningDepth5-4                1	44537287486 ns/op
+    BenchmarkMidGamePruningDepth5-4                1	40094846903 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	112.273s
 
 
 ### Bugs
