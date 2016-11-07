@@ -337,6 +337,23 @@ With new checkCheck method:
     ok      github.com/polypmer/ghess	112.273s
 
 
+Removing bytes to Upper in Favor of unicode ToLower (woah big gain)
+
+    BenchmarkMidGamePruningDepth2-4              100      16925310 ns/op
+    BenchmarkOpeningPruningDepth2-4              100      12206812 ns/op
+    BenchmarkOpeningPruningDepth3-4               10     188508894 ns/op
+    BenchmarkMidGamePruningDepth3-4                3     362414598 ns/op
+    BenchmarkMidGamePruningDepth3v2-4              2     719300465 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	2205359134 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	2047525391 ns/op
+    BenchmarkMidGamePruningDepth4v2-4              1	8160272334 ns/op
+    BenchmarkOpeningPruningDepth5-4                1	35592436104 ns/op
+    BenchmarkMidGamePruningDepth5-4                1	36422738754 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	93.830s
+
+
+
 ### Bugs
 
 - See issues.

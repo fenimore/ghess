@@ -1,8 +1,8 @@
 package ghess
 
 import (
-	"bytes"
 	"errors"
+	"unicode"
 )
 
 // Problem: 1nbq1knr/1rNpppb1/pp4pp/4N3/3P4/P6P/1PP1PPP1/R1BQKB1R w KQ-- - 0 9
@@ -23,20 +23,26 @@ func (b *Board) Move(orig, dest int) error {
 	var isEmpassant bool // refactor?
 	var isCastle bool
 	if b.toMove == "w" {
+		//b[pos] = byte(unicode.ToUpper(rune(b[pos])))
 		// check that orig is Upper
 		// and dest is Enemy or Empty
 		// Use hash map TODO
 		//		o = ByteToUpper[b.board[orig]]
 		//		d = ByteToLower[b.board[dest]]
-		o = []byte(bytes.ToUpper(b.board[orig : orig+1]))[0]
-		d = []byte(bytes.ToLower(b.board[dest : dest+1]))[0]
+		o = byte(unicode.ToUpper(rune(b.board[orig])))
+		//[]byte(bytes.ToUpper(b.board[orig : orig+1]))[0]
+		d = byte(unicode.ToLower(rune(b.board[dest])))
+		//[]byte(bytes.ToLower(b.board[dest : dest+1]))[0]
 	} else if b.toMove == "b" {
 		// check if orig is Lower
 		// and dest is Enemy or Empty
 		//		o = ByteToLower[b.board[orig]]
 		//		d = ByteToUpper[b.board[dest]]
-		o = []byte(bytes.ToLower(b.board[orig : orig+1]))[0]
-		d = []byte(bytes.ToUpper(b.board[dest : dest+1]))[0]
+		o = byte(unicode.ToLower(rune(b.board[orig])))
+		//[]byte(bytes.ToLower(b.board[orig : orig+1]))[0]
+		d = byte(unicode.ToUpper(rune(b.board[dest])))
+
+		//[]byte(bytes.ToUpper(b.board[dest : dest+1]))[0]
 	}
 	// Check for Castle
 	if orig == 14 {
@@ -158,7 +164,7 @@ func (b *Board) Move(orig, dest int) error {
 			b.score = "1/2 - 1/2"
 		}
 	}
-	// For draw
+	// For draw?
 	b.cycleHistory(orig, dest)
 	return nil
 }
@@ -172,14 +178,14 @@ func (b *Board) updateBoard(orig, dest int,
 	var isPromotion bool
 	// Check for Promotion
 	switch {
-	case b.board[orig] == 'p' && dest < 20:
+	case val == 'p' && dest < 20:
 		isPromotion = true
-	case b.board[orig] == 'P' && dest > 80:
+	case val == 'P' && dest > 80:
 		isPromotion = true
 	}
 	// Check for castle deactivation
 	switch {
-	case b.board[orig] == 'r' || b.board[orig] == 'R':
+	case val == 'r' || val == 'R':
 		switch { // Castle
 		case orig == 18:
 			b.castle[1] = '-'
