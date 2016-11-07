@@ -103,6 +103,7 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 ## TODO General
 
 2. Tweak evaluation a bit
+4. Invalid fen when first number is not zero
 5. Add Difficulties to AI UI
 4. Keep track of capture state to combat horizon effect
 4. Undo the ToUpper and ToLower cause that's not good
