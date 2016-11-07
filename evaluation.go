@@ -128,9 +128,9 @@ func (b *Board) Evaluate() int {
 
 	if b.Checkmate {
 		if b.score == "0-1" {
-			score -= 90000
+			score -= 1000000
 		} else if b.score == "1-0" {
-			score += 90000
+			score += 1000000
 		}
 	}
 
@@ -173,9 +173,9 @@ func (b *Board) Evaluate() int {
 			//score += b.evalBishop(idx, isWhitePiece)
 		case 'R', 'r':
 			if isWhitePiece {
-				score += whiteRookMap[idx]
+				//score += whiteRookMap[idx]
 			} else {
-				score -= blackRookMap[idx]
+				//score -= blackRookMap[idx]
 			}
 			//score += b.evalRook(idx, isWhitePiece)
 		//case 'Q', 'q':

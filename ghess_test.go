@@ -460,6 +460,56 @@ func TestCheckMateMiniMax(t *testing.T) {
 }
 
 /**********************************
+Chess Problems!!!
+***********************************/
+func TestChessProblemsMateInTwo(t *testing.T) {
+	game := NewBoard()
+	// Mate in Two
+	//1. Rxf6+ Nxf6 2. g5#
+	fen := `4r3/pbpn2n1/1p1prp1k/8/2PP2PB/P5N1/2B2R1P/R5K1 w - - 0 1`
+	//1... Be3+ 2. Qxe3 Qg4#
+	//fen := `7r/p3ppk1/3p4/2p1P1Kp/2Pb4/3P1QPq/PP5P/R6R b - - 0 1`
+	err := game.LoadFen(fen)
+	if err != nil {
+		t.Error(err)
+	}
+	//fmt.Println(game.StringWhite())
+
+	nxt, err := MiniMaxPruning(0, 3, GetState(&game))
+	if err != nil {
+		t.Error(err)
+	}
+	err = game.Move(nxt.Init[0], nxt.Init[1])
+	if err != nil {
+		t.Error(err)
+	}
+	//fmt.Println(game.StringWhite())
+	// White Response
+	nxt, err = MiniMaxPruning(0, 3, GetState(&game))
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = game.Move(nxt.Init[0], nxt.Init[1])
+	if err != nil {
+		t.Error(err)
+	}
+	///fmt.Println(game.StringWhite())
+	// Mate?
+	nxt, err = MiniMaxPruning(0, 3, GetState(&game))
+	if err != nil {
+		t.Error(err)
+	}
+	err = game.Move(nxt.Init[0], nxt.Init[1])
+	if err != nil {
+		t.Error(err)
+	}
+	if !game.Checkmate {
+		t.Error("Engine didn't solve problem")
+	}
+}
+
+/**********************************
 Examples
 ***********************************/
 

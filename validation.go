@@ -94,14 +94,6 @@ func (b *Board) Move(orig, dest int) error {
 			if e != nil {
 				return e
 			}
-			if orig == 14 || orig == 84 { // starting pos
-				switch {
-				case o == 'K':
-					b.castle[0], b.castle[1] = '-', '-'
-				case o == 'k':
-					b.castle[2], b.castle[3] = '-', '-'
-				}
-			}
 		} else {
 			e := b.validKing(orig, dest, true)
 			if e != nil {
@@ -196,6 +188,15 @@ func (b *Board) updateBoard(orig, dest int,
 		case orig == 81:
 			b.castle[2] = '-'
 		}
+	case orig == 14 || orig == 84:
+		switch {
+		case val == 'K':
+			b.castle[0], b.castle[1] = '-', '-'
+		case val == 'k':
+			b.castle[2], b.castle[3] = '-', '-'
+		default:
+			break
+		}
 	case isCastle:
 		switch {
 		case isWhite:
@@ -212,7 +213,6 @@ func (b *Board) updateBoard(orig, dest int,
 			if b.board[dest] == '.' {
 				// White offset
 				b.board[dest-10] = '.'
-
 			}
 		case orig-dest == 9 || orig-dest == 11:
 			if b.board[dest] == '.' {
@@ -948,10 +948,10 @@ func (b *Board) checkProximity(target int, isWhite bool) bool {
 	// The immediate Proximity
 	A := b.board[target-1]
 	B := b.board[target+1]
-	C := b.board[target-11]
-	D := b.board[target+11]
-	E := b.board[target-9]
-	F := b.board[target+9]
+	C := b.board[target-11] // Pawn
+	D := b.board[target+11] // Pawn
+	E := b.board[target-9]  // Pawn
+	F := b.board[target+9]  // Pawn
 	G := b.board[target-10]
 	H := b.board[target+10]
 
@@ -1002,7 +1002,7 @@ func (b *Board) checkProximity(target int, isWhite bool) bool {
 		}
 
 		switch byte('P') {
-		case D, F:
+		case E, C:
 			return true
 		}
 		switch byte('N') {
