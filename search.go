@@ -440,22 +440,38 @@ func (b *Board) searchKing(orig int) ([]int, []int) {
 
 	}
 	if isWhite {
-		if b.castle[1] == 'Q' {
-			origs = append(origs, orig)
-			dests = append(dests, 18)
+		if b.castle[1] == 'Q' && b.board[orig+1] == '.' {
+			possible := CopyBoard(b)
+			e := possible.Move(orig, 18)
+			if e == nil {
+				origs = append(origs, orig)
+				dests = append(dests, 18)
+			}
 		}
-		if b.castle[0] == 'K' {
-			origs = append(origs, orig)
-			dests = append(dests, 11)
+		if b.castle[0] == 'K' && b.board[orig-1] == '.' {
+			possible := CopyBoard(b)
+			e := possible.Move(orig, 11)
+			if e == nil {
+				origs = append(origs, orig)
+				dests = append(dests, 11)
+			}
 		}
 	} else {
-		if b.castle[3] == 'q' {
-			origs = append(origs, orig)
-			dests = append(dests, 88)
+		if b.castle[3] == 'q' && b.board[orig+1] == '.' {
+			possible := CopyBoard(b)
+			e := possible.Move(orig, 88)
+			if e == nil {
+				origs = append(origs, orig)
+				dests = append(dests, 88)
+			}
 		}
-		if b.castle[2] == 'k' {
-			origs = append(origs, orig)
-			dests = append(dests, 81)
+		if b.castle[2] == 'k' && b.board[orig-1] == '.' {
+			possible := CopyBoard(b)
+			e := possible.Move(orig, 81)
+			if e == nil {
+				origs = append(origs, orig)
+				dests = append(dests, 81)
+			}
 		}
 	}
 	return origs, dests
