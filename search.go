@@ -149,17 +149,17 @@ func (b *Board) searchPawn(orig int) ([]int, []int) {
 				dests = append(dests, possibility)
 			}
 		default: // if it's a piece
-			if isWhite && !b.isUpper(possibility) {
+			if (idx == 2 || idx == 3) &&
+				isWhite && !b.isUpper(possibility) {
 				origs = append(origs, orig)
 				dests = append(dests, possibility)
-			} else if !isWhite && b.isUpper(possibility) {
+			} else if (idx == 2 || idx == 3) &&
+				!isWhite && b.isUpper(possibility) {
 				origs = append(origs, orig)
 				dests = append(dests, possibility)
 			}
 		}
-
 	}
-
 	return origs, dests
 }
 
@@ -192,6 +192,107 @@ PossLoop:
 			}
 		}
 
+	}
+	return origs, dests
+}
+
+func (b *Board) searchBishop(orig int) ([]int, []int) {
+	isWhite := b.isUpper(orig)
+	origs := make([]int, 0)
+	dests := make([]int, 0)
+	// Not by possibility.. but rather check diagnols..
+a1h8Loop:
+	for target := orig + 9; target < 89; target = target + 9 {
+		// Should stop when off the board
+		switch b.board[target] {
+		case ' ':
+			break a1h8Loop
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, target)
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, target)
+			}
+			break a1h8Loop
+		case 'P', 'N', 'B', 'R', 'Q', 'K':
+			if !isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, target)
+			}
+			break a1h8Loop
+		}
+	}
+h8a1Loop:
+	for target := orig - 9; target > 10; target = target - 9 {
+		// Should stop when off the board
+		switch b.board[target] {
+		case ' ':
+			break h8a1Loop
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, target)
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, target)
+			}
+			break h8a1Loop
+		case 'P', 'N', 'B', 'R', 'Q', 'K':
+			if !isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, target)
+			}
+			break h8a1Loop
+		}
+	}
+
+h1a8Loop:
+	for target := orig + 11; target < 89; target = target + 11 {
+		// Should stop when off the board
+		switch b.board[target] {
+		case ' ':
+			break h1a8Loop
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, target)
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, target)
+			}
+			break h1a8Loop
+		case 'P', 'N', 'B', 'R', 'Q', 'K':
+			if !isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, target)
+			}
+			break h1a8Loop
+		}
+	}
+a8h1Loop:
+	for target := orig - 11; target > 10; target = target - 11 {
+		// Should stop when off the board
+		switch b.board[target] {
+		case ' ':
+			break a8h1Loop
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, target)
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, target)
+			}
+			break a8h1Loop
+		case 'P', 'N', 'B', 'R', 'Q', 'K':
+			if !isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, target)
+			}
+			break a8h1Loop
+		}
 	}
 	return origs, dests
 }
