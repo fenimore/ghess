@@ -492,57 +492,58 @@ func TestCheckMateMiniMax(t *testing.T) {
 /**********************************
 Chess Problems!!!
 ***********************************/
-// func TestChessProblemsMateInTwo(t *testing.T) {
-//	game := NewBoard()
-//	// Mate in Two
-//	// Morphy Verse Duke of Brunswick
-//	// 1. Qb8+ Nxb8 2. Rd8#
-//	fen := `4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 1`
-//	// Alekhine vs Fahardo
-//	//1. Rxf6+ Nxf6 2. g5#
-//	//fen := `4r3/pbpn2n1/1p1prp1k/8/2PP2PB/P5N1/2B2R1P/R5K1 w - - 0 1`
-//	//Monterinas vs Euwe
-//	//1... Be3+ 2. Qxe3 Qg4#
-//	//fen := `7r/p3ppk1/3p4/2p1P1Kp/2Pb4/3P1QPq/PP5P/R6R b - - 0 1`
-//	err := game.LoadFen(fen)
-//	if err != nil {
-//		t.Error(err)
-//	}
-//	//fmt.Println(game.StringWhite())
+func TestChessProblemsMateInTwo(t *testing.T) {
+	game := NewBoard()
+	// Mate in Two
+	// Morphy Verse Duke of Brunswick
+	// 1. Qb8+ Nxb8 2. Rd8#
+	fen := `4kb1r/p2n1ppp/4q3/4p1B1/4P3/1Q6/PPP2PPP/2KR4 w k - 1 1`
+	// Alekhine vs Fahardo
+	//1. Rxf6+ Nxf6 2. g5#
+	//fen := `4r3/pbpn2n1/1p1prp1k/8/2PP2PB/P5N1/2B2R1P/R5K1 w - - 0 1`
+	//Monterinas vs Euwe
+	//1... Be3+ 2. Qxe3 Qg4#
+	//fen := `7r/p3ppk1/3p4/2p1P1Kp/2Pb4/3P1QPq/PP5P/R6R b - - 0 1`
+	err := game.LoadFen(fen)
+	if err != nil {
+		t.Error(err)
+	}
+	//fmt.Println(game.StringWhite())
 
-//	nxt, err := MiniMaxPruning(0, 3, GetState(&game))
-//	if err != nil {
-//		t.Error(err)
-//	}
-//	err = game.Move(nxt.Init[0], nxt.Init[1])
-//	if err != nil {
-//		t.Error(err)
-//	}
-//	//fmt.Println(game.StringWhite())
-//	// White Response
-//	nxt, err = MiniMaxPruning(0, 3, GetState(&game))
-//	if err != nil {
-//		t.Error(err)
-//	}
+	nxt, err := MiniMaxPruning(0, 3, GetState(&game))
+	if err != nil {
+		t.Error(err)
+	}
+	err = game.Move(nxt.Init[0], nxt.Init[1])
+	if err != nil {
+		t.Error(err)
+	}
+	//fmt.Println(game.StringWhite())
+	// White Response
+	nxt, err = MiniMaxPruning(0, 3, GetState(&game))
+	if err != nil {
+		t.Error(err)
+	}
 
-//	err = game.Move(nxt.Init[0], nxt.Init[1])
-//	if err != nil {
-//		t.Error(err)
-//	}
-//	///fmt.Println(game.StringWhite())
-//	// Mate?
-//	nxt, err = MiniMaxPruning(0, 3, GetState(&game))
-//	if err != nil {
-//		t.Error(err)
-//	}
-//	err = game.Move(nxt.Init[0], nxt.Init[1])
-//	if err != nil {
-//		t.Error(err)
-//	}
-//	if !game.Checkmate {
-//		t.Error("Engine didn't solve problem")
-//	}
-// }
+	err = game.Move(nxt.Init[0], nxt.Init[1])
+	if err != nil {
+		t.Error(err)
+	}
+	///fmt.Println(game.StringWhite())
+	// Mate?
+	nxt, err = MiniMaxPruning(0, 3, GetState(&game))
+	if err != nil {
+		t.Error(err)
+	}
+	err = game.Move(nxt.Init[0], nxt.Init[1])
+	if err != nil {
+		t.Error(err)
+	}
+	if !game.Checkmate {
+		t.Error("Engine didn't solve problem")
+	}
+}
+
 // func TestChessProblemsMateInThree(t *testing.T) {
 //	game := NewBoard()
 //	// Mate in Three
@@ -990,7 +991,6 @@ func BenchmarkMidGamePruningDepth5(b *testing.B) {
 	}
 }
 
-/*
 func BenchmarkMidGamePruningDepth5v2(b *testing.B) {
 	// Seems to be about four seconds
 	game := NewBoard()
@@ -1000,6 +1000,55 @@ func BenchmarkMidGamePruningDepth5v2(b *testing.B) {
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
 		_, err := MiniMaxPruning(0, 5, GetState(&game))
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+}
+
+// // Woah going to five
+// func BenchmarkOpeningPruningDepth6(b *testing.B) {
+//	// Opening position doesn't count,
+//	// cause of the dictionary attack
+
+//	game := NewBoard()
+//	fen := "r1bqkbnr/ppp2ppp/2np4/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 0 4"
+//	_ = game.LoadFen(fen)
+//	s := GetState(&game)
+//	b.ResetTimer()
+//	for n := 0; n < b.N; n++ {
+//		_, err := MiniMaxPruning(0, 6, s)
+//		if err != nil {
+//			fmt.Println(err)
+//		}
+//	}
+// }
+
+// func BenchmarkMidGamePruningDepth6(b *testing.B) {
+
+//	game := NewBoard()
+//	fen := "r1bqkb1r/1p3ppp/p1n2n2/3p4/8/1N1B4/PPP2PPP/RNBQ1RK1 w kq - 0 9"
+//	_ = game.LoadFen(fen)
+//	s := GetState(&game)
+//	b.ResetTimer()
+//	for n := 0; n < b.N; n++ {
+//		_, err := MiniMaxPruning(0, 6, s)
+//		if err != nil {
+//			fmt.Println(err)
+//		}
+//	}
+// }
+
+/*
+func BenchmarkMidGamePruningDepth6v2(b *testing.B) {
+	// Seems to be about four seconds
+	game := NewBoard()
+	fen := "rn1qkb1r/1p3ppp/p2pbn2/4p3/4P3/1NN1BP2/PPP3PP/R2QKB1R b KQkq - 0 7"
+	_ = game.LoadFen(fen)
+	//s :=
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		_, err := MiniMaxPruning(0, 6, GetState(&game))
 		if err != nil {
 			fmt.Println(err)
 		}

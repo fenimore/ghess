@@ -132,26 +132,16 @@ func (b *Board) Evaluate() int {
 		} else if b.Score == "1-0" {
 			score += 1000000
 		}
-	} else if b.Draw {
-		// Discourage the computer from draw,
-		// But it should be better than checkmate
-		if b.toMove == "w" {
-			score -= 50000
-		} else {
-			score += 50000
-		}
 	}
 
 	for idx, val := range b.board {
 		// only look at 64 squares:
-		if idx%10 == 0 || (idx+1)%10 == 0 || idx > 88 ||
-			idx < 11 {
-			continue
-		} else if val == '.' {
+
+		if val == '.' || val == ' ' {
 			continue
 		}
+
 		isWhitePiece := b.isUpper(idx)
-		//piece := b.board[idx]
 		if isWhitePiece {
 			score += matMap[val]
 		} else {
@@ -164,35 +154,24 @@ func (b *Board) Evaluate() int {
 			} else {
 				score -= blackPawnMap[idx]
 			}
-			//score += b.evalPawn(idx, isWhitePiece)
 		case 'N', 'n':
 			if isWhitePiece {
 				score += whiteKnightMap[idx]
 			} else {
 				score -= blackKnightMap[idx]
 			}
-			//score += b.evalKnight(idx, isWhitePiece)
 		case 'B', 'b':
 			if isWhitePiece {
 				score += whiteBishopMap[idx]
 			} else {
 				score -= blackBishopMap[idx]
 			}
-			//score += b.evalBishop(idx, isWhitePiece)
 		case 'R', 'r':
 			if isWhitePiece {
-				//score += whiteRookMap[idx]
+				score += whiteRookMap[idx]
 			} else {
-				//score -= blackRookMap[idx]
+				score -= blackRookMap[idx]
 			}
-			//score += b.evalRook(idx, isWhitePiece)
-		//case 'Q', 'q':
-		//score += b.evalQueen(idx, isWhitePiece)
-		//case 'K', 'k':
-		//score += b.evalKing(idx, isWhitePiece)
-		default:
-			//wtf default?
-			score += 0
 		}
 	}
 	return score
