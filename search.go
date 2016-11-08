@@ -409,6 +409,58 @@ func (b *Board) searchQueen(orig int) ([]int, []int) {
 	return origs, dests
 }
 
+func (b *Board) searchKing(orig int) ([]int, []int) {
+	isWhite := b.isUpper(orig)
+	origs := make([]int, 0)
+	dests := make([]int, 0)
+	var possibilities [8]int
+	possibilities[0], possibilities[1],
+		possibilities[2], possibilities[3],
+		possibilities[4], possibilities[5],
+		possibilities[6], possibilities[7] = orig+11,
+		orig+9, orig+10, orig+1, orig-11,
+		orig-10, orig-9, orig-1
+	// Check kings close
+	for _, possibility := range possibilities {
+		switch b.board[possibility] {
+		case ' ':
+			continue
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, possibility)
+		default: // if it's a piece
+			if isWhite && !b.isUpper(possibility) {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			} else if !isWhite && b.isUpper(possibility) {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			}
+		}
+
+	}
+	if isWhite {
+		if b.castle[1] == 'Q' {
+			origs = append(origs, orig)
+			dests = append(dests, 18)
+		}
+		if b.castle[0] == 'K' {
+			origs = append(origs, orig)
+			dests = append(dests, 11)
+		}
+	} else {
+		if b.castle[3] == 'q' {
+			origs = append(origs, orig)
+			dests = append(dests, 88)
+		}
+		if b.castle[2] == 'k' {
+			origs = append(origs, orig)
+			dests = append(dests, 81)
+		}
+	}
+	return origs, dests
+}
+
 // Tension returns a map of which squares are attacked
 // by which side. Negative for black Positive for white.
 // TODO: For now it wont take not moving out of check into account?
