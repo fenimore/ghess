@@ -19,16 +19,16 @@ func (b *Board) SearchValid() ([]int, []int) {
 	// Find and sort pieces:
 	for idx, val := range b.board {
 		// Only look for 64 squares
-		if idx%10 == 0 || (idx+1)%10 == 0 ||
+		/*if idx%10 == 0 || (idx+1)%10 == 0 ||
 			idx > 88 || idx < 11 {
 			continue
-		}
-		if b.toMove == "w" && b.isUpper(idx) && val != '.' {
+		}*/
+		if val != ' ' && b.toMove == "w" && b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
-		} else if b.toMove == "b" &&
+		} else if val != ' ' && b.toMove == "b" &&
 			!b.isUpper(idx) && val != '.' {
 			movers = append(movers, idx)
-		} else {
+		} else if val != ' ' {
 			targets = append(targets, idx)
 		}
 	}
@@ -68,6 +68,67 @@ func (b *Board) SearchValid() ([]int, []int) {
 		}
 	}
 	return origs, dests
+}
+
+// SearchValid finds two arrays, of all valid possible
+// destinations and origins. These are int coordinates
+// which point to the index of the byte slice Board.board
+func (b *Board) SearchValidQuick() ([]int, []int) {
+	movers := make([]int, 0, 16)
+	origs := make([]int, 0, 16)
+	dests := make([]int, 0, 64)
+
+	// Find and sort pieces:
+	for idx, val := range b.board {
+		// Only look for 64 squares
+		if val != ' ' && b.toMove == "w" && b.isUpper(idx) && val != '.' {
+			movers = append(movers, idx)
+		} else if val != ' ' && b.toMove == "b" &&
+			!b.isUpper(idx) && val != '.' {
+			movers = append(movers, idx)
+		}
+	}
+
+	// Add Castle (edge squares to targets
+	// if b.toMove == "w" {
+	//	if b.castle[1] == 'Q' {
+	//		targets = append(targets, 18)
+	//	}
+	//	if b.castle[0] == 'K' {
+	//		targets = append(targets, 11)
+	//	}
+	// }
+	// if b.toMove == "b" {
+	//	if b.castle[3] == 'q' {
+	//		targets = append(targets, 88)
+	//	}
+	//	if b.castle[2] == 'k' {
+	//		targets = append(targets, 81)
+	//	}
+	// }
+	// Check for Valid attacks
+	for _, idx := range movers {
+		switch b.board[idx] {
+		case 'n', 'N':
+			o, d := b.searchKnight(idx)
+			origs = append(origs, o...)
+			dests = append(dests, d...)
+		}
+	}
+	return origs, dests
+}
+
+func (b *Board) searchKnight(orig int) ([]int, []int) {
+	var possibilities [8]int
+	possibilities[0], possibilities[1],
+		possibilities[2], possibilities[3],
+		possibilities[4], possibilities[5],
+		possibilities[6], possibilities[7] = orig+21,
+		orig+19, orig+12, orig+8, orig-8,
+		orig-12, orig-19, orig-21
+	for _, possibility := range possibilities {
+
+	}
 }
 
 // Tension returns a map of which squares are attacked
