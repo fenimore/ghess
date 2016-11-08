@@ -118,7 +118,55 @@ func (b *Board) SearchValidQuick() ([]int, []int) {
 	return origs, dests
 }
 
+func (b *Board) searchPawn(orig int) ([]int, []int) {
+	isWhite := b.isUpper(orig)
+	origs := make([]int, 0)
+	dests := make([]int, 0)
+	var possibilities [4]int
+	// TODO: Check for Empassant
+	if isWhite {
+		possibilities[0] = orig + 10
+		possibilities[1] = orig + 20
+		possibilities[2] = orig + 11
+		possibilities[3] = orig + 9
+	} else {
+		possibilities[0] = orig - 10
+		possibilities[1] = orig - 20
+		possibilities[2] = orig - 11
+		possibilities[3] = orig - 9
+	}
+
+	for idx, possibility := range possibilities {
+		switch b.board[possibility] {
+		case ' ':
+			continue
+		case '.':
+			if idx == 0 {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			} else if idx == 1 && (orig < 29 || orig > 69) {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			}
+		default: // if it's a piece
+			if isWhite && !b.isUpper(possibility) {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			} else if !isWhite && b.isUpper(possibility) {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			}
+		}
+
+	}
+
+	return origs, dests
+}
+
 func (b *Board) searchKnight(orig int) ([]int, []int) {
+	isWhite := b.isUpper(orig)
+	origs := make([]int, 0)
+	dests := make([]int, 0)
 	var possibilities [8]int
 	possibilities[0], possibilities[1],
 		possibilities[2], possibilities[3],
@@ -126,9 +174,26 @@ func (b *Board) searchKnight(orig int) ([]int, []int) {
 		possibilities[6], possibilities[7] = orig+21,
 		orig+19, orig+12, orig+8, orig-8,
 		orig-12, orig-19, orig-21
+PossLoop:
 	for _, possibility := range possibilities {
+		switch b.board[possibility] {
+		case ' ':
+			continue PossLoop
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, possibility)
+		default: // if it's a piece
+			if isWhite && !b.isUpper(possibility) {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			} else if !isWhite && b.isUpper(possibility) {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			}
+		}
 
 	}
+	return origs, dests
 }
 
 // Tension returns a map of which squares are attacked
