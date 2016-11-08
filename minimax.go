@@ -56,6 +56,9 @@ func TryState(b *Board, o, d int) (State, error) {
 	possible := CopyBoard(b)
 	err := possible.Move(o, d)
 	if err != nil {
+		//fmt.Println(err, o, d)
+		//fmt.Println(b.StringWhite())
+		//fmt.Println(b.toMove)
 		return state, err
 	}
 	state.board = possible

@@ -372,7 +372,7 @@ Solving Mate in Three Puzzles
 
 Fix isUpper method:
 
-    BenchmarkMidGamePruningDepth2-4     	     100	  18516595 ns/op
+    BenchmarkMidGamePruningDepth2-4              100      18516595 ns/op
     BenchmarkOpeningPruningDepth2-4              100      12221270 ns/op
     BenchmarkOpeningPruningDepth3-4               10     192746436 ns/op
     BenchmarkMidGamePruningDepth3-4                3     396922504 ns/op
@@ -385,7 +385,20 @@ Fix isUpper method:
     PASS
     ok      github.com/polypmer/ghess	101.368s
 
+Redux SearchValid
 
+    BenchmarkMidGamePruningDepth2-4              300       7301357 ns/op
+    BenchmarkOpeningPruningDepth2-4              500       4243673 ns/op
+    BenchmarkOpeningPruningDepth3-4               30      43071126 ns/op
+    BenchmarkMidGamePruningDepth3-4               30      54478924 ns/op
+    BenchmarkMidGamePruningDepth3v2-4             10     197960945 ns/op
+    BenchmarkOpeningPruningDepth4-4                2     755648819 ns/op
+    BenchmarkMidGamePruningDepth4-4                2     665499051 ns/op
+    BenchmarkMidGamePruningDepth4v2-4              1	2091657012 ns/op
+    BenchmarkOpeningPruningDepth5-4                1	8319886414 ns/op
+    BenchmarkMidGamePruningDepth5-4                1	5527034454 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	30.643s
 
 ### Bugs
 

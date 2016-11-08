@@ -10,7 +10,7 @@ import (
 // SearchValid finds two arrays, of all valid possible
 // destinations and origins. These are int coordinates
 // which point to the index of the byte slice Board.board
-func (b *Board) SearchValid() ([]int, []int) {
+func (b *Board) SearchValidSlowly() ([]int, []int) {
 	movers := make([]int, 0, 16)
 	targets := make([]int, 0, 64)
 	origs := make([]int, 0, 16)
@@ -73,7 +73,7 @@ func (b *Board) SearchValid() ([]int, []int) {
 // SearchValid finds two arrays, of all valid possible
 // destinations and origins. These are int coordinates
 // which point to the index of the byte slice Board.board
-func (b *Board) SearchValidQuick() ([]int, []int) {
+func (b *Board) SearchValid() ([]int, []int) {
 	movers := make([]int, 0, 16)
 	origs := make([]int, 0, 16)
 	dests := make([]int, 0, 64)
@@ -88,34 +88,47 @@ func (b *Board) SearchValidQuick() ([]int, []int) {
 			movers = append(movers, idx)
 		}
 	}
-
-	// Add Castle (edge squares to targets
-	// if b.toMove == "w" {
-	//	if b.castle[1] == 'Q' {
-	//		targets = append(targets, 18)
-	//	}
-	//	if b.castle[0] == 'K' {
-	//		targets = append(targets, 11)
-	//	}
-	// }
-	// if b.toMove == "b" {
-	//	if b.castle[3] == 'q' {
-	//		targets = append(targets, 88)
-	//	}
-	//	if b.castle[2] == 'k' {
-	//		targets = append(targets, 81)
-	//	}
-	// }
-	// Check for Valid attacks
 	for _, idx := range movers {
 		switch b.board[idx] {
+		case 'p', 'P':
+			o, d := b.searchPawn(idx)
+			origs = append(origs, o...)
+			dests = append(dests, d...)
 		case 'n', 'N':
 			o, d := b.searchKnight(idx)
+			origs = append(origs, o...)
+			dests = append(dests, d...)
+		case 'b', 'B':
+			o, d := b.searchBishop(idx)
+			origs = append(origs, o...)
+			dests = append(dests, d...)
+		case 'r', 'R':
+			o, d := b.searchRook(idx)
+			origs = append(origs, o...)
+			dests = append(dests, d...)
+		case 'q', 'Q':
+			o, d := b.searchQueen(idx)
+			origs = append(origs, o...)
+			dests = append(dests, d...)
+		case 'k', 'K':
+			o, d := b.searchKing(idx)
 			origs = append(origs, o...)
 			dests = append(dests, d...)
 		}
 	}
 	return origs, dests
+}
+
+// checkForCheck avoids validating the move, but simply
+// checks if a new position would put the opponent in check
+// (which is illegal)
+func (b *Board) searchOk(o, d int) bool {
+	possible := CopyBoard(b)
+	possible.updateBoard(o, d, b.board[o], false, false)
+	if possible.isOpponentInCheck() {
+		return false
+	}
+	return true
 }
 
 func (b *Board) searchPawn(orig int) ([]int, []int) {
@@ -137,26 +150,46 @@ func (b *Board) searchPawn(orig int) ([]int, []int) {
 	}
 
 	for idx, possibility := range possibilities {
+		if possibility > 89 || possibility < 11 {
+			continue
+		}
 		switch b.board[possibility] {
 		case ' ':
 			continue
 		case '.':
 			if idx == 0 {
-				origs = append(origs, orig)
-				dests = append(dests, possibility)
+				if b.searchOk(orig, possibility) {
+					origs = append(origs, orig)
+					dests = append(dests, possibility)
+				}
 			} else if idx == 1 && (orig < 29 || orig > 69) {
-				origs = append(origs, orig)
-				dests = append(dests, possibility)
+				if isWhite {
+					if b.board[orig+10] != '.' {
+						continue
+					}
+				} else {
+					if b.board[orig-10] != '.' {
+						continue
+					}
+				}
+				if b.searchOk(orig, possibility) {
+					origs = append(origs, orig)
+					dests = append(dests, possibility)
+				}
 			}
 		default: // if it's a piece
 			if (idx == 2 || idx == 3) &&
 				isWhite && !b.isUpper(possibility) {
-				origs = append(origs, orig)
-				dests = append(dests, possibility)
+				if b.searchOk(orig, possibility) {
+					origs = append(origs, orig)
+					dests = append(dests, possibility)
+				}
 			} else if (idx == 2 || idx == 3) &&
 				!isWhite && b.isUpper(possibility) {
-				origs = append(origs, orig)
-				dests = append(dests, possibility)
+				if b.searchOk(orig, possibility) {
+					origs = append(origs, orig)
+					dests = append(dests, possibility)
+				}
 			}
 		}
 	}
@@ -176,19 +209,28 @@ func (b *Board) searchKnight(orig int) ([]int, []int) {
 		orig-12, orig-19, orig-21
 PossLoop:
 	for _, possibility := range possibilities {
+		if possibility > 89 || possibility < 11 {
+			continue PossLoop
+		}
 		switch b.board[possibility] {
 		case ' ':
 			continue PossLoop
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, possibility)
+			if b.searchOk(orig, possibility) {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			}
 		default: // if it's a piece
 			if isWhite && !b.isUpper(possibility) {
-				origs = append(origs, orig)
-				dests = append(dests, possibility)
+				if b.searchOk(orig, possibility) {
+					origs = append(origs, orig)
+					dests = append(dests, possibility)
+				}
 			} else if !isWhite && b.isUpper(possibility) {
-				origs = append(origs, orig)
-				dests = append(dests, possibility)
+				if b.searchOk(orig, possibility) {
+					origs = append(origs, orig)
+					dests = append(dests, possibility)
+				}
 			}
 		}
 
@@ -208,18 +250,24 @@ a1h8Loop:
 		case ' ':
 			break a1h8Loop
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, target)
-		case 'p', 'n', 'b', 'r', 'q', 'k':
-			if isWhite {
+			if b.searchOk(orig, target) {
 				origs = append(origs, orig)
 				dests = append(dests, target)
+			}
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				if b.searchOk(orig, target) {
+					origs = append(origs, orig)
+					dests = append(dests, target)
+				}
 			}
 			break a1h8Loop
 		case 'P', 'N', 'B', 'R', 'Q', 'K':
 			if !isWhite {
-				origs = append(origs, orig)
-				dests = append(dests, target)
+				if b.searchOk(orig, target) {
+					origs = append(origs, orig)
+					dests = append(dests, target)
+				}
 			}
 			break a1h8Loop
 		}
@@ -231,18 +279,24 @@ h8a1Loop:
 		case ' ':
 			break h8a1Loop
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, target)
-		case 'p', 'n', 'b', 'r', 'q', 'k':
-			if isWhite {
+			if b.searchOk(orig, target) {
 				origs = append(origs, orig)
 				dests = append(dests, target)
+			}
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				if b.searchOk(orig, target) {
+					origs = append(origs, orig)
+					dests = append(dests, target)
+				}
 			}
 			break h8a1Loop
 		case 'P', 'N', 'B', 'R', 'Q', 'K':
 			if !isWhite {
-				origs = append(origs, orig)
-				dests = append(dests, target)
+				if b.searchOk(orig, target) {
+					origs = append(origs, orig)
+					dests = append(dests, target)
+				}
 			}
 			break h8a1Loop
 		}
@@ -255,18 +309,24 @@ h1a8Loop:
 		case ' ':
 			break h1a8Loop
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, target)
-		case 'p', 'n', 'b', 'r', 'q', 'k':
-			if isWhite {
+			if b.searchOk(orig, target) {
 				origs = append(origs, orig)
 				dests = append(dests, target)
+			}
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				if b.searchOk(orig, target) {
+					origs = append(origs, orig)
+					dests = append(dests, target)
+				}
 			}
 			break h1a8Loop
 		case 'P', 'N', 'B', 'R', 'Q', 'K':
 			if !isWhite {
-				origs = append(origs, orig)
-				dests = append(dests, target)
+				if b.searchOk(orig, target) {
+					origs = append(origs, orig)
+					dests = append(dests, target)
+				}
 			}
 			break h1a8Loop
 		}
@@ -278,18 +338,24 @@ a8h1Loop:
 		case ' ':
 			break a8h1Loop
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, target)
-		case 'p', 'n', 'b', 'r', 'q', 'k':
-			if isWhite {
+			if b.searchOk(orig, target) {
 				origs = append(origs, orig)
 				dests = append(dests, target)
+			}
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				if b.searchOk(orig, target) {
+					origs = append(origs, orig)
+					dests = append(dests, target)
+				}
 			}
 			break a8h1Loop
 		case 'P', 'N', 'B', 'R', 'Q', 'K':
 			if !isWhite {
-				origs = append(origs, orig)
-				dests = append(dests, target)
+				if b.searchOk(orig, target) {
+					origs = append(origs, orig)
+					dests = append(dests, target)
+				}
 			}
 			break a8h1Loop
 		}
@@ -307,18 +373,24 @@ RightLoop:
 		case ' ':
 			break RightLoop
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, i)
-		case 'p', 'n', 'b', 'r', 'q', 'k':
-			if isWhite {
+			if b.searchOk(orig, i) {
 				origs = append(origs, orig)
 				dests = append(dests, i)
+			}
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				if b.searchOk(orig, i) {
+					origs = append(origs, orig)
+					dests = append(dests, i)
+				}
 			}
 			break RightLoop
 		case 'P', 'N', 'B', 'R', 'Q', 'K':
 			if !isWhite {
-				origs = append(origs, orig)
-				dests = append(dests, i)
+				if b.searchOk(orig, i) {
+					origs = append(origs, orig)
+					dests = append(dests, i)
+				}
 			}
 			break RightLoop
 		}
@@ -329,18 +401,24 @@ LeftLoop:
 		case ' ':
 			break LeftLoop
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, i)
-		case 'p', 'n', 'b', 'r', 'q', 'k':
-			if isWhite {
+			if b.searchOk(orig, i) {
 				origs = append(origs, orig)
 				dests = append(dests, i)
+			}
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				if b.searchOk(orig, i) {
+					origs = append(origs, orig)
+					dests = append(dests, i)
+				}
 			}
 			break LeftLoop
 		case 'P', 'N', 'B', 'R', 'Q', 'K':
 			if !isWhite {
-				origs = append(origs, orig)
-				dests = append(dests, i)
+				if b.searchOk(orig, i) {
+					origs = append(origs, orig)
+					dests = append(dests, i)
+				}
 			}
 			break LeftLoop
 		}
@@ -352,18 +430,24 @@ UpVerLoop:
 		case ' ':
 			break UpVerLoop
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, i)
-		case 'p', 'n', 'b', 'r', 'q', 'k':
-			if isWhite {
+			if b.searchOk(orig, i) {
 				origs = append(origs, orig)
 				dests = append(dests, i)
+			}
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				if b.searchOk(orig, i) {
+					origs = append(origs, orig)
+					dests = append(dests, i)
+				}
 			}
 			break UpVerLoop
 		case 'P', 'N', 'B', 'R', 'Q', 'K':
 			if !isWhite {
-				origs = append(origs, orig)
-				dests = append(dests, i)
+				if b.searchOk(orig, i) {
+					origs = append(origs, orig)
+					dests = append(dests, i)
+				}
 			}
 			break UpVerLoop
 		}
@@ -375,18 +459,24 @@ DownVerLoop:
 		case ' ':
 			break DownVerLoop
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, i)
-		case 'p', 'n', 'b', 'r', 'q', 'k':
-			if isWhite {
+			if b.searchOk(orig, i) {
 				origs = append(origs, orig)
 				dests = append(dests, i)
+			}
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				if b.searchOk(orig, i) {
+					origs = append(origs, orig)
+					dests = append(dests, i)
+				}
 			}
 			break DownVerLoop
 		case 'P', 'N', 'B', 'R', 'Q', 'K':
 			if !isWhite {
-				origs = append(origs, orig)
-				dests = append(dests, i)
+				if b.searchOk(orig, i) {
+					origs = append(origs, orig)
+					dests = append(dests, i)
+				}
 			}
 			break DownVerLoop
 		}
@@ -426,15 +516,21 @@ func (b *Board) searchKing(orig int) ([]int, []int) {
 		case ' ':
 			continue
 		case '.':
-			origs = append(origs, orig)
-			dests = append(dests, possibility)
+			if b.searchOk(orig, possibility) {
+				origs = append(origs, orig)
+				dests = append(dests, possibility)
+			}
 		default: // if it's a piece
 			if isWhite && !b.isUpper(possibility) {
-				origs = append(origs, orig)
-				dests = append(dests, possibility)
+				if b.searchOk(orig, possibility) {
+					origs = append(origs, orig)
+					dests = append(dests, possibility)
+				}
 			} else if !isWhite && b.isUpper(possibility) {
-				origs = append(origs, orig)
-				dests = append(dests, possibility)
+				if b.searchOk(orig, possibility) {
+					origs = append(origs, orig)
+					dests = append(dests, possibility)
+				}
 			}
 		}
 

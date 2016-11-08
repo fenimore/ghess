@@ -107,11 +107,13 @@ func TestSearchValid(t *testing.T) {
 	_ = game.LoadFen(fen)
 	o, d := game.SearchValid()
 	exO := []int{21, 21, 21, 43}
-	exD := []int{11, 12, 31, 23}
+	exD := []int{31, 11, 12, 23}
+	//exD := []int{11, 12, 31, 23} // old searchvalid function
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		fmt.Println(o)
 		fmt.Println(d)
-		t.Error("Search doesn't return the correct/valid moves")
+
+		t.Error("1 Search doesn't return the correct/valid moves")
 	}
 
 	fen = `rn1q1kbr/ppNNpppp/8/3p4/4P3/8/PPPP1PPP/R1BQKB1R b KQkq - 0 2`
@@ -124,7 +126,7 @@ func TestSearchValid(t *testing.T) {
 	exD = []int{75, 75}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		fmt.Println(o, exO, d, exD)
-		t.Error("Search doesn't return the correct/valid moves")
+		t.Error("2 Search doesn't return the correct/valid moves")
 	}
 
 	fen = `rn1qkb1r/ppNppppp/8/8/4P3/8/PPPP1PPP/R1BQKBNR b KQkq - 0 2`
@@ -136,7 +138,7 @@ func TestSearchValid(t *testing.T) {
 	exO = []int{85}
 	exD = []int{76}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
-		t.Error("Search doesn't return the correct/valid moves")
+		t.Error("3 Search doesn't return the correct/valid moves")
 	}
 
 	// SearchValid finds Castling:
@@ -146,12 +148,14 @@ func TestSearchValid(t *testing.T) {
 		t.Error("Fen error")
 	}
 	o, d = game.SearchValid()
+
 	exO = []int{11, 11, 14, 14, 14, 14, 14, 14, 14, 18, 18, 18, 21, 21, 28, 28}
-	exD = []int{12, 13, 13, 15, 23, 24, 25, 18, 11, 15, 16, 17, 31, 41, 38, 48}
+	exD = []int{12, 13, 25, 23, 24, 15, 13, 18, 11, 17, 16, 15, 31, 41, 38, 48}
+	//exD = []int{12, 13, 13, 15, 23, 24, 25, 18, 11, 15, 16, 17, 31, 41, 38, 48}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		fmt.Println(o)
 		fmt.Println(d)
-		t.Error("Search doesn't find white castle")
+		t.Error("4 Search doesn't find white castle")
 	}
 	// For black:
 	fen = `r3k2r/p6p/8/8/8/8/P6P/R3K2R b KQkq - 0 1`
@@ -162,11 +166,12 @@ func TestSearchValid(t *testing.T) {
 	}
 	o, d = game.SearchValid()
 	exO = []int{71, 71, 78, 78, 81, 81, 84, 84, 84, 84, 84, 84, 84, 88, 88, 88}
-	exD = []int{51, 61, 58, 68, 82, 83, 73, 74, 75, 83, 85, 88, 81, 85, 86, 87}
+	exD = []int{61, 51, 68, 58, 82, 83, 85, 73, 74, 75, 83, 88, 81, 87, 86, 85}
+	//exD = []int{51, 61, 58, 68, 82, 83, 73, 74, 75, 83, 85, 88, 81, 85, 86, 87}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
 		fmt.Println(o)
 		fmt.Println(d)
-		t.Error("Search doesn't find Black castle")
+		t.Error("5 Search doesn't find Black castle")
 		// Doesn't find both black castles...
 	}
 	// Search for Pawn:
@@ -179,7 +184,7 @@ func TestSearchValid(t *testing.T) {
 	exO = []int{18, 21, 21, 22, 22, 23, 23, 24, 24, 25, 25, 26, 26, 27, 27, 28, 28}
 	exD = []int{17, 31, 41, 32, 42, 33, 43, 34, 44, 35, 45, 36, 46, 37, 47, 38, 48}
 	if !reflect.DeepEqual(o, exO) || !reflect.DeepEqual(d, exD) {
-		t.Error("Search doesn't find White Pawn Moves")
+		t.Error("7Search doesn't find White Pawn Moves")
 	}
 }
 
@@ -815,10 +820,11 @@ func ExampleBoard_SearchValid() {
 	fmt.Println(d)
 
 	// Output:
-	// [12 12 17 17 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28]
-	// [31 33 36 38 31 41 32 42 33 43 34 44 35 45 36 46 37 47 38 48]
-	// [21 21 21 43]
-	// [11 12 31 23]
+	//[12 12 17 17 21 21 22 22 23 23 24 24 25 25 26 26 27 27 28 28]
+	//[33 31 38 36 31 41 32 42 33 43 34 44 35 45 36 46 37 47 38 48]
+	//[21 21 21 43]
+	//[31 11 12 23]
+
 }
 
 /**********************************
@@ -835,7 +841,7 @@ func BenchmarkMidGamePruningDepth2(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		_, err := MiniMaxPruning(0, 2, s)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println("Minimax 2 error: ", err)
 		}
 	}
 
