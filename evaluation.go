@@ -127,10 +127,18 @@ func (b *Board) Evaluate() int {
 	var score int
 
 	if b.Checkmate {
-		if b.score == "0-1" {
+		if b.Score == "0-1" {
 			score -= 1000000
-		} else if b.score == "1-0" {
+		} else if b.Score == "1-0" {
 			score += 1000000
+		}
+	} else if b.Draw {
+		// Discourage the computer from draw,
+		// But it should be better than checkmate
+		if b.toMove == "w" {
+			score -= 50000
+		} else {
+			score += 50000
 		}
 	}
 

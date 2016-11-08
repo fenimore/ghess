@@ -437,6 +437,31 @@ func TestDictionaryAttack(t *testing.T) {
 
 }
 
+func TestDraw(t *testing.T) {
+	game := NewBoard()
+	err := game.Move(12, 33)
+	if err != nil {
+		fmt.Println(err)
+	}
+	_ = game.Move(82, 63)
+	_ = game.Move(33, 12)
+	_ = game.Move(63, 82)
+	//fmt.Println(game.Score, game.Draw)
+	_ = game.Move(12, 33)
+	_ = game.Move(82, 63)
+	_ = game.Move(33, 12)
+	_ = game.Move(63, 82)
+	//fmt.Println(game.Score, game.Draw)
+	_ = game.Move(12, 33)
+	_ = game.Move(82, 63)
+	_ = game.Move(33, 12)
+	_ = game.Move(63, 82)
+	//fmt.Println(game.history)
+	if !game.Draw {
+		t.Error("Should be a draw")
+	}
+}
+
 func TestCheckMateMiniMax(t *testing.T) {
 	game := NewBoard()
 	// One more to checkmate

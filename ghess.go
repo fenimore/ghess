@@ -22,11 +22,12 @@ type Board struct {
 	// Game Variables
 	castle    [4]byte // castle possibility KQkq or ----
 	empassant int     // square vulnerable to empassant
-	score     string
+	Score     string
 	toMove    string // Next move is w or b
 	moves     int    // the count of moves
 	Check     bool
 	Checkmate bool // start Capitalizing
+	Draw      bool
 	// Game Positions
 	fen     string // Game position
 	pgn     string // Game history
@@ -61,7 +62,7 @@ func NewBoard() Board {
 		board:  arr,
 		castle: [4]byte{'K', 'Q', 'k', 'q'},
 		toMove: "w",
-		score:  "*",
+		Score:  "*",
 		moves:  1,
 	}
 }
@@ -213,7 +214,7 @@ func (b *Board) Stats() map[string]string {
 	m["history"] = b.pgn
 	m["check"] = strconv.FormatBool(b.Check)
 	m["headers"] = b.headers
-	m["score"] = b.score
+	m["score"] = b.Score
 	m["checkmate"] = strconv.FormatBool(b.Checkmate)
 	//m["lastthree"] =
 	return m
@@ -337,8 +338,6 @@ func (b *Board) cycleHistory(o, d int) {
 	b.history[4] = b.history[2]
 	b.history[3] = b.history[1]
 	b.history[2] = b.history[0]
-	//b.history[i-1] = b.history[i-2]
-	//fmt.Println(b.history[i-2])
 	b.history[1] = d
 	b.history[0] = o
 

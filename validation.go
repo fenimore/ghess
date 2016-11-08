@@ -153,7 +153,8 @@ func (b *Board) Move(orig, dest int) error {
 	if orig == b.history[6] && orig == b.history[3] && b.history[0] == b.history[5] {
 		// origins all match upppp... suspicious
 		if dest == b.history[7] && dest == b.history[2] && b.history[1] == b.history[4] {
-			b.score = "1/2 - 1/2"
+			b.Score = "1/2 - 1/2"
+			b.Draw = true
 		}
 	}
 	// For draw?
@@ -288,10 +289,10 @@ func (b *Board) PlayerCheckMate() bool {
 	if len(origs) < 1 {
 		b.Checkmate = true
 		if b.toMove == "w" {
-			b.score = "0-1"
+			b.Score = "0-1"
 			return true
 		} else {
-			b.score = "1-0"
+			b.Score = "1-0"
 			return true
 		}
 	}
