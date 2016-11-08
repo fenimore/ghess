@@ -297,6 +297,118 @@ a8h1Loop:
 	return origs, dests
 }
 
+func (b *Board) searchRook(orig int) ([]int, []int) {
+	isWhite := b.isUpper(orig)
+	origs := make([]int, 0)
+	dests := make([]int, 0)
+RightLoop:
+	for i := orig + 1; !((i+1)%10 == 0); i = i + 1 {
+		switch b.board[i] {
+		case ' ':
+			break RightLoop
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, i)
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, i)
+			}
+			break RightLoop
+		case 'P', 'N', 'B', 'R', 'Q', 'K':
+			if !isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, i)
+			}
+			break RightLoop
+		}
+	}
+LeftLoop:
+	for i := orig - 1; !(i%10 == 0); i = i - 1 {
+		switch b.board[i] {
+		case ' ':
+			break LeftLoop
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, i)
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, i)
+			}
+			break LeftLoop
+		case 'P', 'N', 'B', 'R', 'Q', 'K':
+			if !isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, i)
+			}
+			break LeftLoop
+		}
+	}
+UpVerLoop:
+	for i := orig + 10; i < 88; i = i + 10 {
+
+		switch b.board[i] {
+		case ' ':
+			break UpVerLoop
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, i)
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, i)
+			}
+			break UpVerLoop
+		case 'P', 'N', 'B', 'R', 'Q', 'K':
+			if !isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, i)
+			}
+			break UpVerLoop
+		}
+	}
+DownVerLoop:
+	for i := orig - 10; i > 10; i = i - 10 {
+		// Should stop when off the board
+		switch b.board[i] {
+		case ' ':
+			break DownVerLoop
+		case '.':
+			origs = append(origs, orig)
+			dests = append(dests, i)
+		case 'p', 'n', 'b', 'r', 'q', 'k':
+			if isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, i)
+			}
+			break DownVerLoop
+		case 'P', 'N', 'B', 'R', 'Q', 'K':
+			if !isWhite {
+				origs = append(origs, orig)
+				dests = append(dests, i)
+			}
+			break DownVerLoop
+		}
+	}
+	return origs, dests
+}
+
+func (b *Board) searchQueen(orig int) ([]int, []int) {
+	//isWhite := b.isUpper(orig)
+	origs := make([]int, 0)
+	dests := make([]int, 0)
+
+	o, d := b.searchBishop(orig)
+	origs = append(origs, o...)
+	dests = append(dests, d...)
+	o, d = b.searchRook(orig)
+	origs = append(origs, o...)
+	dests = append(dests, d...)
+
+	return origs, dests
+}
+
 // Tension returns a map of which squares are attacked
 // by which side. Negative for black Positive for white.
 // TODO: For now it wont take not moving out of check into account?
