@@ -370,6 +370,23 @@ Solving Mate in Three Puzzles
     ok      github.com/polypmer/ghess	100.381s
 
 
+Fix isUpper method:
+
+    BenchmarkMidGamePruningDepth2-4     	     100	  18516595 ns/op
+    BenchmarkOpeningPruningDepth2-4              100      12221270 ns/op
+    BenchmarkOpeningPruningDepth3-4               10     192746436 ns/op
+    BenchmarkMidGamePruningDepth3-4                3     396922504 ns/op
+    BenchmarkMidGamePruningDepth3v2-4              2     914956021 ns/op
+    BenchmarkOpeningPruningDepth4-4                1	2334247240 ns/op
+    BenchmarkMidGamePruningDepth4-4                1	2202312773 ns/op
+    BenchmarkMidGamePruningDepth4v2-4              1	8984800795 ns/op
+    BenchmarkOpeningPruningDepth5-4                1	38791150950 ns/op
+    BenchmarkMidGamePruningDepth5-4                1	38760424831 ns/op
+    PASS
+    ok      github.com/polypmer/ghess	101.368s
+
+
+
 ### Bugs
 
 - See issues.

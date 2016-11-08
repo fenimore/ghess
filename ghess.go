@@ -32,7 +32,7 @@ type Board struct {
 	fen     string // Game position
 	pgn     string // Game history
 	headers string // Pgn format
-	history [8]int // For Draws, last six coordinates
+	History [8]int // For Draws, last six coordinates
 }
 
 func initPieceMap() {
@@ -328,19 +328,20 @@ func (b *Board) Coordinates() {
 // If Uppercase, it is either white player
 // [TODO] or it is empty square.
 func (b Board) isUpper(x int) bool {
-	return b.board[x] < []byte{0x5a}[0]
+	return b.board[x] <= 'Z' //[]byte{0x5a}[0]
 }
 
 func (b *Board) cycleHistory(o, d int) {
-	b.history[7] = b.history[5]
-	b.history[6] = b.history[4]
-	b.history[5] = b.history[3]
-	b.history[4] = b.history[2]
-	b.history[3] = b.history[1]
-	b.history[2] = b.history[0]
-	b.history[1] = d
-	b.history[0] = o
-
+	//fmt.Println(b.history)
+	b.History[7] = b.History[5]
+	b.History[6] = b.History[4]
+	b.History[5] = b.History[3]
+	b.History[4] = b.History[2]
+	b.History[3] = b.History[1]
+	b.History[2] = b.History[0]
+	b.History[1] = d
+	b.History[0] = o
+	//	fmt.Println(b.History)
 }
 
 // CopyBoard takes in a Board pointer and returns
