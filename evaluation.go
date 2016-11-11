@@ -128,12 +128,13 @@ func (b *Board) Evaluate() int {
 
 	if b.Checkmate {
 		if b.Score == "0-1" {
-			score -= 1000000
+			score -= 1000000000
 		} else if b.Score == "1-0" {
-			score += 1000000
+			score += 1000000000
 		}
+	} else if b.Draw {
+		score -= 50000
 	}
-
 	for idx, val := range b.board {
 		// only look at 64 squares:
 

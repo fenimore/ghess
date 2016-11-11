@@ -278,4 +278,3 @@ Slightly modify evaluation
     BenchmarkMidGamePruningDepth5v2-4              1	66624534625 ns/op
     PASS
     ok      github.com/polypmer/ghess	93.219s
-

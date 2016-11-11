@@ -1,0 +1,161 @@
+* Chess Engine
+
+1. Representing the Board
+2. Validating Moves
+3. Evaluating Position
+
+* Representation
+
+    |Move:  3     Turn: b
+    |Check: false Castle: KQkq
+    |Mate:  false Score: *
+    8: |♖||♘||♗||♕||♔|| ||♘||♖|
+    7: |♙||♙||♙||♙|| ||♙||♙||♙|
+    6: |░|| ||░|| ||░|| ||░|| |
+    5: | ||░||♗||░||♙||░|| ||░|
+    4: |░|| ||░||♟||♟|| ||░|| |
+    3: | ||░|| ||░|| ||♞|| ||░|
+    2: |♟||♟||♟|| ||░||♟||♟||♟|
+    1: |♜||♞||♝||♛||♚||♝|| ||♜|
+       :a::b::c::d::e::f::g::h:
+    Black to move:
+
+
+* Validation
+
+** There are some weird moves in Chess.
+** Representation really matters
+** I use the 10x12 bitmap method (letterbox)
+
+[]byte(`
+        RNBKQBNR  PPPPPPPP  ........  ........
+        ........  ........  pppppppp  rnbkqbnr
+                                `)
+
+    Coordinates:
+    8: |88||87||86||85||84||83||82||81|
+    7: |78||77||76||75||74||73||72||71|
+    6: |68||67||66||65||64||63||62||61|
+    5: |58||57||56||55||54||53||52||51|
+    4: |48||47||46||45||44||43||42||41|
+    3: |38||37||36||35||34||33||32||31|
+    2: |28||27||26||25||24||23||22||21|
+    1: |18||17||16||15||14||13||12||11|
+       :a ::b ::c ::d ::e ::f ::g ::h :
+
+- 11 - 18 1st rank
+- 81 - 88 8th rank
+
+* Examples:
+
+** Pawn validation
+- Destination - Origin = 10
+- Unless capture, in that case 9 and 11 are valid
+** Bishop validation (one axis)
+- Destination - Origin % 11 = 0
+** Knight validation
+- Destination - Origin = 19, 21, etc
+
+* Evaluation
+
+Scoring a position (*not a move*)
+
+- Simpler the better:
+  + goal is to go farther down the tree
+- Largest weight is on *Material* advantage, calculated in *Centipawn*:
+
+** Centipawn
+
+100 - Pawn
+320 - Knight
+330 - Bishop
+500 - Rook
+900 - Queen
+20K - King
+
+* The Game tree
+
+** MiniMax is a depth first search
+
+- It *minimizes maximum loss*
+- (that is), not the move which leads to best position,
+  but the move which gives your opponent the least good
+  (worse) position.
+
+* Performance Matters
+
+Beginning of the game there is 20 possible moves,
+Openings positions typically have about 30 possible moves
+(Ply is half a turn, turn is two players moving)
+1 Ply: 30
+2 Ply: 30 * 30 = 900
+3 Ply: ... 27,000
+4 Ply: 810,000
+5 Ply: 24,300,000
+
+At *worse*, n looks like 24 million, and it's exponential
+(6 ply = 729,000,000)
+
+So I can get a benchmark change like this after rewriting a function:
+
+    // MiniMax on Midgame position 5 ply depth
+    BenchmarkMidGamePruningDepth5-4   38760424831 ns/op // 38 seconds
+
+    BenchmarkMidGamePruningDepth5-4    5527034454 ns/op // 5 seconds
+    // Going to a sixth ply
+    BenchmarkMidGamePruningDepth6-4  176360843441 ns/op // 3 minutes
+
+* No one waits 40 seconds (or three minutes) for a computer to do anything.
+
+* MiniMax
+
+- Leaving out *Pruning* (although this is very important)
+- Simplified (i.e. this Function only works as White perspective)
+- Leaving out the details of the *State* struct
+- Should be familiar to typical depth first searches
+#+BEGIN_SRC go
+func MiniMax(depth, terminal int, s State) (State, error) {
+  if depth == 0 {
+    openState, err := DictionaryAttack(s)
+    if err == nil {
+      return openState, nil
+    }
+  }
+
+  // If terminal, return node
+  if depth == terminal {
+    return s, nil
+  }
+
+  // Otherwise get a list of possible states
+  states, err := GetPossibleStates(s)
+  if err != nil {
+    return s, err
+  }
+
+  // Call Minimax on possible states
+  var bestState State   // the state returned from recursive call
+  var bestStates States // a slice of State structs
+  for _, state := range states {
+    bestState, err = MiniMax(depth+1, terminal, state)
+    if err != nil {
+      return bestState, err
+    }
+    bestStates = append(bestStates, bestState)
+  }
+
+  // ... check if len(bestStates) are 0
+
+  // Return the Min or Max Depending on
+  even := (depth % 2) == 0 // from Root Node
+  if even {
+      return Max(bestStates), nil
+  } else { // Otherwise Return Minimum...
+      return Min(bestStates), nil
+  }
+}
+#+END_SRC
+
+* Graph Represenation of Tree
+
+[[./[[minimax.png]]]]
