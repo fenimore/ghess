@@ -58,24 +58,17 @@ A Golang chess engine and user interfaces
 
 ## `Board` struct fields:
 - [Game variables]
-  * board []byte [the piece positions]
-  * castle []byte [Remaining possibilities]
-  * score string
+  * board [120]byte [the piece positions]
+  * castle [4]byte [Remaining possibilities]
+  * Score string
   * toMove string [either "w" or "b"]
   * empassant int [coordinate value]
-  * checkmate bool
-  * check bool
-- [Board display]
-  * pgnMap map[string]int
-  * pieceMap map[int]string
-  * pieces map[string]string [unicode fonts]
-  * rows map[int][8]int [for white/black coloring]
-- moves [move tally]
-- fen string[Position string]
-- pgn string [move history]
+  * Checkmate bool
+  * Check bool
+  * moves [move tally]
+  * fen string[Position string]
+  * pgn string [move history]
 - headers string [for PGN]
-- pgnPattern *regexp.Regexp
-- fenPattern *regexp.Regexp
 - history []int
 
 As long as it remains on my `TODO` list to change, these fields are unexported and for accessing this data, one can call `Board.Stats()` to return a `map[string]string` of various imminently useful fields, such as "turn", "check", and "scores" (see `ghess.go` `Stats()` for a complete list.
