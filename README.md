@@ -2,7 +2,7 @@
 
 # go-chess || ghess
 
-A Golang chess engine and user interfaces
+A Golang chess engine and user interfaces. Challenge the **AI**, [Ghess](https://ghess-chess.herokuapp.com/), online.
 
     |Move:  3     Turn: b
     |Check: false Castle: KQkq
@@ -71,8 +71,6 @@ A Golang chess engine and user interfaces
 - headers string [for PGN]
 - history []int
 
-As long as it remains on my `TODO` list to change, these fields are unexported and for accessing this data, one can call `Board.Stats()` to return a `map[string]string` of various imminently useful fields, such as "turn", "check", and "scores" (see `ghess.go` `Stats()` for a complete list.
-
 ## Bitmap
 
 The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `Board` `board` field. This boils down to (accessible with the `/coordinates` command in `clichess.go`):
@@ -98,7 +96,7 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 1. SearchValid see empassant?
 2. Tweak evaluation a bit
 4. Deal with Horizon Effect
-4. Invalid fen when first number is not zero
+4. Invalid fen when first Move number is not zero
 4. Keep track of capture state to combat horizon effect
 6. Make piece map global
 1. More tests.
