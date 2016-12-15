@@ -47,29 +47,14 @@ A Golang chess engine and user interfaces. Challenge the **AI**, [Ghess](https:/
 - FEN import-export via `Board.LoadFen()` and `Board.Position()`
 - Command Line interface.
 - Web interface
+- Artificial intelligence, goes 5 ply in a few seconds.
 
 # Search and Evaluate Features
 
 - Looks for all possible and valid moves via `Board.SearchForValid()`, which returns two `[]int` slices with the coordinates of possible origins and possible targets. The `Board` field `pieceMap` is a `map[int]string`; the aforementioned `int`s are keys for the standard notation coordinates.
 - Evaluation returns a score with a positive value for white advantage and negative value for black advantage. See the `evaluation.go` file for it's emerging api. There is also a `Board.MoveRandom()` method which passes in two `[]int` slices and `math/rand` chooses a move.
-- A MiniMax algorithm is a work in progress, but with it one can play a game against a rather low level opponent.
 
 ----
-
-## `Board` struct fields:
-- [Game variables]
-  * board [120]byte [the piece positions]
-  * castle [4]byte [Remaining possibilities]
-  * Score string
-  * toMove string [either "w" or "b"]
-  * empassant int [coordinate value]
-  * Checkmate bool
-  * Check bool
-  * moves [move tally]
-  * fen string[Position string]
-  * pgn string [move history]
-- headers string [for PGN]
-- history []int
 
 ## Bitmap
 
@@ -91,35 +76,22 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 
 ----
 
-## TODO General
+## Road Map:
 
-1. SearchValid see empassant?
-2. Tweak evaluation a bit
-4. Deal with Horizon Effect
-4. Invalid fen when first Move number is not zero
-4. Keep track of capture state to combat horizon effect
-6. Make piece map global
-1. More tests.
-4. Export `Board` fields.
-6. Change `Board` to `Game`, as that makes more sense...
-3. Convert `ParseStand()` to PGN move.
-7. Save history
+1. FIXME: SearchForValid empassant
+4. FIXME: Horizon Effect
+ - Keep track of capture state to combat horizon effect
+4. FIXME: Invalid fen when first Move number is not zero
+6. TODO: Change `Board` to `Game`
+7. TODO: Save history
 
-### TODO Basic rules
 
-- Minor pawn promotion.
-- Queen disambiguation.
+### Basic Functionality
 
-### TODO Basic Functionality
-
-- Checkmate should update PGN headers/history.
-- `ParseMove` should allow for resign.
-
-### TODO Extra features
-
-- Move history/ Undo
-  * Save game history to board (not automatic)?
-  * Save as two coordinates, with piece specifier
+- [ ] Minor pawn promotion.
+- [ ] Queen disambiguation.
+- [ ] Checkmate should update PGN headers/history.
+- [ ] `ParseMove` should allow for resign.
 
 ----
 
@@ -139,13 +111,6 @@ The chess engine works with a 120 (10x12) bitmap `[]byte` slice, stored in the `
 - Games are stored with a BoltDB keystore database
 - See the repository: [Shallow-Green](https://github.com/polypmer/shallow-green)
 
-----
-
-
-
-### Bugs
-
-- See issues.
 
 ### License
 
