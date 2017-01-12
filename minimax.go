@@ -135,30 +135,48 @@ func Min(states States) State {
 	return states[minIdx]
 }
 
-// MiniMax Recursive, pass in state, search depth and terminal depth.
-// and depth is always 0 when passed in initially.
-// This is like a DFS algorithm which tries to Minimize maximun loss.
-// TODO: write tests somehow.
-// Pass bback error LOL
+// MiniMax with Alpha Beta Pruning:
+// Return the position where, assuming your opponent picks its
+// *best* moves, they have the minimum advantage
+// Minimizing Maximum Loss
+//
+// Param:
+//     state, current depth and terminal depth.
+//     Depth is always 0 when passed in initially.
+//
+// Minimax:
+//     This is like a Depth First Search algorithm.
+//     Speed increase from Pruning largely depends on Move Ordering
 func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 	if depth == 0 {
+		// At first depth set Alpha and Beta values
 		s.alpha = -1000000000
 		s.beta = 1000000000
-		// set the Min or Max
+
+		// Search for Max or Min Player?
 		if s.board.toMove == "w" {
 			s.isMax = true
 		} else {
 			s.isMax = false
 		}
+
+		// At first depth check for Opening in Dictionary
 		openState, err := DictionaryAttack(s)
 		if err == nil {
 			return openState, nil
 		}
 	}
+
 	if depth == terminal {
+		// The final state will pass up the
+		// call stack:
+		// the Score of terminal position
+		// the Original move to get there
 		return s, nil
 	}
 
+	// Determine if Max or Min node
+	// by height of tree
 	even := (depth % 2) == 0
 	maxNode := even == s.isMax
 
@@ -167,20 +185,35 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 		return s, err
 	}
 
-	// Recursive Call
+	// Recursively call MiniMax on all Possible States
 	var bestState State
 	var bestStates States
 	for _, state := range states {
 		state.alpha = s.alpha
 		state.beta = s.beta
+		// Increment Depth when calling MiniMax
 		bestState, err = MiniMaxPruning(depth+1, terminal, state)
 		if err != nil {
 			return bestState, err
 		}
-		/* Alpha Beta Pruning */
-		// The trick is to update the root (for this branch)
-		// beta or alpha, which then will cut off further
-		// iterating in	THIS VERY for loop.
+
+		/* Alpha Beta Pruning
+		* The trick is to update the root node's
+		* (for this branch) beta or alpha
+		* This will prune further branches from root
+
+		* If we are considering a Max Node,
+		* and state's score/evaluation >= beta, then PRUNE/return
+		* otherwise, set alpha = Max(alpha, state's value)
+
+		* If we are considering a Min Node,
+		* and state's score/evaluation <= alpha, then PRUNE/return
+		* otherwise, set beta = Min(beta, state's value)
+
+		* Pruning effectively breaks out of this loop
+		* which call MiniMax on all Possible States
+		* in a certain branch of the tree
+		 */
 		if maxNode {
 			if bestState.eval > s.beta {
 				return bestState, nil
@@ -198,22 +231,20 @@ func MiniMaxPruning(depth, terminal int, s State) (State, error) {
 
 			}
 		}
-		// If we are considering Max,
-		//and state's value >= beta, then return NOW
-		// otherwise, set alpha = Max(alpha, state's value)
 
-		// If we are considyering Min,
-		// and state's value <= alpha, then return NOW
-		// otherwise, set beta = Min(beta, state's value)
+		// if there is no Pruning, add the returned
+		// bestStates from MiniMax calls to slice of bestStates
 		bestStates = append(bestStates, bestState)
 	}
+
+	// If say there is stalemate/checkmate no best-states
 	if len(bestStates) < 1 {
 		return s, nil
 	}
 
-	if maxNode {
+	if maxNode { // if height == Max nodes
 		return Max(bestStates), nil
-	} else {
+	} else { // if height == Min nodes
 		return Min(bestStates), nil
 	}
 }
@@ -237,8 +268,9 @@ func max(a, b int) int {
 }
 
 // DEPRECATED
-
-// Depricated
+// MiniMax is Deprecated in favor of
+// AlphaBeta Pruning Minimax
+// Use for Testing
 func MiniMax(depth, terminal int, s State) (State, error) {
 	if depth == 0 {
 		// set the Min or Max
@@ -247,8 +279,7 @@ func MiniMax(depth, terminal int, s State) (State, error) {
 		} else {
 			s.isMax = false
 		}
-		//fmt.Println("SHHH, I'm thinking")
-		// DICT attack
+
 		openState, err := DictionaryAttack(s)
 		if err == nil {
 			return openState, nil
