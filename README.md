@@ -20,21 +20,23 @@ A Golang chess engine and user interfaces. Challenge the **AI**, [Ghess](https:/
 
 
 # Instructions
-`ghess.go` is a Go package responsible for representing a chess board, parsing PGN input, and validating moves. In the `ui/` directory, `clichess.go` is a simple interface for debugging and `growser.go` is a browser client powered by *websockets*. The `ghess.go` package is broken into `parse.go`, `validation.go`, and `evaluation.go`. See godoc for the [docs](https://godoc.org/github.com/polypmer/go-chess).
-
-- After putting the source in `$GOPATH/src/github.com/polypmer/ghess/`, try
-
-    `go run ui/clichess.go`
-
-- To see a `math/rand` vs `math/rand` game, enter into the **clichess** client:
-
-    `> /random-game`
-
-- To play a real-time game over the internal network, run `growser.go` within the `/ui` directory, and connect to port 8080.
+`ghess.go` is a Go package responsible for representing a chess board, parsing PGN input, and validating moves. In the **UI** branch, in the `ui/` directory, `clichess.go` is a simple interface for debugging and `growser.go` is a browser client powered by *websockets*. See godoc for the [docs](https://godoc.org/github.com/polypmer/go-chess).
 
 - To use the package in a project, start a new game by calling `ghess.NewBoard()`, which returns an instance of the `ghess.Board` `struct`, ready to `Board.ParseMove()` and return *FEN* positions, `Board.Position()`.
 
-- To evaluate a board position, with positive numbers as a White advantage and negative as Black advantage:
+- To use the built in Front-Ends, go to the **UI branch**:
+
+  + To play a real-time game over the internal network, run `growser.go` within the `/ui` directory, and connect to port 8080.
+
+  + After cloning the source into `$GOPATH/src/github.com/polypmer/ghess/`, try
+
+    `go run ui/clichess.go // found in UI branch`
+
+  + To see a `math/rand` vs `math/rand` game, enter into the **clichess** client:
+
+    `> /random-game`
+
+  + To evaluate a board position, with positive numbers as a White advantage and negative as Black advantage:
 
     `> /eval`
 
